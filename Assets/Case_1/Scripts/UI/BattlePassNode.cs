@@ -97,7 +97,7 @@ namespace VertigoCase.UI
                 if (rd != null) premiumRedDot = rd.gameObject;
             }
 
-            // Automatically attach UILocalUVModifier to background images so that the UISweepShader is fully atlas-compatible
+            // UILocalUVModifier provides atlas-independent local UVs for Sh_Shine
             if (freeCardBg != null && freeCardBg.GetComponent<UILocalUVModifier>() == null)
             {
                 freeCardBg.gameObject.AddComponent<UILocalUVModifier>();

@@ -824,7 +824,7 @@ namespace VertigoCase.UI
             {
                 if (graphic != null && graphic.material != null && graphic.material.shader != null)
                 {
-                    if (graphic.material.shader.name == "UI/Custom/LightSweep")
+                    if (graphic.material.shader.name == "Case1/Sh_Shine")
                     {
                         if (graphic.GetComponent<UILocalUVModifier>() == null)
                         {

@@ -48,7 +48,6 @@ namespace VertigoCase.UI
 
             UIVertex vertex = new UIVertex();
             
-            // Find the local bounding box of the graphic mesh vertices
             float minX = float.MaxValue;
             float maxX = float.MinValue;
             float minY = float.MaxValue;
@@ -66,7 +65,6 @@ namespace VertigoCase.UI
             float width = maxX - minX;
             float height = maxY - minY;
             
-            // Avoid division by zero
             if (width <= 0f) width = 1f;
             if (height <= 0f) height = 1f;
             
@@ -74,11 +72,9 @@ namespace VertigoCase.UI
             {
                 vh.PopulateUIVertex(ref vertex, i);
                 
-                // Calculate local 0..1 UV coordinate based on position relative to bounds
                 float localX = (vertex.position.x - minX) / width;
                 float localY = (vertex.position.y - minY) / height;
                 
-                // Assign to uv1 (which maps to TEXCOORD1 in HLSL/CG shader)
                 vertex.uv1 = new Vector2(localX, localY);
                 
                 vh.SetUIVertex(vertex, i);

@@ -13,8 +13,8 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
-  - _INVERTGLOW_ON
-  - _USECENTERGLOW_ON
+  - _ENABLEVIGNETTE_ON
+  - _VIGNETTEINVERT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -25,48 +25,48 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _GlowTex:
-        m_Texture: {fileID: 2800000, guid: 5d591231680021a49a57df44d72b11a7, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _VignetteMap:
+        m_Texture: {fileID: 2800000, guid: 5d591231680021a49a57df44d72b11a7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AspectRatio: 1.7
-    - _CenterAlphaBoost: 1
+    - _BorderDim: 0.495
     - _ColorMask: 15
+    - _CoreAlphaLift: 1
     - _DstBlend: 10
-    - _EdgeDarkness: 0.495
-    - _GlowAspect: 1.7
-    - _GlowEmission: 0
-    - _GlowIntensity: 1.04
-    - _GlowMode: 0
-    - _GlowShine: 0
-    - _GlowSoftness: 3.6
-    - _GlowSource: 0
-    - _GlowWidth: 0.56
-    - _InvertGlow: 1
-    - _Rotation: -697.3
+    - _EnableVignette: 1
+    - _ScrollAngle: -697.3
+    - _ScrollAspect: 1.7
     - _SrcBlend: 5
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _UseCenterGlow: 1
     - _UseUIAlphaClip: 0
+    - _VignetteAspect: 1.7
+    - _VignetteBloom: 0
+    - _VignetteEmitStrength: 0
+    - _VignetteFeather: 3.6
+    - _VignetteInvert: 1
+    - _VignetteMode: 0
+    - _VignettePower: 1.04
+    - _VignetteRadius: 0.56
+    - _VignetteShape: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _GlowCenter: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _GlowColor: {r: 0.92, g: 0.75, b: 1, a: 1}
-    - _GlowEmissionColor: {r: 13.928808, g: 13.928808, b: 13.928808, a: 1}
-    - _GlowTexOffset: {r: 1.37, g: 0, b: 0, a: 0}
-    - _GlowTexScale: {r: -2.2, g: 0.85, b: 0, a: 0}
-    - _PanOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _PanSpeed: {r: 0, g: -0.05, b: 0, a: 0}
-    - _Tiling: {r: 5, g: 3, b: 0, a: 0}
+    - _ScrollBias: {r: 0, g: 0, b: 0, a: 0}
+    - _ScrollRepeat: {r: 5, g: 3, b: 0, a: 0}
+    - _ScrollVelocity: {r: 0, g: -0.05, b: 0, a: 0}
+    - _VignetteAnchor: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _VignetteEmitColor: {r: 13.928808, g: 13.928808, b: 13.928808, a: 1}
+    - _VignetteMapOffset: {r: 1.37, g: 0, b: 0, a: 0}
+    - _VignetteMapScale: {r: -2.2, g: 0.85, b: 0, a: 0}
+    - _VignetteTint: {r: 0.92, g: 0.75, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
