@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 68968892}
   - component: {fileID: 68968891}
   m_Layer: 5
-  m_Name: Ind_Reward
+  m_Name: Reward
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,143 +234,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 68968889}
   m_CullTransparentMesh: 1
---- !u!1 &128988706
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 128988707}
-  - component: {fileID: 128988709}
-  - component: {fileID: 128988708}
-  m_Layer: 5
-  m_Name: Txt_SeasonCard_Clepatra
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &128988707
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128988706}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 254817947}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 302.7, y: -91.9}
-  m_SizeDelta: {x: 215.5, y: 72.2}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &128988708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128988706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: CLEAOPATRA
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-  m_sharedMaterial: {fileID: -5442646582826897045, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 30.7
-  m_fontSizeBase: 36
-  m_fontWeight: 400
-  m_enableAutoSizing: 1
-  m_fontSizeMin: 12
-  m_fontSizeMax: 36
-  m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 65535
-  m_characterSpacing: -10
-  m_characterHorizontalScale: 1
-  m_wordSpacing: 10
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &128988709
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128988706}
-  m_CullTransparentMesh: 1
 --- !u!1 &138709628
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,7 +246,7 @@ GameObject:
   - component: {fileID: 138709631}
   - component: {fileID: 138709630}
   m_Layer: 5
-  m_Name: Grp_Road
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 181053106}
   m_Layer: 5
-  m_Name: Panel_Top
+  m_Name: Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -529,7 +392,7 @@ GameObject:
   - component: {fileID: 186786587}
   - component: {fileID: 186786586}
   m_Layer: 5
-  m_Name: Img_Road_Fill
+  m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -604,7 +467,7 @@ GameObject:
   - component: {fileID: 199596322}
   - component: {fileID: 199596321}
   m_Layer: 5
-  m_Name: Img_Road_Bar_BG
+  m_Name: Bar_Bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -677,7 +540,7 @@ GameObject:
   m_Component:
   - component: {fileID: 254817947}
   m_Layer: 5
-  m_Name: Grp_SeasonCard_Header
+  m_Name: Card_Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -696,13 +559,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 933436489}
-  - {fileID: 128988707}
-  - {fileID: 1895757736}
   m_Father: {fileID: 1870684118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -30.060059, y: 323.63025}
+  m_AnchoredPosition: {x: -30.060055, y: 323.63025}
   m_SizeDelta: {x: -117.450005, y: -680.55005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &278197476
@@ -717,7 +578,7 @@ GameObject:
   - component: {fileID: 278197479}
   - component: {fileID: 278197478}
   m_Layer: 5
-  m_Name: Txt_Banner_Premium
+  m_Name: "Premiu\u0131m"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -739,7 +600,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -32, y: 2.0999985}
+  m_AnchoredPosition: {x: -32, y: 2.1}
   m_SizeDelta: {x: 166.65, y: 49.66}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &278197478
@@ -854,7 +715,7 @@ GameObject:
   - component: {fileID: 279718749}
   - component: {fileID: 279718751}
   m_Layer: 0
-  m_Name: Light_Directional
+  m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -983,7 +844,7 @@ GameObject:
   - component: {fileID: 402715329}
   - component: {fileID: 402715328}
   m_Layer: 5
-  m_Name: Btn_XP_Skip
+  m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1116,7 +977,7 @@ GameObject:
   m_Component:
   - component: {fileID: 412996549}
   m_Layer: 5
-  m_Name: Panel_Offer
+  m_Name: Special
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1141,7 +1002,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15.100098, y: -374.50067}
+  m_AnchoredPosition: {x: -15.100098, y: -374.50064}
   m_SizeDelta: {x: 0, y: -602.5901}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &492457565
@@ -1156,7 +1017,7 @@ GameObject:
   - component: {fileID: 492457568}
   - component: {fileID: 492457567}
   m_Layer: 5
-  m_Name: Img_SeasonCard_BG
+  m_Name: Season_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1179,7 +1040,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -17.745117, y: 0}
+  m_AnchoredPosition: {x: -17.745125, y: 0}
   m_SizeDelta: {x: -92.818985, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &492457567
@@ -1220,143 +1081,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 492457565}
   m_CullTransparentMesh: 1
---- !u!1 &542327554
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 542327555}
-  - component: {fileID: 542327557}
-  - component: {fileID: 542327556}
-  m_Layer: 5
-  m_Name: Txt_Myhtic
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &542327555
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542327554}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1895757736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 18}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &542327556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542327554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: MYTHIC
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-  m_sharedMaterial: {fileID: -5442646582826897045, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 36
-  m_fontWeight: 400
-  m_enableAutoSizing: 1
-  m_fontSizeMin: 12
-  m_fontSizeMax: 22
-  m_fontStyle: 17
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: -10
-  m_characterHorizontalScale: 1
-  m_wordSpacing: 10
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &542327557
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542327554}
-  m_CullTransparentMesh: 1
 --- !u!1 &546567963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1367,7 +1091,7 @@ GameObject:
   m_Component:
   - component: {fileID: 546567964}
   m_Layer: 0
-  m_Name: _Settings
+  m_Name: ---Settings---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1403,7 +1127,7 @@ GameObject:
   - component: {fileID: 589071502}
   - component: {fileID: 589071501}
   m_Layer: 5
-  m_Name: Txt_Offer_Special
+  m_Name: Text_Special
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1425,7 +1149,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -4.549999}
+  m_AnchoredPosition: {x: 0, y: -4.550001}
   m_SizeDelta: {x: 0, y: -31.099998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &589071501
@@ -1540,7 +1264,7 @@ GameObject:
   - component: {fileID: 606924298}
   - component: {fileID: 606924297}
   m_Layer: 5
-  m_Name: Img_Banner_Subscription
+  m_Name: Subscription_Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1615,7 +1339,7 @@ GameObject:
   - component: {fileID: 627077787}
   - component: {fileID: 627077786}
   m_Layer: 5
-  m_Name: Img_SeasonCard_Frame
+  m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1688,7 +1412,7 @@ GameObject:
   m_Component:
   - component: {fileID: 653894684}
   m_Layer: 5
-  m_Name: Grp_Background
+  m_Name: ---BackGround---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1716,81 +1440,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &657305295
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 657305296}
-  - component: {fileID: 657305298}
-  - component: {fileID: 657305297}
-  m_Layer: 5
-  m_Name: Img_Mythic
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &657305296
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 657305295}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1895757736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &657305297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 657305295}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.69803923, g: 0.69803923, b: 0.69803923, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 94c4673d02595a247bc5bf22193e383c, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &657305298
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 657305295}
-  m_CullTransparentMesh: 1
 --- !u!1 &680794366
 GameObject:
   m_ObjectHideFlags: 0
@@ -1803,7 +1452,7 @@ GameObject:
   - component: {fileID: 680794369}
   - component: {fileID: 680794368}
   m_Layer: 5
-  m_Name: Txt_Offer_Value
+  m_Name: Text_Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1942,7 +1591,7 @@ GameObject:
   - component: {fileID: 718044832}
   - component: {fileID: 718044831}
   m_Layer: 5
-  m_Name: Img_XP_Icon
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2018,7 +1667,7 @@ GameObject:
   - component: {fileID: 759564877}
   - component: {fileID: 759564876}
   m_Layer: 5
-  m_Name: Img_Ind_Level_Arrow
+  m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2137,7 +1786,7 @@ GameObject:
   - component: {fileID: 763065360}
   - component: {fileID: 763065359}
   m_Layer: 5
-  m_Name: Img_ProgressLine_Gradient_L
+  m_Name: L_Gradiant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2210,7 +1859,7 @@ GameObject:
   m_Component:
   - component: {fileID: 803851517}
   m_Layer: 5
-  m_Name: Grp_Road_FillArea
+  m_Name: Fill_Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2248,7 +1897,7 @@ GameObject:
   - component: {fileID: 806008154}
   - component: {fileID: 806008155}
   m_Layer: 5
-  m_Name: Grp_ProgressLine
+  m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2309,7 +1958,7 @@ GameObject:
   - component: {fileID: 901313052}
   - component: {fileID: 901313051}
   m_Layer: 5
-  m_Name: Img_SeasonCard_Character
+  m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2382,7 +2031,7 @@ GameObject:
   m_Component:
   - component: {fileID: 927278549}
   m_Layer: 5
-  m_Name: VFX_Scroll
+  m_Name: VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2419,7 +2068,7 @@ GameObject:
   - component: {fileID: 933436491}
   - component: {fileID: 933436490}
   m_Layer: 5
-  m_Name: Txt_SeasonCard_Title
+  m_Name: Text_Season
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2439,10 +2088,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 254817947}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 324.6, y: -36.4}
-  m_SizeDelta: {x: 215.5, y: 72.2}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &933436490
 MonoBehaviour:
@@ -2466,15 +2115,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: SEASON 16
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-  m_sharedMaterial: {fileID: -5442646582826897045, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4287163391
-  m_fontColor: {r: 1, g: 0.9210736, b: 0.5330188, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2494,16 +2143,16 @@ MonoBehaviour:
   m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 1
-  m_fontSizeMin: 12
-  m_fontSizeMax: 36
-  m_fontStyle: 1
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: -10
+  m_characterSpacing: 0
   m_characterHorizontalScale: 1
-  m_wordSpacing: 10
+  m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -2557,7 +2206,7 @@ GameObject:
   - component: {fileID: 1040001499}
   - component: {fileID: 1040001498}
   m_Layer: 5
-  m_Name: Scr_BattlePass
+  m_Name: Scroll View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2665,7 +2314,7 @@ GameObject:
   - component: {fileID: 1137820871}
   - component: {fileID: 1137820872}
   m_Layer: 5
-  m_Name: UI_BattlePass
+  m_Name: BattlePass_UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2712,7 +2361,7 @@ GameObject:
   - component: {fileID: 1140723644}
   - component: {fileID: 1140723643}
   m_Layer: 5
-  m_Name: Txt_Ind_Level
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2849,7 +2498,7 @@ GameObject:
   - component: {fileID: 1152709312}
   - component: {fileID: 1152709311}
   m_Layer: 5
-  m_Name: Img_Background_Gradient
+  m_Name: Gradiant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2924,7 +2573,7 @@ GameObject:
   - component: {fileID: 1153701140}
   - component: {fileID: 1153701139}
   m_Layer: 5
-  m_Name: Panel_Offer_Value
+  m_Name: Battle_Pass_Offer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2947,7 +2596,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 32.599976, y: 59.600006}
+  m_AnchoredPosition: {x: 32.6, y: 59.600006}
   m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1153701139
@@ -3000,7 +2649,7 @@ GameObject:
   - component: {fileID: 1187279150}
   - component: {fileID: 1187279149}
   m_Layer: 5
-  m_Name: Img_Background_Tile
+  m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3073,7 +2722,7 @@ GameObject:
   - component: {fileID: 1216021924}
   - component: {fileID: 1216021923}
   m_Layer: 5
-  m_Name: Img_Ind_Reward_Circle
+  m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3192,7 +2841,7 @@ GameObject:
   - component: {fileID: 1238500370}
   - component: {fileID: 1238500369}
   m_Layer: 5
-  m_Name: Img_Banner_XP
+  m_Name: Icon_Xp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3268,7 +2917,7 @@ GameObject:
   - component: {fileID: 1246495830}
   - component: {fileID: 1246495829}
   m_Layer: 5
-  m_Name: Img_Ind_Reward_Arrow
+  m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3388,7 +3037,7 @@ GameObject:
   - component: {fileID: 1263593382}
   - component: {fileID: 1263593381}
   m_Layer: 5
-  m_Name: Scr_BattlePass_Viewport
+  m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3476,7 +3125,7 @@ GameObject:
   - component: {fileID: 1328146783}
   - component: {fileID: 1328146784}
   m_Layer: 0
-  m_Name: Volume_PostProcess
+  m_Name: PostProcess
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3525,7 +3174,7 @@ GameObject:
   - component: {fileID: 1460671673}
   - component: {fileID: 1460671674}
   m_Layer: 5
-  m_Name: Panel_Banner
+  m_Name: Banner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3551,7 +3200,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 50.629883, y: 0}
+  m_AnchoredPosition: {x: 50.62989, y: 0}
   m_SizeDelta: {x: -133.06003, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1460671674
@@ -3590,7 +3239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1488515908}
   m_Layer: 5
-  m_Name: Panel_Main
+  m_Name: Main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3631,7 +3280,7 @@ GameObject:
   - component: {fileID: 1507482404}
   - component: {fileID: 1507482407}
   m_Layer: 0
-  m_Name: Camera_Main
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3768,7 +3417,7 @@ GameObject:
   - component: {fileID: 1543045396}
   - component: {fileID: 1543045395}
   m_Layer: 5
-  m_Name: Ind_Level
+  m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3883,7 +3532,7 @@ GameObject:
   - component: {fileID: 1601401332}
   - component: {fileID: 1601401331}
   m_Layer: 5
-  m_Name: Txt_Banner_Premium_Inactive
+  m_Name: Inactive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4021,7 +3670,7 @@ GameObject:
   - component: {fileID: 1608658034}
   - component: {fileID: 1608658033}
   m_Layer: 5
-  m_Name: Btn_Offer_Get
+  m_Name: Button_Get
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4142,7 +3791,7 @@ GameObject:
   - component: {fileID: 1611988877}
   - component: {fileID: 1611988876}
   m_Layer: 5
-  m_Name: Img_Banner_BG
+  m_Name: BackGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4164,7 +3813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 19.754883, y: 2.25}
+  m_AnchoredPosition: {x: 19.754883, y: 2.2500005}
   m_SizeDelta: {x: -39.51001, y: -18.369999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1611988876
@@ -4238,7 +3887,7 @@ GameObject:
   - component: {fileID: 1647718177}
   - component: {fileID: 1647718176}
   m_Layer: 5
-  m_Name: Canvas_BattlePass
+  m_Name: ---BP_Canvas---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4340,7 +3989,7 @@ GameObject:
   - component: {fileID: 1653869185}
   - component: {fileID: 1653869184}
   m_Layer: 5
-  m_Name: Img_Ind_Level_Circle
+  m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4459,7 +4108,7 @@ GameObject:
   - component: {fileID: 1711525862}
   - component: {fileID: 1711525861}
   m_Layer: 5
-  m_Name: Scr_BattlePass_Content
+  m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4538,7 +4187,7 @@ GameObject:
   - component: {fileID: 1748963067}
   - component: {fileID: 1748963066}
   m_Layer: 5
-  m_Name: Txt_Offer_Get
+  m_Name: Text_Get
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4560,7 +4209,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.8100014}
+  m_AnchoredPosition: {x: 0, y: 3.8100019}
   m_SizeDelta: {x: 0, y: -7.619996}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1748963066
@@ -4675,7 +4324,7 @@ GameObject:
   - component: {fileID: 1749638675}
   - component: {fileID: 1749638674}
   m_Layer: 5
-  m_Name: Txt_XP_Amount
+  m_Name: Amount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4812,7 +4461,7 @@ GameObject:
   - component: {fileID: 1752080454}
   - component: {fileID: 1752080453}
   m_Layer: 5
-  m_Name: Img_ProgressLine_R
+  m_Name: R_Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4887,7 +4536,7 @@ GameObject:
   - component: {fileID: 1764264669}
   - component: {fileID: 1764264668}
   m_Layer: 5
-  m_Name: Img_ProgressLine_Gradient_R
+  m_Name: R_Gradiant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4962,7 +4611,7 @@ GameObject:
   - component: {fileID: 1766322955}
   - component: {fileID: 1766322954}
   m_Layer: 5
-  m_Name: Img_ProgressLine_L
+  m_Name: L_Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5037,7 +4686,7 @@ GameObject:
   - component: {fileID: 1798288146}
   - component: {fileID: 1798288145}
   m_Layer: 5
-  m_Name: Img_SeasonCard_Tile
+  m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5186,7 +4835,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1870684118}
   m_Layer: 5
-  m_Name: Panel_SeasonCard
+  m_Name: Season_Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5216,43 +4865,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1895757735
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1895757736}
-  m_Layer: 5
-  m_Name: Grp_Label
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1895757736
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1895757735}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 657305296}
-  - {fileID: 542327555}
-  m_Father: {fileID: 254817947}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -65.1, y: 42.1}
-  m_SizeDelta: {x: 100, y: 24}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1901470018
 GameObject:
   m_ObjectHideFlags: 0
@@ -5263,7 +4875,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1901470019}
   m_Layer: 5
-  m_Name: Panel_Bottom
+  m_Name: Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5301,7 +4913,7 @@ GameObject:
   - component: {fileID: 1901708905}
   - component: {fileID: 1901708904}
   m_Layer: 5
-  m_Name: Img_Background_Color
+  m_Name: BackGround Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5376,7 +4988,7 @@ GameObject:
   - component: {fileID: 1968904823}
   - component: {fileID: 1968904822}
   m_Layer: 5
-  m_Name: Img_Offer_Flag
+  m_Name: Battle_Flag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5450,7 +5062,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2097639381}
   m_Layer: 5
-  m_Name: Grp_Banner_Text
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
