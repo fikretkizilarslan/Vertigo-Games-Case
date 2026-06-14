@@ -28,6 +28,24 @@ namespace VertigoCase.UI
     }
 
     /// <summary>
+    /// Inspector-authored entry for a featured "instant reward" showcase card (the highlighted
+    /// row shown before level 1, e.g. SOLARIS / CLEOPATRA). Add an entry here — including an
+    /// Attachment reward — to feature it; the tier generator turns each entry into one instant tier.
+    /// </summary>
+    [System.Serializable]
+    public class InstantRewardEntry
+    {
+        [Tooltip("Reward featured on this instant showcase card (e.g. an Attachment, Character or Currency reward).")]
+        public RewardItemSO reward;
+
+        [Tooltip("Amount displayed on the card (e.g. 1, 2, 1000).")]
+        [Min(1)] public int amount = 1;
+
+        [Tooltip("If true, the card shows the 'UNLOCK NOW' teaser text until Premium is purchased.")]
+        public bool showUnlockNowText;
+    }
+
+    /// <summary>
     /// Defines a single tier level on the Battle Pass road.
     /// Contains a Free and a Premium reward slot.
     /// </summary>

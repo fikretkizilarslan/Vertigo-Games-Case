@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace VertigoCase.UI
 {
@@ -8,45 +7,19 @@ namespace VertigoCase.UI
     /// A floating indicator dedicated to pointing to the next upcoming key unclaimed reward
     /// (e.g. premium chest, unique characters, fragments, etc.) on the right edge of the viewport.
     /// </summary>
-    public class UIKeyRewardIndicator : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
+    public class UIKeyRewardIndicator : UIViewportIndicator
     {
-        [Header("References")]
-        [SerializeField] private ScrollRect scrollRect;
-        [SerializeField] private RectTransform viewportRect;
+        [Header("Key Reward Indicator")]
         [SerializeField] private UILevelIndicator levelIndicator; // To check if Level Indicator is clamped to the left
-        [SerializeField] private Image arrowImage; // Indicator arrow/pointer pointing left or right
         [SerializeField] private Image rewardIconImage; // Image showing the target reward icon
 
-        [Header("Settings")]
-        [SerializeField] private float padding = 50f; // Padding from left/right edges of viewport
-        [SerializeField] private float snapDuration = 0.5f; // Duration of snap animation
-        [SerializeField] private float visibilityThreshold = -50f; // Threshold to determine if reward is off-screen
-
-        [Header("Arrow Customization")]
-        [SerializeField] private Vector3 rightRotation = new Vector3(0, 0, 0); // Rotation for pointing right
-
-        [Header("Content Alignment (Automated)")]
-        [SerializeField] private RectTransform circleRect; // Container for the reward icon
-        [SerializeField] private float contentOffset = 13f; // Offset compensation for sibling/child rotation alignment
-
-        private RectTransform indicatorRect;
         private RectTransform targetRewardNode;
-        private Coroutine snapCoroutine;
-        private CanvasGroup canvasGroup;
         private bool isCurrentlyVisible = false;
-        private bool ignorePressCancelUntilRelease;
 
-        private void Start()
+        protected override RectTransform TargetNode => targetRewardNode;
+
+        protected override void OnIndicatorStart()
         {
-            indicatorRect = GetComponent<RectTransform>();
-            canvasGroup = GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-            {
-                canvasGroup = gameObject.AddComponent<CanvasGroup>();
-            }
-
-            EnsureClickableArea();
-
             // Fallback assignments to make setup foolproof
             if (levelIndicator == null)
             {
@@ -107,70 +80,7 @@ namespace VertigoCase.UI
             }
         }
 
-        private void Update()
-        {
-            // Cancel snap animation if user drags/touches screen during snap
-            bool isPressed = IsPointerPressed();
-            if (!isPressed)
-            {
-                ignorePressCancelUntilRelease = false;
-            }
-
-            if (snapCoroutine != null && isPressed && !ignorePressCancelUntilRelease)
-            {
-                StopCoroutine(snapCoroutine);
-                snapCoroutine = null;
-            }
-        }
-
-        private static bool IsPointerPressed()
-        {
-#if ENABLE_INPUT_SYSTEM
-            if (UnityEngine.InputSystem.Pointer.current != null)
-            {
-                return UnityEngine.InputSystem.Pointer.current.press.isPressed;
-            }
-#elif ENABLE_LEGACY_INPUT_MANAGER
-            return Input.GetMouseButton(0);
-#endif
-            return false;
-        }
-
-        private void EnsureClickableArea()
-        {
-            Image hitArea = GetComponent<Image>();
-            if (hitArea == null)
-            {
-                hitArea = gameObject.AddComponent<Image>();
-                hitArea.color = new Color(0f, 0f, 0f, 0f);
-            }
-
-            hitArea.raycastTarget = true;
-
-            Button rootButton = GetComponent<Button>();
-            if (rootButton != null)
-            {
-                rootButton.targetGraphic = hitArea;
-                rootButton.onClick.RemoveListener(ScrollToTarget);
-                rootButton.onClick.AddListener(ScrollToTarget);
-            }
-
-            Button[] childButtons = GetComponentsInChildren<Button>(true);
-            for (int i = 0; i < childButtons.Length; i++)
-            {
-                if (childButtons[i].gameObject != gameObject)
-                {
-                    childButtons[i].interactable = false;
-                }
-            }
-        }
-
-        private void LateUpdate()
-        {
-            UpdateIndicatorPosition();
-        }
-
-        private void UpdateIndicatorPosition()
+        protected override void UpdateIndicatorPosition()
         {
             if (viewportRect == null || indicatorRect == null) return;
 
@@ -273,63 +183,6 @@ namespace VertigoCase.UI
                 canvasGroup.blocksRaycasts = visible;
                 canvasGroup.interactable = visible;
             }
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            ScrollToTarget();
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            ScrollToTarget();
-        }
-
-        private void ScrollToTarget()
-        {
-            if (targetRewardNode == null || scrollRect == null || viewportRect == null) return;
-
-            RectTransform contentRect = scrollRect.content;
-            float contentWidth = contentRect.rect.width;
-            float viewportWidth = viewportRect.rect.width;
-
-            if (contentWidth <= viewportWidth) return;
-
-            // Anchor/pivot-independent scrolling coordinate math
-            float targetLocalX = contentRect.InverseTransformPoint(targetRewardNode.position).x;
-            float distanceFromLeft = targetLocalX + (contentRect.pivot.x * contentWidth);
-            float desiredScrollPos = distanceFromLeft - (viewportWidth / 2f);
-            
-            float targetNormalized = desiredScrollPos / (contentWidth - viewportWidth);
-            float clampedTargetNormalized = Mathf.Clamp01(targetNormalized);
-
-            if (snapCoroutine != null)
-            {
-                StopCoroutine(snapCoroutine);
-            }
-            ignorePressCancelUntilRelease = true;
-            snapCoroutine = StartCoroutine(SnapToPositionRoutine(clampedTargetNormalized));
-        }
-
-        private System.Collections.IEnumerator SnapToPositionRoutine(float targetX)
-        {
-            float startX = scrollRect.horizontalNormalizedPosition;
-            float elapsed = 0f;
-
-            while (elapsed < snapDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / snapDuration;
-                
-                // Ease Out Cubic snap animation
-                float easeT = 1f - Mathf.Pow(1f - t, 3f);
-                
-                scrollRect.horizontalNormalizedPosition = Mathf.Lerp(startX, targetX, easeT);
-                yield return null;
-            }
-
-            scrollRect.horizontalNormalizedPosition = targetX;
-            snapCoroutine = null;
         }
     }
 }

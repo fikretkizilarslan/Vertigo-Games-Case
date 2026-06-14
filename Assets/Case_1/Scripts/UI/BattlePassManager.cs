@@ -64,12 +64,42 @@ namespace VertigoCase.UI
         [SerializeField] private Sprite gemIconSprite;
         [SerializeField] private float levelSkipButtonHorizontalOffset = 0f;
 
+        [Header("Diamond Wallet")]
+        [Tooltip("Header diamond counter label (scene: Txt_Count_Diamond). Auto-resolved by name when left empty.")]
+        [SerializeField] private TextMeshProUGUI diamondCountText;
+        [Tooltip("Player's current diamond balance. Diamonds are spent when skipping a level with the Btn_XP_Skip badge.")]
+        [Min(0)] [SerializeField] private int diamondBalance = 100;
+
+        [Header("Gold Wallet")]
+        [Tooltip("Header gold counter label (scene: Txt_Count_Gold). Auto-resolved by name when left empty.")]
+        [SerializeField] private TextMeshProUGUI goldCountText;
+        [Tooltip("Player's current gold balance, topped up when a gold reward card is claimed.")]
+        [Min(0)] [SerializeField] private int goldBalance = 0;
+
+        [Header("Startup")]
+        [Tooltip("Road scroll-view canvas group, faded in once the road finishes building to hide the first-frame layout pop. Auto-resolved from the ScrollRect when empty.")]
+        [SerializeField] private CanvasGroup roadCanvasGroup;
+        [Tooltip("Fade-in duration (seconds) used to reveal the road on startup.")]
+        [Min(0f)] [SerializeField] private float startupRevealDuration = 0.2f;
+
         [Header("Prefabs")]
         [SerializeField] private GameObject nodePrefab;
 
-        [Header("VFX & Particles")]
+        [Header("VFX & Particles - Claim")]
+        [Tooltip("Claim VFX spawned when a FREE reward card is claimed.")]
         [SerializeField] private GameObject freeClaimVfxPrefab;
+        [Tooltip("Claim VFX spawned when a PREMIUM reward card is claimed.")]
         [SerializeField] private GameObject premiumClaimVfxPrefab;
+
+        [Header("VFX & Particles - Click")]
+        [Tooltip("Click VFX spawned when the premium OFFER button (Btn_Offer_Get) is tapped.")]
+        [SerializeField] private GameObject offerClickVfxPrefab;
+        [Tooltip("Click VFX spawned when the DIAMOND skip button (Btn_XP_Skip) is tapped.")]
+        [SerializeField] private GameObject diamondClickVfxPrefab;
+
+        [Header("Premium Offer")]
+        [Tooltip("Offer button (scene: Btn_Offer_Get). Tapping it activates the premium track. Auto-resolved by name when left empty.")]
+        [SerializeField] private Button offerButton;
 
         [Header("UI Customization")]
         [SerializeField] private List<RewardType> rewardTypesToShowAmountText = new List<RewardType>
@@ -84,6 +114,7 @@ namespace VertigoCase.UI
 
         private List<BattlePassNode> instantiatedNodes = new List<BattlePassNode>();
         private RectTransform sliderRectTransform;
+        private Coroutine scrollSnapRoutine;
 
         private float initialLineLocalY;
         private float initialLineLocalZ;
@@ -97,643 +128,21 @@ namespace VertigoCase.UI
         [SerializeField] private int generateLevelCount = 50;
         [SerializeField] private int instantRewardCount = 7;
 
+        [Header("Instant Reward Showcase (Optional)")]
+        [Tooltip("Featured instant-reward cards shown before level 1 (the highlighted SOLARIS / CLEOPATRA row). " +
+                 "Add an entry here — e.g. an Attachment reward — to control exactly which cards appear, in order. " +
+                 "When this list is empty, the generator falls back to its built-in default sequence.")]
+        [SerializeField] private List<InstantRewardEntry> instantRewardShowcase = new List<InstantRewardEntry>();
+
 #if UNITY_EDITOR
+        // Editor-only accessors consumed by BattlePassManagerEditor (the tier generator tool).
+        // The heavy generation logic lives in Scripts/UI/Editor/BattlePassTierGenerator.cs so this
+        // runtime class stays lean and free of editor-only code.
+        public List<BattlePassTierData> EditorTierList => tierList;
+        public int EditorGenerateLevelCount => generateLevelCount;
+        public int EditorInstantRewardCount => instantRewardCount;
+        public List<InstantRewardEntry> EditorInstantRewardShowcase => instantRewardShowcase;
 
-        [ContextMenu("Auto Generate Tiers")]
-        private void AutoGenerateTiers()
-        {
-            // Find all RewardItemSO assets and filter out those excluded from Battle Pass
-            List<RewardItemSO> allRewards = new List<RewardItemSO>();
-#if UNITY_EDITOR
-            string[] guids = AssetDatabase.FindAssets("t:RewardItemSO");
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                RewardItemSO item = AssetDatabase.LoadAssetAtPath<RewardItemSO>(path);
-                if (item != null && !item.excludeFromBattlePass)
-                    allRewards.Add(item);
-            }
-#endif
-            // Separate free and premium pools
-            List<RewardItemSO> freePool = allRewards.FindAll(r => r.canAppearInFreeTrack);
-            List<RewardItemSO> premiumPool = allRewards.FindAll(r => r.canAppearInPremiumTrack);
-            
-            // Set to track unique rewards and prevent duplication
-            HashSet<RewardItemSO> placedUniqueRewards = new HashSet<RewardItemSO>();
-
-            // Categorize free rewards
-            List<RewardItemSO> freeCurrencies = freePool.FindAll(r => r.Type == RewardType.Currency);
-            List<RewardItemSO> freeOthers = freePool.FindAll(r => r.Type != RewardType.Currency);
-            
-            // Categorize premium rewards
-            List<RewardItemSO> premCurrencies = premiumPool.FindAll(r => r.Type == RewardType.Currency);
-            List<RewardItemSO> premOthers = premiumPool.FindAll(r => r.Type != RewardType.Currency);
-
-            if (allRewards.Count == 0)
-            {
-                Debug.LogWarning("No RewardItemSO found in project!");
-                return;
-            }
-
-            tierList.Clear();
-
-            // Fixed instant reward sequence (starts from negative levels)
-            var instantRewardDefs = new[]
-            {
-                new { name = "cleopatra", amount = 1, unlockNow = true },
-                new { name = "solaris",   amount = 1, unlockNow = true },
-                new { name = "cleopatra", amount = 2, unlockNow = false },
-                new { name = "solaris",   amount = 2, unlockNow = false },
-                new { name = "gold",      amount = 1000, unlockNow = false },
-                new { name = "diamond",   amount = 5, unlockNow = false },
-                new { name = "lucky",     amount = 10, unlockNow = false },
-            };
-
-            int finalInstantCount = Mathf.Clamp(instantRewardCount, 0, 100);
-            for (int i = 0; i < finalInstantCount; i++)
-            {
-                var def = instantRewardDefs[i % instantRewardDefs.Length];
-                RewardItemSO item = GetReward(def.name, allRewards);
-                if (item == null) continue;
-
-                BattlePassTierData instantTier = new BattlePassTierData();
-                instantTier.level = -(finalInstantCount - i); // e.g. -7, -6, -5
-                instantTier.isInstantReward = true;
-                instantTier.isHighlighted = true;
-                instantTier.isUnlockNowText = (i < 2);
-                instantTier.premiumReward = new RewardSlot { rewardData = item, amount = def.amount };
-                tierList.Add(instantTier);
-
-                // Add unique starter items to the unique set to prevent repetition
-                if (item.IsUnique)
-                {
-                    placedUniqueRewards.Add(item);
-                }
-            }
-
-            // Anti-repetition check: track last 2 choices to enforce minimum spacing
-            List<RewardItemSO> recentFree = new List<RewardItemSO>();
-            List<RewardItemSO> recentPrem = new List<RewardItemSO>();
-
-            RewardItemSO goldReward = GetReward("gold", allRewards);
-            RewardItemSO diamondReward = GetReward("diamond", allRewards);
-
-            // Spacing constraint dictionaries tracking allowed levels
-            Dictionary<RewardItemSO, int> nextAllowedLevelsFree = new Dictionary<RewardItemSO, int>();
-            Dictionary<RewardItemSO, int> nextAllowedLevelsPremium = new Dictionary<RewardItemSO, int>();
-
-            // Tracking remaining fragments/amounts for distribution
-            Dictionary<RewardItemSO, int> remainingToDistributeFree = new Dictionary<RewardItemSO, int>();
-            Dictionary<RewardItemSO, int> remainingToDistributePremium = new Dictionary<RewardItemSO, int>();
-
-            foreach (var item in freePool)
-            {
-                if (item.DistributeFixedTotal)
-                {
-                    remainingToDistributeFree[item] = item.FixedTotalAmount;
-                }
-            }
-
-            foreach (var item in premiumPool)
-            {
-                if (item.DistributeFixedTotal)
-                {
-                    remainingToDistributePremium[item] = item.FixedTotalAmount;
-                }
-            }
-
-            // Standard levels (Level 0 is ticket icon, Level 1+ are normal levels)
-            for (int i = 0; i <= generateLevelCount; i++)
-            {
-                BattlePassTierData tier = new BattlePassTierData();
-                tier.level = i;
-                tier.isHighlighted = false;
-
-                // Free Reward selection according to constraints
-                tier.freeReward = new RewardSlot();
-
-                if (freePool.Count > 0)
-                {
-                    RewardItemSO freeItem = PickWithoutRepeat(freePool, recentFree, placedUniqueRewards, nextAllowedLevelsFree, remainingToDistributeFree, i, null, recentPrem, nextAllowedLevelsPremium, false);
-                    tier.freeReward.rewardData = freeItem;
-
-                    // Determine slot amount based on reward type
-                    if (freeItem.DistributeFixedTotal && remainingToDistributeFree.ContainsKey(freeItem))
-                    {
-                        int remaining = remainingToDistributeFree[freeItem];
-                        int maxPerSlot = (freeItem.FixedTotalAmount <= 5) ? 1 : Random.Range(1, 4);
-                        int amount = Mathf.Min(maxPerSlot, remaining);
-                        tier.freeReward.amount = amount;
-                        remainingToDistributeFree[freeItem] -= amount;
-                    }
-                    else if (freeItem.Type == RewardType.Currency)
-                    {
-                        if (freeItem.DisplayName.ToLower().Contains("gold"))
-                            tier.freeReward.amount = 1000 + (i * 150);
-                        else
-                            tier.freeReward.amount = 5 + i;
-                    }
-                    else if (freeItem.Type == RewardType.Consumable)
-                    {
-                        tier.freeReward.amount = Random.Range(2, 6);
-                    }
-                    else if (freeItem.Type == RewardType.Character)
-                    {
-                        tier.freeReward.amount = Random.Range(1, 4);
-                    }
-                    else
-                    {
-                        tier.freeReward.amount = 1;
-                    }
-                }
-
-                // --- Premium Reward selection according to constraints ---
-                tier.premiumReward = new RewardSlot();
-                
-                // Specific premium rewards for levels 0 and 1
-                if (i == 0 && goldReward != null) 
-                { 
-                    tier.premiumReward.rewardData = goldReward; 
-                    tier.premiumReward.amount = 5000; 
-                    recentPrem.Add(goldReward); 
-                    if (goldReward.IsUnique) placedUniqueRewards.Add(goldReward); 
-                    nextAllowedLevelsPremium[goldReward] = 8; 
-                }
-                else if (i == 1 && diamondReward != null) 
-                { 
-                    tier.premiumReward.rewardData = diamondReward; 
-                    tier.premiumReward.amount = 12; 
-                    recentPrem.Add(diamondReward); 
-                    if (diamondReward.IsUnique) placedUniqueRewards.Add(diamondReward); 
-                    nextAllowedLevelsPremium[diamondReward] = 3; 
-                }
-                else if (premiumPool.Count > 0)
-                {
-                    RewardItemSO premItem = PickWithoutRepeat(premiumPool, recentPrem, placedUniqueRewards, nextAllowedLevelsPremium, remainingToDistributePremium, i, tier.freeReward != null ? tier.freeReward.rewardData : null, recentFree, nextAllowedLevelsFree, true);
-                    tier.premiumReward.rewardData = premItem;
-
-                    if (premItem.DistributeFixedTotal && remainingToDistributePremium.ContainsKey(premItem))
-                    {
-                        int remaining = remainingToDistributePremium[premItem];
-                        int maxPerSlot = (premItem.FixedTotalAmount <= 5) ? 1 : Random.Range(1, 4);
-                        int amount = Mathf.Min(maxPerSlot, remaining);
-                        tier.premiumReward.amount = amount;
-                        remainingToDistributePremium[premItem] -= amount;
-                    }
-                    else if (premItem.Type == RewardType.Currency)
-                    {
-                        if (premItem.DisplayName.ToLower().Contains("gold"))
-                            tier.premiumReward.amount = 1500 + (i * 300);
-                        else
-                            tier.premiumReward.amount = 10 + (i * 2);
-                    }
-                    else if (premItem.Type == RewardType.Consumable)
-                    {
-                        tier.premiumReward.amount = Random.Range(2, 8);
-                    }
-                    else if (premItem.Type == RewardType.Character)
-                    {
-                        tier.premiumReward.amount = Random.Range(1, 4);
-                    }
-                    else
-                    {
-                        tier.premiumReward.amount = 1;
-                    }
-                }
-
-                tierList.Add(tier);
-            }
-
-            // --- POST-PASS: Distribute remaining fragments ---
-            
-            // Free Track Post-Pass
-            foreach (var kvp in new Dictionary<RewardItemSO, int>(remainingToDistributeFree))
-            {
-                RewardItemSO item = kvp.Key;
-                int remaining = kvp.Value;
-                if (remaining <= 0) continue;
-
-                // 1. Try adding to existing slots of this item
-                List<BattlePassTierData> existingTiers = tierList.FindAll(t => !t.isInstantReward && t.freeReward != null && t.freeReward.rewardData == item);
-                foreach (var tier in existingTiers)
-                {
-                    if (remaining <= 0) break;
-                    int maxCap = (item.ShowInKeyRewardIndicator && !item.DistributeFixedTotal) ? 9999 : 3;
-                    int addable = Mathf.Max(0, maxCap - tier.freeReward.amount);
-                    if (addable > 0)
-                    {
-                        int toAdd = Mathf.Min(addable, remaining);
-                        tier.freeReward.amount += toAdd;
-                        remaining -= toAdd;
-                    }
-                }
-
-                // 2. Replace non-unique, non-distribution items with this item
-                if (remaining > 0 && (!item.ShowInKeyRewardIndicator || item.DistributeFixedTotal))
-                {
-                    List<BattlePassTierData> candidateTiers = tierList.FindAll(t => 
-                        !t.isInstantReward && 
-                        t.level > 0 &&
-                        t.freeReward != null && 
-                        t.freeReward.rewardData != null && 
-                        !t.freeReward.rewardData.IsUnique && 
-                        !t.freeReward.rewardData.DistributeFixedTotal
-                    );
-
-                    // Shuffle candidate tiers
-                    for (int idx = 0; idx < candidateTiers.Count; idx++)
-                    {
-                        int tempIdx = Random.Range(idx, candidateTiers.Count);
-                        var temp = candidateTiers[idx];
-                        candidateTiers[idx] = candidateTiers[tempIdx];
-                        candidateTiers[tempIdx] = temp;
-                    }
-
-                    foreach (var tier in candidateTiers)
-                    {
-                        if (remaining <= 0) break;
-
-                        // Check for adjacent duplicate rewards on same track, or same-level duplicate on other track
-                        int L = tier.level;
-                        bool hasDuplicate = tierList.Exists(t => 
-                            ((t.level == L - 1 || t.level == L + 1) && t.freeReward != null && t.freeReward.rewardData == item) ||
-                            (t.level == L && t.premiumReward != null && t.premiumReward.rewardData == item)
-                        );
-                        if (hasDuplicate) continue;
-
-                        tier.freeReward.rewardData = item;
-                        int amount = Mathf.Min(Random.Range(1, 4), remaining);
-                        tier.freeReward.amount = amount;
-                        remaining -= amount;
-                    }
-                }
-
-                if (remaining > 0)
-                {
-                    Debug.LogWarning($"[BattlePassManager] Free track: Could not distribute all fragments of {item.DisplayName}. Remaining: {remaining}");
-                }
-            }
-
-            // Premium Track Post-Pass
-            foreach (var kvp in new Dictionary<RewardItemSO, int>(remainingToDistributePremium))
-            {
-                RewardItemSO item = kvp.Key;
-                int remaining = kvp.Value;
-                if (remaining <= 0) continue;
-
-                // 1. Try adding to existing slots of this item
-                List<BattlePassTierData> existingTiers = tierList.FindAll(t => !t.isInstantReward && t.premiumReward != null && t.premiumReward.rewardData == item);
-                foreach (var tier in existingTiers)
-                {
-                    if (remaining <= 0) break;
-                    int maxCap = (item.ShowInKeyRewardIndicator && !item.DistributeFixedTotal) ? 9999 : 3;
-                    int addable = Mathf.Max(0, maxCap - tier.premiumReward.amount);
-                    if (addable > 0)
-                    {
-                        int toAdd = Mathf.Min(addable, remaining);
-                        tier.premiumReward.amount += toAdd;
-                        remaining -= toAdd;
-                    }
-                }
-
-                // 2. Replace non-unique, non-distribution items with this item
-                if (remaining > 0 && (!item.ShowInKeyRewardIndicator || item.DistributeFixedTotal))
-                {
-                    List<BattlePassTierData> candidateTiers = tierList.FindAll(t => 
-                        !t.isInstantReward && 
-                        t.level > 1 &&
-                        t.premiumReward != null && 
-                        t.premiumReward.rewardData != null && 
-                        !t.premiumReward.rewardData.IsUnique && 
-                        !t.premiumReward.rewardData.DistributeFixedTotal
-                    );
-
-                    // Shuffle candidate tiers
-                    for (int idx = 0; idx < candidateTiers.Count; idx++)
-                    {
-                        int tempIdx = Random.Range(idx, candidateTiers.Count);
-                        var temp = candidateTiers[idx];
-                        candidateTiers[idx] = candidateTiers[tempIdx];
-                        candidateTiers[tempIdx] = temp;
-                    }
-
-                    foreach (var tier in candidateTiers)
-                    {
-                        if (remaining <= 0) break;
-
-                        // Check for adjacent duplicate rewards on same track, or same-level duplicate on other track
-                        int L = tier.level;
-                        bool hasDuplicate = tierList.Exists(t => 
-                            ((t.level == L - 1 || t.level == L + 1) && t.premiumReward != null && t.premiumReward.rewardData == item) ||
-                            (t.level == L && t.freeReward != null && t.freeReward.rewardData == item)
-                        );
-                        if (hasDuplicate) continue;
-
-                        tier.premiumReward.rewardData = item;
-                        int amount = Mathf.Min(Random.Range(1, 4), remaining);
-                        tier.premiumReward.amount = amount;
-                        remaining -= amount;
-                    }
-                }
-
-                if (remaining > 0)
-                {
-                    Debug.LogWarning($"[BattlePassManager] Premium track: Could not distribute all fragments of {item.DisplayName}. Remaining: {remaining}");
-                }
-            }
-
-            // Guarantee all unique premium items (like Anubis) are placed at least once
-            List<RewardItemSO> uniquePremiumPool = premOthers.FindAll(r => r.IsUnique);
-            foreach (var uniqueItem in uniquePremiumPool)
-            {
-                if (!placedUniqueRewards.Contains(uniqueItem))
-                {
-                    List<BattlePassTierData> candidates = tierList.FindAll(t => 
-                        !t.isInstantReward && 
-                        t.level > 1 && 
-                        t.premiumReward != null && 
-                        t.premiumReward.rewardData != null && 
-                        !t.premiumReward.rewardData.IsUnique && 
-                        !t.premiumReward.rewardData.DistributeFixedTotal
-                    );
-                    if (candidates.Count > 0)
-                    {
-                        BattlePassTierData targetTier = candidates[Random.Range(0, candidates.Count)];
-                        targetTier.premiumReward.rewardData = uniqueItem;
-                        targetTier.premiumReward.amount = 1;
-                        placedUniqueRewards.Add(uniqueItem);
-                    }
-                }
-            }
-
-            // Guarantee all unique free items are placed at least once
-            List<RewardItemSO> uniqueFreePool = freeOthers.FindAll(r => r.IsUnique);
-            foreach (var uniqueItem in uniqueFreePool)
-            {
-                if (!placedUniqueRewards.Contains(uniqueItem))
-                {
-                    List<BattlePassTierData> candidates = tierList.FindAll(t => 
-                        !t.isInstantReward && 
-                        t.level > 0 && 
-                        t.freeReward != null && 
-                        t.freeReward.rewardData != null && 
-                        !t.freeReward.rewardData.IsUnique && 
-                        !t.freeReward.rewardData.DistributeFixedTotal
-                    );
-                    if (candidates.Count > 0)
-                    {
-                        BattlePassTierData targetTier = candidates[Random.Range(0, candidates.Count)];
-                        targetTier.freeReward.rewardData = uniqueItem;
-                        targetTier.freeReward.amount = 1;
-                        placedUniqueRewards.Add(uniqueItem);
-                    }
-                }
-            }
-
-            // Post-process Gold amounts to follow the exact progression rules
-            int finalFreeGoldCount = 0;
-            int finalPremiumGoldCount = 0;
-
-            foreach (var t in tierList)
-            {
-                if (!t.isInstantReward)
-                {
-                    if (t.freeReward != null && t.freeReward.rewardData != null && 
-                        ((t.freeReward.rewardData.DisplayName != null && t.freeReward.rewardData.DisplayName.ToLower().Contains("gold")) || t.freeReward.rewardData.name.ToLower().Contains("gold")))
-                    {
-                        finalFreeGoldCount++;
-                        if (finalFreeGoldCount <= 3)
-                        {
-                            t.freeReward.amount = 1000;
-                        }
-                        else
-                        {
-                            t.freeReward.amount = 1000 + 200 + (finalFreeGoldCount - 4) * 250;
-                        }
-                    }
-
-                    if (t.premiumReward != null && t.premiumReward.rewardData != null && 
-                        ((t.premiumReward.rewardData.DisplayName != null && t.premiumReward.rewardData.DisplayName.ToLower().Contains("gold")) || t.premiumReward.rewardData.name.ToLower().Contains("gold")))
-                    {
-                        finalPremiumGoldCount++;
-                        t.premiumReward.amount = 5000 + (finalPremiumGoldCount - 1) * 1000;
-                    }
-                }
-            }
-
-            EditorUtility.SetDirty(this);
-            Debug.Log($"Automatically generated {generateLevelCount} levels!");
-        }
-
-        private RewardItemSO GetReward(string namePart, List<RewardItemSO> allRewards)
-        {
-            string lowerName = namePart.ToLower();
-            foreach (var r in allRewards) 
-                if (r != null && (r.name.ToLower().Contains(lowerName) || r.DisplayName.ToLower().Contains(lowerName))) return r;
-            return null;
-        }
-
-        private RewardItemSO PickWithoutRepeat(
-            List<RewardItemSO> pool, 
-            List<RewardItemSO> recentList, 
-            HashSet<RewardItemSO> placedUniques, 
-            Dictionary<RewardItemSO, int> nextAllowedLevels,
-            Dictionary<RewardItemSO, int> remainingToDistribute,
-            int currentLevel,
-            RewardItemSO excludeItem = null,
-            List<RewardItemSO> otherRecentList = null,
-            Dictionary<RewardItemSO, int> otherNextAllowedLevels = null,
-            bool isPremium = false)
-        {
-            bool isMilestoneLevel = (currentLevel > 0 && (currentLevel % 8 == 0 || currentLevel == generateLevelCount));
-            
-            // Check if the last item placed on this track was Uncommon to prevent consecutive uncommons
-            bool lastWasUncommon = (recentList.Count > 0 && recentList[recentList.Count - 1].Rarity == RewardRarity.Uncommon);
-
-            List<RewardItemSO> filtered = pool.FindAll(r => 
-                !recentList.Contains(r) && 
-                (excludeItem == null || r != excludeItem) &&
-                (!r.IsUnique || !placedUniques.Contains(r)) &&
-                (isMilestoneLevel ? r.ShowInKeyRewardIndicator : !r.ShowInKeyRewardIndicator) &&
-                (!lastWasUncommon || r.Rarity != RewardRarity.Uncommon) &&
-                (!nextAllowedLevels.ContainsKey(r) || currentLevel >= nextAllowedLevels[r]) &&
-                (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
-            );
-
-            // Fallback 1: Relax full recent history but keep milestone logic, spacing, consecutive uncommons check, and immediate previous exclusions
-            if (filtered.Count == 0) 
-            {
-                filtered = pool.FindAll(r => 
-                    (recentList.Count == 0 || r != recentList[recentList.Count - 1]) &&
-                    (excludeItem == null || r != excludeItem) &&
-                    (!r.IsUnique || !placedUniques.Contains(r)) &&
-                    (isMilestoneLevel ? r.ShowInKeyRewardIndicator : !r.ShowInKeyRewardIndicator) &&
-                    (!lastWasUncommon || r.Rarity != RewardRarity.Uncommon) &&
-                    (!nextAllowedLevels.ContainsKey(r) || currentLevel >= nextAllowedLevels[r]) &&
-                    (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
-                );
-            }
-
-            // Fallback 2: Relax spacing cooldowns but STILL keep consecutive uncommons check, milestone logic and immediate previous exclusions
-            if (filtered.Count == 0)
-            {
-                filtered = pool.FindAll(r => 
-                    (recentList.Count == 0 || r != recentList[recentList.Count - 1]) &&
-                    (excludeItem == null || r != excludeItem) &&
-                    (!r.IsUnique || !placedUniques.Contains(r)) &&
-                    (isMilestoneLevel ? r.ShowInKeyRewardIndicator : !r.ShowInKeyRewardIndicator) &&
-                    (!lastWasUncommon || r.Rarity != RewardRarity.Uncommon) &&
-                    (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
-                );
-            }
-
-            // Fallback 3: Relax spacing cooldowns AND consecutive uncommons check but keep milestone logic and immediate previous exclusions
-            if (filtered.Count == 0)
-            {
-                filtered = pool.FindAll(r => 
-                    (recentList.Count == 0 || r != recentList[recentList.Count - 1]) &&
-                    (excludeItem == null || r != excludeItem) &&
-                    (!r.IsUnique || !placedUniques.Contains(r)) &&
-                    (isMilestoneLevel ? r.ShowInKeyRewardIndicator : !r.ShowInKeyRewardIndicator) &&
-                    (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
-                );
-            }
-
-            // Fallback 4: Relax milestone logic but STILL keep immediate previous and same-level exclusions
-            if (filtered.Count == 0)
-            {
-                filtered = pool.FindAll(r => 
-                    (recentList.Count == 0 || r != recentList[recentList.Count - 1]) &&
-                    (excludeItem == null || r != excludeItem) &&
-                    (!r.IsUnique || !placedUniques.Contains(r)) &&
-                    (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
-                );
-            }
-
-            // Fallback 5: Absolute backup (only if mathematically locked, relax immediate constraints but keep uniqueness)
-            if (filtered.Count == 0)
-            {
-                filtered = pool.FindAll(r => 
-                    (!r.IsUnique || !placedUniques.Contains(r)) &&
-                    (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
-                );
-                if (filtered.Count == 0)
-                {
-                    filtered = pool.FindAll(r => !remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0);
-                    if (filtered.Count == 0) filtered = pool;
-                }
-            }
-
-            // Weighted random selection based on rarity weights to control card densities
-            int totalWeight = 0;
-            List<int> weights = new List<int>();
-            foreach (var r in filtered)
-            {
-                int w = GetRarityWeight(r.Rarity);
-                weights.Add(w);
-                totalWeight += w;
-            }
-
-            RewardItemSO picked = filtered[0];
-            if (totalWeight > 0)
-            {
-                int randomValue = Random.Range(0, totalWeight);
-                int currentSum = 0;
-                for (int idx = 0; idx < filtered.Count; idx++)
-                {
-                    currentSum += weights[idx];
-                    if (randomValue < currentSum)
-                    {
-                        picked = filtered[idx];
-                        break;
-                    }
-                }
-            }
-
-            if (picked.IsUnique)
-            {
-                placedUniques.Add(picked);
-            }
-
-            // 1. Rarity-based spacing (prevents identical items from repeating too close)
-            // Gentler cooldowns to allow natural alternation (rare = 2, epic = 3, etc.)
-            int spacing = 2; // Default for Uncommon
-            switch (picked.Rarity)
-            {
-                case RewardRarity.Rare:
-                    spacing = 2;
-                    break;
-                case RewardRarity.Epic:
-                    spacing = 3;
-                    break;
-                case RewardRarity.Legendary:
-                    spacing = 4;
-                    break;
-                case RewardRarity.Mythic:
-                    spacing = 5;
-                    break;
-            }
-
-            // Override for Premium Gold to make it rarer
-            if (isPremium && picked != null && ((picked.DisplayName != null && picked.DisplayName.ToLower().Contains("gold")) || picked.name.ToLower().Contains("gold")))
-            {
-                spacing = 8;
-            }
-            
-            nextAllowedLevels[picked] = currentLevel + spacing;
-            // Only share cooldowns cross-track for Key Rewards
-            if (picked.ShowInKeyRewardIndicator && otherNextAllowedLevels != null)
-            {
-                otherNextAllowedLevels[picked] = currentLevel + spacing;
-            }
-
-            // 2. Spacing for Key Rewards (ShowInKeyRewardIndicator = true) - minimum interval of 8 levels between any key rewards
-            if (picked.ShowInKeyRewardIndicator)
-            {
-                foreach (var r in pool)
-                {
-                    if (r.ShowInKeyRewardIndicator)
-                    {
-                        nextAllowedLevels[r] = currentLevel + 8;
-                        if (otherNextAllowedLevels != null)
-                        {
-                            otherNextAllowedLevels[r] = currentLevel + 8;
-                        }
-                    }
-                }
-            }
-
-            recentList.Add(picked);
-            if (recentList.Count > 1) recentList.RemoveAt(0); // Size 1 for standard items to prevent starvation
-
-            // Only share history cross-track for Key Rewards
-            if (picked.ShowInKeyRewardIndicator && otherRecentList != null)
-            {
-                otherRecentList.Add(picked);
-                if (otherRecentList.Count > 1) otherRecentList.RemoveAt(0);
-            }
-
-            return picked;
-        }
-
-        private int GetRarityWeight(RewardRarity rarity)
-        {
-            switch (rarity)
-            {
-                case RewardRarity.Uncommon:
-                    return 10;
-                case RewardRarity.Rare:
-                    return 30;
-                case RewardRarity.Epic:
-                    return 30;
-                case RewardRarity.Legendary:
-                    return 15;
-                case RewardRarity.Mythic:
-                    return 10;
-                default:
-                    return 10;
-            }
-        }
         private void OnValidate()
         {
             currentLevel = Mathf.Max(0, currentLevel);
@@ -789,10 +198,24 @@ namespace VertigoCase.UI
                 initialLineLocalZ = lineGradient.localPosition.z;
             }
 
+            ResolveDiamondWallet();
+            ResolveGoldWallet();
+
+            if (levelSkipButton != null)
+            {
+                levelSkipButton.Bind(TrySkipCurrentLevel);
+            }
+
+            ResolveOfferButton();
+
+            // Keep the road hidden while it is being built so the first-frame layout pop is not visible.
+            PrepareRoadReveal();
+
             // tierList must be populated. Warn if empty.
             if (tierList == null || tierList.Count == 0)
             {
                 Debug.LogWarning("[BattlePassManager] tierList is empty! Must be populated in the Inspector.");
+                if (roadCanvasGroup != null) roadCanvasGroup.alpha = 1f;
                 return;
             }
 
@@ -815,11 +238,63 @@ namespace VertigoCase.UI
 
             StartCoroutine(SeasonCountdownRoutine());
 
-            // Force canvas update to let layouts resolve, then update UI
+            // Settle the layout immediately so the road is correctly positioned on the very first
+            // rendered frame, then reveal it. This removes the visible "build then jump" pop on startup.
             Canvas.ForceUpdateCanvases();
+            if (contentContainer is RectTransform contentRect)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+            }
+            Canvas.ForceUpdateCanvases();
+
             AutoAttachLocalUVModifiers();
             UpdateAllUI();
-            StartCoroutine(AnimateToCurrentLevelRoutine());
+
+            StartCoroutine(StartupRevealRoutine());
+            scrollSnapRoutine = StartCoroutine(AnimateToCurrentLevelRoutine());
+        }
+
+        /// <summary>
+        /// Hides the road scroll view (alpha 0) before it is populated, resolving the
+        /// <see cref="roadCanvasGroup"/> from the ScrollRect when it has not been assigned.
+        /// </summary>
+        private void PrepareRoadReveal()
+        {
+            if (roadCanvasGroup == null && scrollRect != null)
+            {
+                roadCanvasGroup = scrollRect.GetComponent<CanvasGroup>();
+                if (roadCanvasGroup == null)
+                {
+                    roadCanvasGroup = scrollRect.gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+
+            if (roadCanvasGroup != null)
+            {
+                roadCanvasGroup.alpha = 0f;
+            }
+        }
+
+        /// <summary>
+        /// Fades the road scroll view back in once its layout has been built, so the player
+        /// only ever sees the finished, correctly positioned road.
+        /// </summary>
+        private IEnumerator StartupRevealRoutine()
+        {
+            if (roadCanvasGroup == null) yield break;
+
+            // One extra frame guarantees the layout rebuild has flushed before we start revealing.
+            yield return null;
+
+            float elapsed = 0f;
+            while (elapsed < startupRevealDuration && startupRevealDuration > 0f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                roadCanvasGroup.alpha = Mathf.Clamp01(elapsed / startupRevealDuration);
+                yield return null;
+            }
+
+            roadCanvasGroup.alpha = 1f;
         }
 
         private void AutoAttachLocalUVModifiers()
@@ -1053,7 +528,7 @@ namespace VertigoCase.UI
                         lineGradient.localPosition = new Vector3(localPosInContent.x, initialLineLocalY, initialLineLocalZ);
                     }
 
-                    levelSkipButton.UpdateSkipCost(gemIconSprite, gemCostPerLevel.ToString());
+                    levelSkipButton.SetCost(gemIconSprite, gemCostPerLevel.ToString());
                 }
             }
         }
@@ -1138,74 +613,338 @@ namespace VertigoCase.UI
             // Claim the reward
             slot.isClaimed = true;
 
+            // Credit currency rewards into their wallet (e.g. a claimed "💎 15" diamond card tops
+            // up the header diamond counter by its amount).
+            CreditClaimedReward(slot);
+
             // Spawn claim VFX if configured
             SpawnClaimVFX(node, isPremium);
 
             UpdateAllUI();
         }
 
+        /// <summary>
+        /// Adds a freshly claimed currency reward into the matching wallet. Diamond rewards (e.g. the
+        /// "💎 15" card) top up the header diamond counter (<c>Txt_Count_Diamond</c>) by the reward
+        /// amount. Non-currency / non-diamond rewards are ignored.
+        /// </summary>
+        /// <param name="slot">The reward slot that was just claimed.</param>
+        private void CreditClaimedReward(RewardSlot slot)
+        {
+            if (slot == null || slot.rewardData == null) return;
+            if (slot.rewardData.Type != RewardType.Currency) return;
+
+            int amount = Mathf.Max(0, slot.amount);
+
+            if (IsDiamondReward(slot.rewardData))
+            {
+                diamondBalance += amount;
+                RefreshDiamondCounter();
+            }
+            else if (IsGoldReward(slot.rewardData))
+            {
+                goldBalance += amount;
+                RefreshGoldCounter();
+            }
+        }
+
+        /// <summary>
+        /// Identifies whether a reward is the diamond/hard currency by matching its display or asset
+        /// name, so claimed diamond cards can be routed into the header diamond wallet.
+        /// </summary>
+        /// <param name="reward">Reward item to test.</param>
+        /// <returns>True when the reward represents diamonds.</returns>
+        private bool IsDiamondReward(RewardItemSO reward)
+        {
+            return RewardNameContains(reward, "diamond");
+        }
+
+        /// <summary>
+        /// Identifies whether a reward is the gold/soft currency by matching its display or asset
+        /// name, so claimed gold cards can be routed into the header gold wallet.
+        /// </summary>
+        /// <param name="reward">Reward item to test.</param>
+        /// <returns>True when the reward represents gold.</returns>
+        private bool IsGoldReward(RewardItemSO reward)
+        {
+            return RewardNameContains(reward, "gold");
+        }
+
+        /// <summary>
+        /// Case-insensitive check of a reward's display name and asset name against a keyword,
+        /// shared by the currency-wallet routing helpers.
+        /// </summary>
+        private bool RewardNameContains(RewardItemSO reward, string keyword)
+        {
+            string displayName = reward.DisplayName != null ? reward.DisplayName.ToLowerInvariant() : string.Empty;
+            string assetName = reward.name != null ? reward.name.ToLowerInvariant() : string.Empty;
+            return displayName.Contains(keyword) || assetName.Contains(keyword);
+        }
+
+        /// <summary>
+        /// Resolves the header diamond counter (scene: <c>Txt_Count_Diamond</c>) when it has not
+        /// been wired in the Inspector, then paints the current balance.
+        /// </summary>
+        private void ResolveDiamondWallet()
+        {
+            if (diamondCountText == null)
+            {
+                GameObject diamondCounter = GameObject.Find("Txt_Count_Diamond");
+                if (diamondCounter != null)
+                {
+                    diamondCountText = diamondCounter.GetComponent<TextMeshProUGUI>();
+                }
+            }
+
+            RefreshDiamondCounter();
+        }
+
+        /// <summary>
+        /// Writes the current <see cref="diamondBalance"/> into the header diamond counter label.
+        /// </summary>
+        private void RefreshDiamondCounter()
+        {
+            if (diamondCountText != null)
+            {
+                diamondCountText.text = diamondBalance.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Resolves the header gold counter (scene: <c>Txt_Count_Gold</c>) when it has not been wired
+        /// in the Inspector, then paints the current balance.
+        /// </summary>
+        private void ResolveGoldWallet()
+        {
+            if (goldCountText == null)
+            {
+                GameObject goldCounter = GameObject.Find("Txt_Count_Gold");
+                if (goldCounter != null)
+                {
+                    goldCountText = goldCounter.GetComponent<TextMeshProUGUI>();
+                }
+            }
+
+            RefreshGoldCounter();
+        }
+
+        /// <summary>
+        /// Writes the current <see cref="goldBalance"/> into the header gold counter label.
+        /// </summary>
+        private void RefreshGoldCounter()
+        {
+            if (goldCountText != null)
+            {
+                goldCountText.text = goldBalance.ToString("N0");
+            }
+        }
+
+        /// <summary>
+        /// Resolves the premium offer button (scene: <c>Btn_Offer_Get</c>) when it has not been
+        /// wired in the Inspector and connects its tap to <see cref="ActivatePremium"/>.
+        /// </summary>
+        private void ResolveOfferButton()
+        {
+            if (offerButton == null)
+            {
+                GameObject offerGo = GameObject.Find("Btn_Offer_Get");
+                if (offerGo != null)
+                {
+                    offerButton = offerGo.GetComponent<Button>();
+                }
+            }
+
+            if (offerButton != null)
+            {
+                offerButton.onClick.RemoveListener(ActivatePremium);
+                offerButton.onClick.AddListener(ActivatePremium);
+            }
+        }
+
+        /// <summary>
+        /// Unlocks the premium track: flips <see cref="isPremiumActive"/> on, refreshes every node
+        /// so premium rewards become claimable, and plays the offer-button tap feedback. The
+        /// <c>Btn_Offer_Get</c> button invokes this on tap.
+        /// </summary>
+        public void ActivatePremium()
+        {
+            if (offerButton != null)
+            {
+                PlayClickFeedback(offerButton.transform, offerButton.transform.position, offerClickVfxPrefab);
+            }
+
+            if (isPremiumActive) return;
+
+            isPremiumActive = true;
+            UpdateAllUI();
+        }
+
+        /// <summary>
+        /// Tap handler for the <c>Btn_XP_Skip</c> badge: spends <see cref="gemCostPerLevel"/>
+        /// diamonds, advances one level and re-centres the road on the new level. Does nothing
+        /// when the player cannot afford the skip or is already at the final level.
+        /// </summary>
+        public void TrySkipCurrentLevel()
+        {
+            if (currentLevel >= generateLevelCount) return;
+            if (diamondBalance < gemCostPerLevel) return;
+
+            diamondBalance -= gemCostPerLevel;
+            RefreshDiamondCounter();
+
+            if (levelSkipButton != null)
+            {
+                PlayClickFeedback(levelSkipButton.transform, levelSkipButton.transform.position, diamondClickVfxPrefab);
+            }
+
+            currentLevel = Mathf.Min(currentLevel + 1, generateLevelCount);
+            currentXp = 0;
+
+            UpdateAllUI();
+
+            if (scrollRect != null && instantiatedNodes.Count > 0)
+            {
+                if (scrollSnapRoutine != null) StopCoroutine(scrollSnapRoutine);
+                scrollSnapRoutine = StartCoroutine(ScrollToLevelRoutine(currentLevel, 0f, 0.4f));
+            }
+        }
+
+        /// <summary>
+        /// Plays the shared button-tap feedback: an instant scale punch on the tapped button
+        /// (always visible, needs no asset) plus an optional click VFX burst supplied by the caller
+        /// (the offer button and the diamond skip button each pass their own prefab).
+        /// </summary>
+        /// <param name="buttonTransform">Transform of the tapped button (punched for feedback).</param>
+        /// <param name="worldPosition">World position used to spawn the click VFX.</param>
+        /// <param name="clickVfxPrefab">Click VFX prefab to spawn for this specific button (no-op when null).</param>
+        private void PlayClickFeedback(Transform buttonTransform, Vector3 worldPosition, GameObject clickVfxPrefab)
+        {
+            if (buttonTransform != null)
+            {
+                StartCoroutine(PunchScaleRoutine(buttonTransform, 0.18f, 0.22f));
+            }
+
+            if (clickVfxPrefab != null)
+            {
+                SpawnVfxAt(clickVfxPrefab, worldPosition);
+            }
+        }
+
+        /// <summary>
+        /// Briefly scales <paramref name="target"/> up and back to its original size for tactile
+        /// click feedback. Uses unscaled time so it animates even while the game is paused.
+        /// </summary>
+        private IEnumerator PunchScaleRoutine(Transform target, float strength, float duration)
+        {
+            if (target == null) yield break;
+
+            Vector3 baseScale = target.localScale;
+            Vector3 peakScale = baseScale * (1f + strength);
+            float half = Mathf.Max(0.01f, duration * 0.5f);
+
+            float t = 0f;
+            while (t < half)
+            {
+                t += Time.unscaledDeltaTime;
+                target.localScale = Vector3.Lerp(baseScale, peakScale, t / half);
+                yield return null;
+            }
+
+            t = 0f;
+            while (t < half)
+            {
+                t += Time.unscaledDeltaTime;
+                target.localScale = Vector3.Lerp(peakScale, baseScale, t / half);
+                yield return null;
+            }
+
+            target.localScale = baseScale;
+        }
+
         private void SpawnClaimVFX(BattlePassNode node, bool isPremium)
         {
             GameObject prefabToSpawn = isPremium ? premiumClaimVfxPrefab : freeClaimVfxPrefab;
-            if (prefabToSpawn == null) return;
+            SpawnVfxAt(prefabToSpawn, node.GetCardWorldPosition(isPremium));
+        }
+
+        /// <summary>
+        /// Instantiates a VFX prefab at the given world position under this manager and auto-destroys
+        /// it once its longest particle system has finished. Shared by claim VFX and click VFX.
+        /// </summary>
+        /// <param name="prefab">VFX prefab to spawn (no-op when null).</param>
+        /// <param name="worldPosition">World position to place the spawned VFX at.</param>
+        private void SpawnVfxAt(GameObject prefab, Vector3 worldPosition)
+        {
+            if (prefab == null) return;
 
             // Spawn the VFX instance under this manager's canvas hierarchy
-            GameObject vfxInstance = Instantiate(prefabToSpawn, transform);
-            
-            if (vfxInstance != null)
+            GameObject vfxInstance = Instantiate(prefab, transform);
+            if (vfxInstance == null) return;
+
+            vfxInstance.transform.position = worldPosition;
+
+            // Auto-destroy after the longest active particle system finishes playing
+            ParticleSystem[] allPS = vfxInstance.GetComponentsInChildren<ParticleSystem>();
+            float duration = 3.0f; // Default fallback if no particle systems found
+
+            if (allPS != null && allPS.Length > 0)
             {
-                // Position VFX at the clicked card's world position
-                vfxInstance.transform.position = node.GetCardWorldPosition(isPremium);
-                
-                // Auto-destroy after the longest active particle system finishes playing
-                ParticleSystem[] allPS = vfxInstance.GetComponentsInChildren<ParticleSystem>();
-                float duration = 3.0f; // Default fallback if no particle systems found
-                
-                if (allPS != null && allPS.Length > 0)
+                float maxDuration = 0f;
+                foreach (var ps in allPS)
                 {
-                    float maxDuration = 0f;
-                    foreach (var ps in allPS)
+                    if (ps == null) continue;
+
+                    var main = ps.main;
+                    float psDuration = main.duration;
+
+                    // If it's not looping, account for the start lifetime offset
+                    if (!main.loop)
                     {
-                        if (ps == null) continue;
-                        
-                        var main = ps.main;
-                        float psDuration = main.duration;
-                        
-                        // If it's not looping, account for the start lifetime offset
-                        if (!main.loop)
-                        {
-                            float lifetime = Mathf.Max(main.startLifetime.constant, main.startLifetime.constantMax);
-                            psDuration += lifetime;
-                        }
-                        
-                        if (psDuration > maxDuration)
-                        {
-                            maxDuration = psDuration;
-                        }
+                        float lifetime = Mathf.Max(main.startLifetime.constant, main.startLifetime.constantMax);
+                        psDuration += lifetime;
                     }
-                    
-                    if (maxDuration > 0f)
+
+                    if (psDuration > maxDuration)
                     {
-                        duration = maxDuration;
+                        maxDuration = psDuration;
                     }
                 }
-                
-                Destroy(vfxInstance, duration);
+
+                if (maxDuration > 0f)
+                {
+                    duration = maxDuration;
+                }
             }
+
+            Destroy(vfxInstance, duration);
         }
 
         private IEnumerator AnimateToCurrentLevelRoutine()
         {
             if (scrollRect == null || instantiatedNodes.Count == 0) yield break;
 
-            // Reset horizontal scroll position to zero
+            // Start from the left edge, then smoothly reveal toward the current level.
             scrollRect.horizontalNormalizedPosition = 0f;
-            
-            // Wait 1 frame for hierarchy layout to rebuild
+            yield return ScrollToLevelRoutine(currentLevel, 0.5f, 1.5f);
+        }
+
+        /// <summary>
+        /// Smoothly scrolls the road so the requested level sits in the centre of the viewport.
+        /// Shared by the startup intro animation and the level-skip re-centre.
+        /// </summary>
+        /// <param name="level">Target level to centre on.</param>
+        /// <param name="startDelay">Delay (seconds) before the scroll begins.</param>
+        /// <param name="duration">Scroll animation duration (seconds).</param>
+        private IEnumerator ScrollToLevelRoutine(int level, float startDelay, float duration)
+        {
+            if (scrollRect == null || instantiatedNodes.Count == 0) yield break;
+
+            // Wait 1 frame for the layout to rebuild before measuring node positions.
             yield return null;
 
-            int currentLevelIndex = GetNodeIndexForLevel(currentLevel);
-            BattlePassNode currentNode = instantiatedNodes[currentLevelIndex];
+            int levelIndex = GetNodeIndexForLevel(level);
+            BattlePassNode targetNode = instantiatedNodes[levelIndex];
+            if (targetNode == null || targetNode.LevelNodeAnchor == null) yield break;
 
             RectTransform contentRect = scrollRect.content;
             RectTransform viewportRect = scrollRect.viewport;
@@ -1214,28 +953,25 @@ namespace VertigoCase.UI
 
             if (contentWidth <= viewportWidth) yield break;
 
-            // Compute local target scroll position
-            float targetLocalX = contentRect.InverseTransformPoint(currentNode.LevelNodeAnchor.position).x;
+            float targetLocalX = contentRect.InverseTransformPoint(targetNode.LevelNodeAnchor.position).x;
             float distanceFromLeft = targetLocalX + (contentRect.pivot.x * contentWidth);
             float desiredScrollPos = distanceFromLeft - (viewportWidth / 2f);
-            float targetNormalized = desiredScrollPos / (contentWidth - viewportWidth);
-            targetNormalized = Mathf.Clamp01(targetNormalized);
+            float targetNormalized = Mathf.Clamp01(desiredScrollPos / (contentWidth - viewportWidth));
 
-            // Delay scroll scroll animation slightly for visual effect
-            yield return new WaitForSeconds(0.5f);
+            float startNormalized = scrollRect.horizontalNormalizedPosition;
 
-            float duration = 1.5f;
+            if (startDelay > 0f) yield return new WaitForSeconds(startDelay);
+
             float elapsed = 0f;
-
-            while (elapsed < duration)
+            while (elapsed < duration && duration > 0f)
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / duration;
-                
-                // Ease Out Cubic scroll interpolation
+
+                // Ease Out Cubic scroll interpolation.
                 float easeT = 1f - Mathf.Pow(1f - t, 3f);
-                
-                scrollRect.horizontalNormalizedPosition = Mathf.Lerp(0f, targetNormalized, easeT);
+
+                scrollRect.horizontalNormalizedPosition = Mathf.Lerp(startNormalized, targetNormalized, easeT);
                 yield return null;
             }
 

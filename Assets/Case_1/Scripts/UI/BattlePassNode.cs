@@ -259,6 +259,11 @@ namespace VertigoCase.UI
             bool freeClaimed = tierData.freeReward != null && tierData.freeReward.isClaimed;
             bool premiumClaimed = tierData.premiumReward != null && tierData.premiumReward.isClaimed;
 
+            // Attachment cards read "ATTACHMENT" while their tier is still locked and flip to
+            // "UNLOCK NOW" the moment the player reaches the tier level (the reward is claimable).
+            RefreshAttachmentLabel(tierData.freeReward, freeAmountText, isLevelUnlocked);
+            RefreshAttachmentLabel(tierData.premiumReward, premiumAmountText, isLevelUnlocked);
+
             // --- Free Reward UI State ---
             if (!tierData.isInstantReward)
             {
@@ -378,6 +383,24 @@ namespace VertigoCase.UI
 
             if (freeRedDot != null) freeRedDot.SetActive(showFreeRedDot);
             if (premiumRedDot != null) premiumRedDot.SetActive(showPremiumRedDot);
+        }
+
+        /// <summary>
+        /// Refreshes an Attachment card's label so it reads "ATTACHMENT" while its tier is still
+        /// locked and switches to "UNLOCK NOW" once the player reaches the tier level (i.e. the
+        /// reward becomes claimable). Only standard (non-instant) attachment rewards are affected;
+        /// every other reward type and the instant-reward teaser cards are left untouched.
+        /// </summary>
+        /// <param name="slot">Reward slot to inspect (no-op when empty or not an attachment).</param>
+        /// <param name="amountText">Label to repaint.</param>
+        /// <param name="isLevelUnlocked">True once the tier level has been reached.</param>
+        private void RefreshAttachmentLabel(RewardSlot slot, TextMeshProUGUI amountText, bool isLevelUnlocked)
+        {
+            if (tierData.isInstantReward) return;
+            if (amountText == null || slot == null || slot.rewardData == null) return;
+            if (slot.rewardData.Type != RewardType.Attachment) return;
+
+            amountText.text = isLevelUnlocked ? "UNLOCK NOW" : "ATTACHMENT";
         }
 
         /// <summary>
