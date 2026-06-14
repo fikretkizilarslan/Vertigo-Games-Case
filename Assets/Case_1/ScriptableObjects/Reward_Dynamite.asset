@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab97974ee9c470340a2d1c6282e1db7a, type: 3}
+  m_Name: Reward_Dynamite
+  m_EditorClassIdentifier: Assembly-CSharp::VertigoCase.UI.RewardItemSO
+  displayName: Dynamite
+  icon: {fileID: 21300000, guid: 9de0122b9d2dfe44e98eea552dde6e71, type: 3}
+  currencyIcon: {fileID: 21300000, guid: 6a24da2f0d2515149af749fa02858b66, type: 3}
+  rewardType: 2
+  rarity: 2
+  isUnique: 0
+  showInKeyRewardIndicator: 0
+  excludeFromBattlePass: 0
+  canAppearInFreeTrack: 0
+  canAppearInPremiumTrack: 1
+  distributeFixedTotal: 1
+  fixedTotalAmount: 3

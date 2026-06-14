@@ -5,7 +5,7 @@ using TMPro;
 
 namespace VertigoCase.UI
 {
-    public class UILevelIndicator : MonoBehaviour, IPointerClickHandler
+    public class UILevelIndicator : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
     {
         [Header("References")]
         [SerializeField] private ScrollRect scrollRect;
@@ -41,6 +41,7 @@ namespace VertigoCase.UI
         public IndicatorState CurrentState => currentState;
         private Coroutine snapCoroutine;
         private CanvasGroup canvasGroup;
+        private bool ignorePressCancelUntilRelease;
 
         private void Start()
         {
@@ -50,6 +51,8 @@ namespace VertigoCase.UI
             {
                 canvasGroup = gameObject.AddComponent<CanvasGroup>();
             }
+
+            EnsureClickableArea();
         }
 
         public void SetTarget(RectTransform targetNode, int level)
@@ -65,19 +68,58 @@ namespace VertigoCase.UI
         private void Update()
         {
             // Cancel snap animation if user drags/touches screen during snap
-            bool isPressed = false;
-#if ENABLE_INPUT_SYSTEM
-            if (UnityEngine.InputSystem.Pointer.current != null)
+            bool isPressed = IsPointerPressed();
+            if (!isPressed)
             {
-                isPressed = UnityEngine.InputSystem.Pointer.current.press.isPressed;
+                ignorePressCancelUntilRelease = false;
             }
-#elif ENABLE_LEGACY_INPUT_MANAGER
-            isPressed = Input.GetMouseButton(0);
-#endif
-            if (snapCoroutine != null && isPressed)
+
+            if (snapCoroutine != null && isPressed && !ignorePressCancelUntilRelease)
             {
                 StopCoroutine(snapCoroutine);
                 snapCoroutine = null;
+            }
+        }
+
+        private static bool IsPointerPressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (UnityEngine.InputSystem.Pointer.current != null)
+            {
+                return UnityEngine.InputSystem.Pointer.current.press.isPressed;
+            }
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            return Input.GetMouseButton(0);
+#endif
+            return false;
+        }
+
+        private void EnsureClickableArea()
+        {
+            Image hitArea = GetComponent<Image>();
+            if (hitArea == null)
+            {
+                hitArea = gameObject.AddComponent<Image>();
+                hitArea.color = new Color(0f, 0f, 0f, 0f);
+            }
+
+            hitArea.raycastTarget = true;
+
+            Button rootButton = GetComponent<Button>();
+            if (rootButton != null)
+            {
+                rootButton.targetGraphic = hitArea;
+                rootButton.onClick.RemoveListener(ScrollToTarget);
+                rootButton.onClick.AddListener(ScrollToTarget);
+            }
+
+            Button[] childButtons = GetComponentsInChildren<Button>(true);
+            for (int i = 0; i < childButtons.Length; i++)
+            {
+                if (childButtons[i].gameObject != gameObject)
+                {
+                    childButtons[i].interactable = false;
+                }
             }
         }
 
@@ -215,6 +257,16 @@ namespace VertigoCase.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            ScrollToTarget();
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            ScrollToTarget();
+        }
+
+        private void ScrollToTarget()
+        {
             if (targetLevelNode == null || scrollRect == null || viewportRect == null) return;
 
             RectTransform contentRect = scrollRect.content;
@@ -235,6 +287,7 @@ namespace VertigoCase.UI
             {
                 StopCoroutine(snapCoroutine);
             }
+            ignorePressCancelUntilRelease = true;
             snapCoroutine = StartCoroutine(SnapToPositionRoutine(clampedTargetNormalized));
         }
 

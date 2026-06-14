@@ -146,13 +146,6 @@ namespace VertigoCase.UI
             // Amount text or unlock conditions
             if (amountText != null)
             {
-                HorizontalLayoutGroup layout = amountText.transform.parent.GetComponent<HorizontalLayoutGroup>();
-                if (layout != null)
-                {
-                    layout.childControlWidth = true;
-                    layout.childControlHeight = true;
-                }
-
                 if (manager.RewardTypesToShowAmountText != null && manager.RewardTypesToShowAmountText.Contains(data.Type))
                 {
                     if (data.Type == RewardType.Attachment)

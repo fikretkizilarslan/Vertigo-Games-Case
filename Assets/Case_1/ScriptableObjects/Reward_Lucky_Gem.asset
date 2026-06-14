@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab97974ee9c470340a2d1c6282e1db7a, type: 3}
+  m_Name: Reward_Lucky_Gem
+  m_EditorClassIdentifier: Assembly-CSharp::VertigoCase.UI.RewardItemSO
+  displayName: Lucky Gem
+  icon: {fileID: 21300000, guid: 5bd232d14a3efd4468a03746ac2d6ce2, type: 3}
+  currencyIcon: {fileID: 21300000, guid: a7324b47607cec046b3926d9852d8b6a, type: 3}
+  rewardType: 0
+  rarity: 0
+  isUnique: 0
+  showInKeyRewardIndicator: 0
+  excludeFromBattlePass: 0
+  canAppearInFreeTrack: 1
+  canAppearInPremiumTrack: 1
+  distributeFixedTotal: 0
+  fixedTotalAmount: 10

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab97974ee9c470340a2d1c6282e1db7a, type: 3}
+  m_Name: Reward_Epic_Chest
+  m_EditorClassIdentifier: Assembly-CSharp::VertigoCase.UI.RewardItemSO
+  displayName: Epic Chest
+  icon: {fileID: 21300000, guid: 8b3fa6ee6bf0a554d8cb66dbf938238a, type: 3}
+  currencyIcon: {fileID: 0}
+  rewardType: 3
+  rarity: 2
+  isUnique: 0
+  showInKeyRewardIndicator: 1
+  excludeFromBattlePass: 0
+  canAppearInFreeTrack: 0
+  canAppearInPremiumTrack: 1
+  distributeFixedTotal: 0
+  fixedTotalAmount: 10

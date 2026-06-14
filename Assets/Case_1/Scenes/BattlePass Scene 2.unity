@@ -207,7 +207,6 @@ GameObject:
   - component: {fileID: 68968893}
   - component: {fileID: 68968892}
   - component: {fileID: 68968891}
-  - component: {fileID: 68968894}
   m_Layer: 5
   m_Name: Ind_Reward
   m_TagString: Untagged
@@ -285,7 +284,7 @@ MonoBehaviour:
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 5
+    m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
@@ -299,7 +298,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 68968894}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -311,36 +310,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 68968889}
   m_CullTransparentMesh: 1
---- !u!114 &68968894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 68968889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &69830443
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,7 +708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 276, y: -199}
+  m_AnchoredPosition: {x: 74.61273, y: -199}
   m_SizeDelta: {x: 572.1748, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &138709630
@@ -983,7 +952,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -614, y: 463}
+  m_AnchoredPosition: {x: -616.5, y: 463}
   m_SizeDelta: {x: -1467, y: -880}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &186786584
@@ -1069,6 +1038,54 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1711525860}
     m_Modifications:
+    - target: {fileID: 116064871654836621, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 116064871654836621, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 116064871654836621, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 116064871654836621, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 257665340916241446, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 257665340916241446, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 615622722867138322, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 615622722867138322, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 615622722867138322, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 95.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 615622722867138322, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 615622722867138322, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 82.675
+      objectReference: {fileID: 0}
+    - target: {fileID: 615622722867138322, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -16.58
+      objectReference: {fileID: 0}
     - target: {fileID: 1672848003924978745, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1149,6 +1166,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3235060703535771710, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235060703535771710, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235060703535771710, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235060703535771710, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510906684297759226, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510906684297759226, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510906684297759226, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 86.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510906684297759226, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510906684297759226, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 78.475
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510906684297759226, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -16.58
+      objectReference: {fileID: 0}
     - target: {fileID: 3525062406161916459, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -1159,7 +1216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3525062406161916459, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 74.95
+      value: 86.95
       objectReference: {fileID: 0}
     - target: {fileID: 3525062406161916459, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1167,7 +1224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3525062406161916459, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 72.475
+      value: 78.475
       objectReference: {fileID: 0}
     - target: {fileID: 3525062406161916459, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1183,27 +1240,91 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3783812390316067738, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 63.57
+      value: 95.35
       objectReference: {fileID: 0}
     - target: {fileID: 3783812390316067738, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 22.11
+      value: 33.16
       objectReference: {fileID: 0}
     - target: {fileID: 3783812390316067738, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 66.785
+      value: 82.675
       objectReference: {fileID: 0}
     - target: {fileID: 3783812390316067738, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -15
+      value: -16.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087979655778465566, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087979655778465566, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087979655778465566, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 86.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087979655778465566, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087979655778465566, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 78.475
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087979655778465566, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -16.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096861164653953012, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096861164653953012, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4179094187517481624, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -8.099998
       objectReference: {fileID: 0}
     - target: {fileID: 4262853179555470440, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 109.95
+      value: 121.95
       objectReference: {fileID: 0}
     - target: {fileID: 4262853179555470440, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.y
       value: 33.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766484922980327420, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766484922980327420, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766484922980327420, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4766484922980327420, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5159401139712984362, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -191
+      objectReference: {fileID: 0}
+    - target: {fileID: 5399900674255325977, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5399900674255325977, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5576622050855289407, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1219,7 +1340,51 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5576622050855289407, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -15
+      value: -16.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641966391647735261, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641966391647735261, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5854972048376455156, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5854972048376455156, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5854972048376455156, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5854972048376455156, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6537691958186722289, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6537691958186722289, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6537691958186722289, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6537691958186722289, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6855260021321211585, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 7555761151618658622, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_Name
@@ -1229,13 +1394,45 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7565903400589791002, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4281479730
+      objectReference: {fileID: 0}
+    - target: {fileID: 7565903400589791002, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884690425579881472, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884690425579881472, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884690425579881472, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 95.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884690425579881472, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884690425579881472, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 82.675
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884690425579881472, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -16.58
+      objectReference: {fileID: 0}
     - target: {fileID: 8507696099076728331, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 98.57
+      value: 130.35
       objectReference: {fileID: 0}
     - target: {fileID: 8507696099076728331, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 30
+      value: 33.16
       objectReference: {fileID: 0}
     - target: {fileID: 8526351992878003012, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1250,6 +1447,38 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8526351992878003012, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -16.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 8814119287011830860, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8814119287011830860, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067005292376097536, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067005292376097536, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067005292376097536, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 95.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067005292376097536, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067005292376097536, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 82.675
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067005292376097536, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -16.58
       objectReference: {fileID: 0}
@@ -1292,7 +1521,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -21, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &199596321
@@ -1371,41 +1600,6 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 70}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &238864348
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 238864349}
-  m_Layer: 5
-  m_Name: Grp_Timerleft
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &238864349
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 238864348}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 932623902}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &253170241
 GameObject:
@@ -2580,116 +2774,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!21 &526605266
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Gotham Bold SDF Material (Instance)
-  m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - UNDERLAY_ON
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_LockedProperties: 
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _BumpMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Cube:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _FaceTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: -1888068986888343335, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _OutlineTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Ambient: 0.5
-    - _Bevel: 0.5
-    - _BevelClamp: 0
-    - _BevelOffset: 0
-    - _BevelRoundness: 0
-    - _BevelWidth: 0
-    - _BumpFace: 0
-    - _BumpOutline: 0
-    - _ColorMask: 15
-    - _CullMode: 0
-    - _Diffuse: 0.5
-    - _FaceDilate: 0.189
-    - _FaceUVSpeedX: 0
-    - _FaceUVSpeedY: 0
-    - _GlowInner: 0.05
-    - _GlowOffset: 0
-    - _GlowOuter: 0.05
-    - _GlowPower: 0.75
-    - _GradientScale: 10
-    - _LightAngle: 3.1416
-    - _MaskSoftnessX: 0
-    - _MaskSoftnessY: 0
-    - _OutlineSoftness: 0.023
-    - _OutlineUVSpeedX: 0
-    - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0.315
-    - _PerspectiveFilter: 0.875
-    - _Reflectivity: 10
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.56114995
-    - _ScaleRatioC: 0.28718013
-    - _ScaleX: 1
-    - _ScaleY: 1
-    - _ShaderFlags: 0
-    - _Sharpness: 0
-    - _SpecularPower: 2
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 1
-    - _StencilWriteMask: 0
-    - _TextureHeight: 1024
-    - _TextureWidth: 1024
-    - _UnderlayDilate: 0.739
-    - _UnderlayOffsetX: 1
-    - _UnderlayOffsetY: 0.06
-    - _UnderlaySoftness: 0.215
-    - _VertexOffsetX: 0
-    - _VertexOffsetY: 0
-    - _WeightBold: 0.75
-    - _WeightNormal: 0
-    m_Colors:
-    - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
-    - _EnvMatrixRotation: {r: 0, g: 0, b: 0, a: 0}
-    - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
-    - _GlowColor: {r: 0, g: 1, b: 0, a: 0.5}
-    - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
-    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.79607844}
-  m_BuildTextureStacks: []
-  m_AllowLocking: 1
 --- !u!1 &542327554
 GameObject:
   m_ObjectHideFlags: 0
@@ -3044,7 +3128,7 @@ MonoBehaviour:
       amount: 1000
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3057,7 +3141,7 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3079,12 +3163,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 1000
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 20
+      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 6
@@ -3092,8 +3176,8 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 11
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 1000
       isClaimed: 0
     premiumReward:
       rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
@@ -3109,8 +3193,8 @@ MonoBehaviour:
       amount: 12
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 24
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 3
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 8
@@ -3118,11 +3202,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 13
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 2e1a32ca2da341f4cb153fb2cb3aa74e, type: 2}
+      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3131,11 +3215,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 1200
+      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3144,15 +3228,28 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 15
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 1200
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 6000
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 30
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 11
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 16
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 12
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -3161,11 +3258,11 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 32
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 6000
       isClaimed: 0
     xpRequiredToUnlock: 100
-  - level: 12
+  - level: 13
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -3174,21 +3271,8 @@ MonoBehaviour:
       amount: 1450
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 2
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 13
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
       rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 18
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
-      amount: 1
+      amount: 36
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 14
@@ -3196,15 +3280,28 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 19
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 2
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 15
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 20
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 40
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 16
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -3213,21 +3310,8 @@ MonoBehaviour:
       amount: 1700
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
-      amount: 1
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 16
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 21
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: d5832546f0e376f4fbcd65263c5e3c43, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 17
@@ -3235,12 +3319,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 1950
+      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 44
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 18
@@ -3248,12 +3332,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 23
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 19
@@ -3262,11 +3346,11 @@ MonoBehaviour:
     isHighlighted: 0
     freeReward:
       rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 2200
+      amount: 1950
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 20
@@ -3274,12 +3358,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 25
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 50
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 21
@@ -3287,15 +3371,54 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 26
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 2200
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 52
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 22
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 27
       isClaimed: 0
     premiumReward:
       rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
       amount: 7000
       isClaimed: 0
     xpRequiredToUnlock: 100
-  - level: 22
+  - level: 23
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 28
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 3
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 24
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 2450
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 18426f530f00a7d46b070764214aa80d, type: 2}
+      amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 25
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -3305,46 +3428,7 @@ MonoBehaviour:
       isClaimed: 0
     premiumReward:
       rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 54
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 23
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 2450
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 56
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 24
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 29
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 2e1a32ca2da341f4cb153fb2cb3aa74e, type: 2}
-      amount: 1
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 25
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 30
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
-      amount: 1
+      amount: 60
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 26
@@ -3352,12 +3436,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 31
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 62
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 27
@@ -3369,7 +3453,7 @@ MonoBehaviour:
       amount: 2700
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
       amount: 64
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3378,28 +3462,15 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 33
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 3
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 29
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
+      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
       amount: 1
       isClaimed: 0
     premiumReward:
       rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
-      amount: 1
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
-  - level: 30
+  - level: 29
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -3408,8 +3479,21 @@ MonoBehaviour:
       amount: 2950
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 3
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 30
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 35
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 8000
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 31
@@ -3417,12 +3501,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
       amount: 36
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 72
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 32
@@ -3430,11 +3514,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 37
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 18426f530f00a7d46b070764214aa80d, type: 2}
+      rewardData: {fileID: 11400000, guid: 2e1a32ca2da341f4cb153fb2cb3aa74e, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3443,11 +3527,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 38
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 3200
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
       amount: 76
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3456,11 +3540,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 3200
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 39
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3469,11 +3553,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 40
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
       amount: 80
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3482,12 +3566,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 41
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 3450
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
-      amount: 2
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 82
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 37
@@ -3495,8 +3579,8 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 3450
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
       rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
@@ -3508,28 +3592,15 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 43
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 3700
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 8000
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 86
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 39
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 44
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 88
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 40
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -3538,7 +3609,20 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: d5832546f0e376f4fbcd65263c5e3c43, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 88
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 40
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 45
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 2e1a32ca2da341f4cb153fb2cb3aa74e, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -3566,7 +3650,6 @@ MonoBehaviour:
   seasonEndDateTime: 2026-06-22T18:00:00
   gemCostPerLevel: 20
   gemIconSprite: {fileID: 21300000, guid: 6218b643dc7456f42b1c4dbca6ccfe86, type: 3}
-  levelSkipButtonHorizontalOffset: 0
   nodePrefab: {fileID: 7555761151618658622, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
   freeClaimVfxPrefab: {fileID: 0}
   premiumClaimVfxPrefab: {fileID: 0}
@@ -4457,6 +4540,7 @@ GameObject:
   - component: {fileID: 759564875}
   - component: {fileID: 759564878}
   - component: {fileID: 759564877}
+  - component: {fileID: 759564876}
   m_Layer: 5
   m_Name: Img_Ind_Level_Arrow
   m_TagString: Untagged
@@ -4483,6 +4567,50 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 130, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &759564876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759564874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 759564877}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &759564877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4497,7 +4625,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4756,15 +4884,15 @@ RectTransform:
   m_GameObject: {fileID: 901313049}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1870684118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 5, y: -74}
-  m_SizeDelta: {x: 0, y: -280}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 35.20001, y: -71}
+  m_SizeDelta: {x: 550, y: 550}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &901313051
 MonoBehaviour:
@@ -4870,7 +4998,7 @@ RectTransform:
   m_Children:
   - {fileID: 1564610376}
   - {fileID: 1778895529}
-  - {fileID: 238864349}
+  - {fileID: 1749865030}
   m_Father: {fileID: 1151400744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
@@ -5309,19 +5437,19 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 32
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 12
-  m_fontSizeMax: 28
+  m_fontSizeMax: 32
   m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: -10
   m_characterHorizontalScale: 1
-  m_wordSpacing: 0
+  m_wordSpacing: 10
   m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -5401,7 +5529,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -252, y: 69.375}
+  m_AnchoredPosition: {x: -315, y: 69.375}
   m_SizeDelta: {x: -550.65, y: 141.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1040001498
@@ -5681,7 +5809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -5690,12 +5818,10 @@ MonoBehaviour:
   m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
-  m_sharedMaterial: {fileID: 526605266}
-  m_fontSharedMaterials:
-  - {fileID: 526605266}
-  m_fontMaterial: {fileID: 526605266}
-  m_fontMaterials:
-  - {fileID: 526605266}
+  m_sharedMaterial: {fileID: -5442646582826897045, guid: 3426a7d9c357ad34ba9d1607b83114a3, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
@@ -5804,7 +5930,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -30}
+  m_AnchoredPosition: {x: 0, y: -25}
   m_SizeDelta: {x: 0, y: 200}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1152709309
@@ -6289,7 +6415,7 @@ MonoBehaviour:
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 5
+    m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
@@ -6302,7 +6428,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1216021924}
   m_OnClick:
     m_PersistentCalls:
@@ -6321,7 +6447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6559,7 +6685,7 @@ MonoBehaviour:
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 5
+    m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
@@ -6572,7 +6698,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1246495830}
   m_OnClick:
     m_PersistentCalls:
@@ -6591,7 +6717,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6651,8 +6777,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 512.8, y: 5.2999268}
-  m_SizeDelta: {x: 40.200012, y: 5.0999985}
+  m_AnchoredPosition: {x: 553, y: 5.300049}
+  m_SizeDelta: {x: 0, y: 5.0999985}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1263593381
 MonoBehaviour:
@@ -7633,7 +7759,6 @@ GameObject:
   - component: {fileID: 1543045397}
   - component: {fileID: 1543045396}
   - component: {fileID: 1543045395}
-  - component: {fileID: 1543045398}
   m_Layer: 5
   m_Name: Ind_Level
   m_TagString: Untagged
@@ -7660,7 +7785,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 325.3, y: -202.1}
+  m_AnchoredPosition: {x: 200, y: -202.1}
   m_SizeDelta: {x: 200, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1543045395
@@ -7711,8 +7836,8 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_ColorMultiplier: 5
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
@@ -7738,36 +7863,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543045393}
   m_CullTransparentMesh: 1
---- !u!114 &1543045398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1543045393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1559321328
 GameObject:
   m_ObjectHideFlags: 0
@@ -7854,12 +7949,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 32
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 12
-  m_fontSizeMax: 28
+  m_fontSizeMax: 32
   m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -8497,7 +8592,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
-  m_IgnoreReversedGraphics: 0
+  m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
@@ -8632,7 +8727,7 @@ MonoBehaviour:
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 5
+    m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
@@ -8645,7 +8740,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1653869185}
   m_OnClick:
     m_PersistentCalls:
@@ -8664,7 +8759,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -8938,7 +9033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00015916262, y: -260}
+  m_AnchoredPosition: {x: 0.00006096943, y: -260}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1711525861
@@ -8993,7 +9088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
-  m_IgnoreLayout: 1
+  m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
@@ -9275,6 +9370,89 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1749638672}
   m_CullTransparentMesh: 1
+--- !u!1 &1749865029
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1749865030}
+  - component: {fileID: 1749865032}
+  - component: {fileID: 1749865031}
+  m_Layer: 5
+  m_Name: Grp_TimeLeft
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1749865030
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749865029}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 932623902}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -59, y: 0}
+  m_SizeDelta: {x: 250, y: 30}
+  m_Pivot: {x: 1, y: 0}
+--- !u!114 &1749865031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749865029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 1
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &1749865032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749865029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 3
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 1
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1752080451
 GameObject:
   m_ObjectHideFlags: 0
@@ -9641,7 +9819,6 @@ GameObject:
   - component: {fileID: 1844538324}
   - component: {fileID: 1844538323}
   - component: {fileID: 1844538325}
-  - component: {fileID: 1844538326}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -9710,18 +9887,6 @@ MonoBehaviour:
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
   m_ScrollDeltaPerTick: 6
---- !u!114 &1844538326
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1844538321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1511ccae7919cfc46b603b9b337fdc94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.BaseInput
 --- !u!1 &1870684117
 GameObject:
   m_ObjectHideFlags: 0
@@ -9951,10 +10116,10 @@ RectTransform:
   - {fileID: 1870684118}
   m_Father: {fileID: 1488515908}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -627.60004, y: 2}
-  m_SizeDelta: {x: 530, y: 830.0001}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -605, y: 2}
+  m_SizeDelta: {x: -1390, y: -119.99988}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1901708902
 GameObject:

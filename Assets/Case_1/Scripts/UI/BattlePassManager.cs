@@ -60,6 +60,7 @@ namespace VertigoCase.UI
         [Header("Level Skip Settings")]
         [SerializeField] private int gemCostPerLevel = 20;
         [SerializeField] private Sprite gemIconSprite;
+        [SerializeField] private float levelSkipButtonHorizontalOffset = 0f;
 
         [Header("Prefabs")]
         [SerializeField] private GameObject nodePrefab;
@@ -84,6 +85,8 @@ namespace VertigoCase.UI
 
         private float initialLineLocalY;
         private float initialLineLocalZ;
+        private readonly Vector3[] skipButtonCorners = new Vector3[4];
+        private readonly Vector3[] levelNodeCorners = new Vector3[4];
 
         public int CurrentLevel => currentLevel;
         public bool IsPremiumActive => isPremiumActive;
@@ -1036,19 +1039,74 @@ namespace VertigoCase.UI
                 {
                     levelSkipButton.gameObject.SetActive(true);
                     if (lineGradient != null) lineGradient.gameObject.SetActive(true);
-                    
-                    Vector3 fillEndPos = GetProgressFillEndWorldPosition();
-                    levelSkipButton.transform.position = fillEndPos;
-                    
+
+                    // The skip badge sits in the gap right after the current (yellow) level
+                    // node, with its left tip touching that node, pointing toward the next one.
+                    Vector3 skipPos = GetLevelSkipButtonWorldPosition(currentNode);
+                    levelSkipButton.transform.position = skipPos;
+
                     if (lineGradient != null)
                     {
-                        Vector3 localPosInContent = contentContainer.InverseTransformPoint(fillEndPos);
+                        Vector3 localPosInContent = contentContainer.InverseTransformPoint(skipPos);
                         lineGradient.localPosition = new Vector3(localPosInContent.x, initialLineLocalY, initialLineLocalZ);
                     }
 
                     levelSkipButton.UpdateSkipCost(gemIconSprite, gemCostPerLevel.ToString());
                 }
             }
+        }
+
+        private Vector3 GetLevelSkipButtonWorldPosition(BattlePassNode currentNode)
+        {
+            RectTransform skipRect = levelSkipButton != null ? levelSkipButton.GetComponent<RectTransform>() : null;
+            RectTransform parentRect = skipRect != null ? skipRect.parent as RectTransform : null;
+            RectTransform nodeAnchor = currentNode != null ? currentNode.LevelNodeAnchor : null;
+
+            if (skipRect == null || parentRect == null || nodeAnchor == null)
+                return skipRect != null ? skipRect.position : Vector3.zero;
+
+            // Right edge of the current (yellow) level node in the badge's parent space.
+            nodeAnchor.GetWorldCorners(levelNodeCorners);
+            float nodeRightX = GetRectMaxXInParentSpace(levelNodeCorners, parentRect);
+
+            // Half width of the skip badge so we can align its LEFT tip to the node edge.
+            skipRect.GetWorldCorners(skipButtonCorners);
+            float skipHalfWidth = GetRectWidthInParentSpace(skipButtonCorners, parentRect) * 0.5f;
+
+            // Keep the badge's current vertical position (on the road), override X only so the
+            // badge tip touches the current node and the body points toward the next node.
+            Vector3 targetLocalPos = parentRect.InverseTransformPoint(skipRect.position);
+            targetLocalPos.x = nodeRightX + skipHalfWidth + levelSkipButtonHorizontalOffset;
+
+            return parentRect.TransformPoint(targetLocalPos);
+        }
+
+        private static float GetRectWidthInParentSpace(Vector3[] worldCorners, RectTransform parentRect)
+        {
+            float minX = float.MaxValue;
+            float maxX = float.MinValue;
+
+            for (int i = 0; i < worldCorners.Length; i++)
+            {
+                float localX = parentRect.InverseTransformPoint(worldCorners[i]).x;
+                minX = Mathf.Min(minX, localX);
+                maxX = Mathf.Max(maxX, localX);
+            }
+
+            return maxX - minX;
+        }
+
+        private static float GetRectMaxXInParentSpace(Vector3[] worldCorners, RectTransform parentRect)
+        {
+            float maxX = float.MinValue;
+
+            for (int i = 0; i < worldCorners.Length; i++)
+            {
+                float localX = parentRect.InverseTransformPoint(worldCorners[i]).x;
+                maxX = Mathf.Max(maxX, localX);
+            }
+
+            return maxX;
         }
 
         public Sprite GetCardSpriteByRarity(RewardRarity rarity)
