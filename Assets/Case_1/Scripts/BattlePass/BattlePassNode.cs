@@ -84,17 +84,14 @@ namespace VertigoCase.UI
                     freeCardBg.transform.parent.gameObject.SetActive(false);
             }
 
-            // Auto-assign red dots recursively if they are null
-            if (freeRedDot == null && freeCardBg != null && freeCardBg.transform.parent != null)
+            // Auto-assign red dots when they were not wired in the Inspector (prefab uses Img_Reddot).
+            if (freeRedDot == null && freeCardBg != null)
             {
-                Transform rd = FindChildRecursive(freeCardBg.transform.parent, "RedDot");
-                if (rd != null) freeRedDot = rd.gameObject;
+                freeRedDot = ResolveRedDot(freeCardBg.transform);
             }
-            if (premiumRedDot == null && premiumCardBg != null && premiumCardBg.transform.parent != null)
+            if (premiumRedDot == null && premiumCardBg != null)
             {
-                Transform rd = FindChildRecursive(premiumCardBg.transform.parent, "RedDot (1)");
-                if (rd == null) rd = FindChildRecursive(premiumCardBg.transform.parent, "RedDot");
-                if (rd != null) premiumRedDot = rd.gameObject;
+                premiumRedDot = ResolveRedDot(premiumCardBg.transform);
             }
 
             // UILocalUVModifier provides atlas-independent local UVs for Sh_Shine
@@ -353,10 +350,14 @@ namespace VertigoCase.UI
 
             if (premiumCardBg != null)
             {
-                // Collectable/highlighted cards keep their original sweep (shown while unlocked and
-                // not claimed, even if Premium Pass is inactive — an enticing teaser). The other
-                // (rarity) cards get their own sweep material instead.
-                bool showPremiumSweep = isLevelUnlocked && !premiumClaimed;
+                // Collectable/highlighted cards keep their original sweep as an enticing teaser:
+                // instant showcase cards (CLEOPATRA, SOLARIS, GOLD, ...) shine even while Premium is
+                // inactive, since their "unlock" state is gated on the Premium purchase rather than a
+                // reached level. Standard cards only shine once their tier level is reached. In both
+                // cases a claimed card stops shining.
+                bool showPremiumSweep = tierData.isInstantReward
+                    ? !premiumClaimed
+                    : isLevelUnlocked && !premiumClaimed;
                 premiumCardBg.material = ResolveCardSweepMaterial(premiumClaimed, showPremiumSweep);
             }
 
@@ -371,8 +372,8 @@ namespace VertigoCase.UI
             {
                 if (tierData.isInstantReward)
                 {
-                    // Instant premium rewards show indicator by default
-                    showPremiumRedDot = true;
+                    // Instant showcase cards keep the badge until the player actually claims them.
+                    showPremiumRedDot = !premiumClaimed;
                 }
                 else
                 {
@@ -381,8 +382,35 @@ namespace VertigoCase.UI
                 }
             }
 
-            if (freeRedDot != null) freeRedDot.SetActive(showFreeRedDot);
-            if (premiumRedDot != null) premiumRedDot.SetActive(showPremiumRedDot);
+            SetRedDotActive(freeRedDot, showFreeRedDot);
+            SetRedDotActive(premiumRedDot, showPremiumRedDot);
+        }
+
+        /// <summary>
+        /// Shows or hides a red-dot badge. When hiding, any running <see cref="UITweenAnimator"/>
+        /// is stopped via <c>OnDisable</c> so the claimed card stays clean.
+        /// </summary>
+        private void SetRedDotActive(GameObject redDot, bool isVisible)
+        {
+            if (redDot == null) return;
+            redDot.SetActive(isVisible);
+        }
+
+        /// <summary>
+        /// Finds the notification badge under a reward card. Prefabs name it <c>Img_Reddot</c>;
+        /// older layouts may still use <c>RedDot</c>.
+        /// </summary>
+        private GameObject ResolveRedDot(Transform cardRoot)
+        {
+            if (cardRoot == null) return null;
+
+            Transform found = cardRoot.Find("Img_Reddot");
+            if (found == null) found = cardRoot.Find("RedDot");
+            if (found == null) found = FindChildRecursive(cardRoot, "Img_Reddot");
+            if (found == null) found = FindChildRecursive(cardRoot, "RedDot");
+            if (found == null) found = FindChildRecursive(cardRoot, "RedDot (1)");
+
+            return found != null ? found.gameObject : null;
         }
 
         /// <summary>

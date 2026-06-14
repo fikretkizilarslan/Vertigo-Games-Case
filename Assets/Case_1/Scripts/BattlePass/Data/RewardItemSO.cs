@@ -17,7 +17,7 @@ namespace VertigoCase.UI
     /// ScriptableObject defining a single reward item type.
     /// Acts as static data template for pass cards.
     /// </summary>
-    [CreateAssetMenu(fileName = "NewReward", menuName = "VertigoCase/Reward Item Data")]
+    [CreateAssetMenu(fileName = "NewReward", menuName = "Reward Data/Reward Item Data")]
     public class RewardItemSO : ScriptableObject
     {
         [Header("Visual Information")]

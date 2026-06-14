@@ -671,7 +671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationType: 0
-  duration: 0.4
+  duration: 2
   repeatCount: 2
   delayBetweenCycles: 0
   ease: 4
