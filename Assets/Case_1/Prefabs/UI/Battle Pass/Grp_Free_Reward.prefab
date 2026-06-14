@@ -508,6 +508,7 @@ GameObject:
   - component: {fileID: 6157983701649552254}
   - component: {fileID: 5249205770679286443}
   - component: {fileID: 4261538304386559515}
+  - component: {fileID: 4261538304386559600}
   m_Layer: 5
   m_Name: Img_Reddot
   m_TagString: Untagged
@@ -572,6 +573,29 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4261538304386559600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7984739996397072879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a7c1d2b4e845f6a8c9d0e1f2a3b4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationType: 0
+  duration: 0.4
+  repeatCount: 2
+  delayBetweenCycles: 0
+  ease: 4
+  useUnscaledTime: 1
+  playOnEnable: 1
+  scaleAmount: 0.15
+  rotationAngle: 15
+  spinSpeed: 180
+  minAlpha: 0.3
 --- !u!1 &8090535966218647005
 GameObject:
   m_ObjectHideFlags: 0

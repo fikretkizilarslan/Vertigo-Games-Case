@@ -692,7 +692,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 109.00001, y: 0}
+  m_AnchoredPosition: {x: 109.00001, y: -39.2}
   m_SizeDelta: {x: 225, y: 265}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6019801055512632600
@@ -758,6 +758,7 @@ GameObject:
   - component: {fileID: 2257814479776788468}
   - component: {fileID: 3074332252695396416}
   - component: {fileID: 467546762738154489}
+  - component: {fileID: 467546762738154600}
   m_Layer: 5
   m_Name: Img_Reddot
   m_TagString: Untagged
@@ -822,6 +823,29 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &467546762738154600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3283839539420916113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a7c1d2b4e845f6a8c9d0e1f2a3b4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationType: 0
+  duration: 0.4
+  repeatCount: 2
+  delayBetweenCycles: 0
+  ease: 4
+  useUnscaledTime: 1
+  playOnEnable: 1
+  scaleAmount: 0.15
+  rotationAngle: 15
+  spinSpeed: 180
+  minAlpha: 0.3
 --- !u!1 &3514598352898727835
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,6 +857,7 @@ GameObject:
   - component: {fileID: 2693799389664593116}
   - component: {fileID: 5133965139470225964}
   - component: {fileID: 6695704096012074371}
+  - component: {fileID: 6695704096012074600}
   m_Layer: 5
   m_Name: Img_Reddot
   m_TagString: Untagged
@@ -897,6 +922,29 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6695704096012074600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3514598352898727835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a7c1d2b4e845f6a8c9d0e1f2a3b4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationType: 0
+  duration: 0.4
+  repeatCount: 2
+  delayBetweenCycles: 0
+  ease: 4
+  useUnscaledTime: 1
+  playOnEnable: 1
+  scaleAmount: 0.15
+  rotationAngle: 15
+  spinSpeed: 180
+  minAlpha: 0.3
 --- !u!1 &4623082915399623738
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,6 +1625,7 @@ GameObject:
   - component: {fileID: 8019495187280709764}
   - component: {fileID: 4916357268692723209}
   - component: {fileID: 8495915532507709049}
+  - component: {fileID: 2948467807740042141}
   m_Layer: 5
   m_Name: Img_Card
   m_TagString: Untagged
@@ -1628,7 +1677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: d01ff5dcd96c9284381a608adb74b44b, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1646,6 +1695,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2948467807740042141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7589366562935116686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146d58f3a57dc9e44811118a5a99cf06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VertigoCase.UI.UILocalUVModifier
 --- !u!1 &7745628334214756485
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,11 +28,13 @@ namespace VertigoCase.UI
         [SerializeField] private Sprite cardMythic;
         [SerializeField] private Sprite highlightedCardBgSprite; // ui_event_pass_collectable
         [SerializeField] private Sprite claimedCardBgSprite; // ui_item_level_panel_collected
-        [SerializeField] private Material cardSweepMaterial;
+        [SerializeField] private Material cardSweepMaterial; // Shine sweep for collectable/highlighted cards
+        [SerializeField] private Material rarityCardSweepMaterial; // Shine sweep for the other (rarity) cards
 
         public Sprite HighlightedCardBgSprite => highlightedCardBgSprite;
         public Sprite ClaimedCardBgSprite => claimedCardBgSprite;
         public Material CardSweepMaterial => cardSweepMaterial;
+        public Material RarityCardSweepMaterial => rarityCardSweepMaterial;
 
         [Header("Level Node Sprites")]
         [SerializeField] private Sprite levelCompletedSprite;

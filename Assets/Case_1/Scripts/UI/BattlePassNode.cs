@@ -302,7 +302,7 @@ namespace VertigoCase.UI
 
                 if (freeCardBg != null)
                 {
-                    freeCardBg.material = freeClaimable ? manager.CardSweepMaterial : null;
+                    freeCardBg.material = ResolveCardSweepMaterial(freeClaimed, freeClaimable);
                 }
             }
 
@@ -348,10 +348,11 @@ namespace VertigoCase.UI
 
             if (premiumCardBg != null)
             {
-                // Sweep material appears when the level is unlocked and the reward is not claimed,
-                // even if Premium Pass is not active yet (serves as an enticing teaser for the player!)
+                // Collectable/highlighted cards keep their original sweep (shown while unlocked and
+                // not claimed, even if Premium Pass is inactive — an enticing teaser). The other
+                // (rarity) cards get their own sweep material instead.
                 bool showPremiumSweep = isLevelUnlocked && !premiumClaimed;
-                premiumCardBg.material = showPremiumSweep ? manager.CardSweepMaterial : null;
+                premiumCardBg.material = ResolveCardSweepMaterial(premiumClaimed, showPremiumSweep);
             }
 
             // --- Red Dot Notification Badges ---
@@ -377,6 +378,24 @@ namespace VertigoCase.UI
 
             if (freeRedDot != null) freeRedDot.SetActive(showFreeRedDot);
             if (premiumRedDot != null) premiumRedDot.SetActive(showPremiumRedDot);
+        }
+
+        /// <summary>
+        /// Picks the shine/sweep material for a card background. Collectable/highlighted cards keep
+        /// their dedicated sweep (only while it should be shown), while the other (rarity) cards use
+        /// their own sweep material so they can shine with a different look. Claimed cards get none.
+        /// </summary>
+        private Material ResolveCardSweepMaterial(bool isClaimed, bool showHighlightedSweep)
+        {
+            if (isClaimed) return null;
+
+            bool showsHighlightedBg = (tierData.isInstantReward || (manager.CurrentLevel >= tierData.level))
+                                      && manager.HighlightedCardBgSprite != null;
+
+            if (showsHighlightedBg)
+                return showHighlightedSweep ? manager.CardSweepMaterial : null;
+
+            return manager.RarityCardSweepMaterial;
         }
 
         private void OnRewardClicked(bool isPremium)
