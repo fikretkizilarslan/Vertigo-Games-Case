@@ -43,6 +43,19 @@ namespace VertigoCase.UI
         private BattlePassTierData tierData;
         private BattlePassManager manager;
         private bool isInitialized = false;
+        private bool effectStateInitialized;
+        private bool lastShowFreeGlow;
+        private bool lastShowPremiumGlow;
+        private bool lastShowFreePulse;
+        private bool lastShowPremiumPulse;
+        private Material assignedFreeCardMaterial;
+        private Material assignedPremiumCardMaterial;
+        private Material assignedFreeGlowMaterial;
+        private Material assignedPremiumGlowMaterial;
+        private bool freeClaimShineActive;
+        private bool premiumClaimShineActive;
+        private Coroutine freeClaimShineRoutine;
+        private Coroutine premiumClaimShineRoutine;
 
         public RectTransform LevelNodeAnchor => levelNodeAnchor;
         public BattlePassTierData TierData => tierData;
@@ -83,6 +96,11 @@ namespace VertigoCase.UI
                 if (freeCardBg != null && freeCardBg.transform.parent != null)
                     freeCardBg.transform.parent.gameObject.SetActive(false);
             }
+
+            // Prefabs bake Sh_Shine on highlighted cards; default UI material batches better on mobile.
+            ApplyCardMaterial(freeCardBg, null, ref assignedFreeCardMaterial);
+            ApplyCardMaterial(premiumCardBg, null, ref assignedPremiumCardMaterial);
+            effectStateInitialized = false;
 
             // Auto-assign red dots when they were not wired in the Inspector (prefab uses Img_Reddot).
             if (freeRedDot == null && freeCardBg != null)
@@ -238,26 +256,130 @@ namespace VertigoCase.UI
 
         public void UpdateNodeVisualState()
         {
-            if (tierData == null) return;
+            if (tierData == null || manager == null) return;
 
-            // Hide level badge indicators for instant rewards
+            NodeClaimState state = ComputeClaimState();
+            UpdateNodeCoreState(state);
+            UpdateNodeEffectState(state);
+        }
+
+        public void UpdateNodeCoreState()
+        {
+            if (tierData == null || manager == null) return;
+            UpdateNodeCoreState(ComputeClaimState());
+        }
+
+        public void UpdateNodeEffectState()
+        {
+            if (tierData == null || manager == null) return;
+
+            NodeClaimState state = ComputeClaimState();
+            bool showEffects = manager.IsNearViewport(GetViewportAnchor());
+            bool showFreeGlow = showEffects && state.freeClaimablePulse;
+            bool showPremiumGlow = showEffects && state.premiumClaimable;
+
+            if (effectStateInitialized
+                && !showEffects
+                && !showFreeGlow
+                && !showPremiumGlow
+                && !lastShowFreeGlow
+                && !lastShowPremiumGlow
+                && !lastShowFreePulse
+                && !lastShowPremiumPulse)
+            {
+                return;
+            }
+
+            UpdateNodeEffectState(state, showEffects, showFreeGlow, showPremiumGlow);
+        }
+
+        private struct NodeClaimState
+        {
+            public bool isLevelUnlocked;
+            public bool hasPremiumActive;
+            public bool freeClaimed;
+            public bool premiumClaimed;
+            public bool freeClaimablePulse;
+            public bool premiumClaimable;
+            public bool premiumLocked;
+            public bool showFreeRedDot;
+            public bool showPremiumRedDot;
+        }
+
+        private NodeClaimState ComputeClaimState()
+        {
+            bool isLevelUnlocked = tierData.isInstantReward ? manager.IsPremiumActive : manager.CurrentLevel >= tierData.level;
+            bool hasPremiumActive = manager.IsPremiumActive;
+            bool freeClaimed = tierData.freeReward != null && tierData.freeReward.isClaimed;
+            bool premiumClaimed = tierData.premiumReward != null && tierData.premiumReward.isClaimed;
+            bool freeClaimablePulse = !tierData.isInstantReward && isLevelUnlocked && !freeClaimed;
+            bool premiumClaimable = isLevelUnlocked && hasPremiumActive && tierData.premiumReward != null && !premiumClaimed;
+
+            bool showFreeRedDot = isLevelUnlocked &&
+                                  tierData.freeReward != null &&
+                                  tierData.freeReward.rewardData != null &&
+                                  !freeClaimed;
+
+            bool showPremiumRedDot = false;
+            if (tierData.premiumReward != null && tierData.premiumReward.rewardData != null)
+            {
+                showPremiumRedDot = tierData.isInstantReward
+                    ? !premiumClaimed
+                    : isLevelUnlocked && !premiumClaimed;
+            }
+
+            return new NodeClaimState
+            {
+                isLevelUnlocked = isLevelUnlocked,
+                hasPremiumActive = hasPremiumActive,
+                freeClaimed = freeClaimed,
+                premiumClaimed = premiumClaimed,
+                freeClaimablePulse = freeClaimablePulse,
+                premiumClaimable = premiumClaimable,
+                premiumLocked = !isLevelUnlocked || !hasPremiumActive,
+                showFreeRedDot = showFreeRedDot,
+                showPremiumRedDot = showPremiumRedDot
+            };
+        }
+
+        private RectTransform GetViewportAnchor()
+        {
+            if (levelNodeAnchor != null && levelNodeAnchor.gameObject.activeInHierarchy)
+            {
+                return levelNodeAnchor;
+            }
+
+            if (premiumCardBg != null)
+            {
+                return premiumCardBg.rectTransform;
+            }
+
+            if (freeCardBg != null)
+            {
+                return freeCardBg.rectTransform;
+            }
+
+            return transform as RectTransform;
+        }
+
+        private void UpdateNodeCoreState(NodeClaimState state)
+        {
             if (tierData.isInstantReward)
             {
                 if (levelNodeImage != null) levelNodeImage.gameObject.SetActive(false);
                 if (levelText != null) levelText.gameObject.SetActive(false);
                 if (specialLevelIcon != null) specialLevelIcon.gameObject.SetActive(false);
 
-                // Update text to UNLOCK NOW if premium is locked
                 if (tierData.isUnlockNowText)
                 {
-                    if (manager.IsPremiumActive)
+                    if (state.hasPremiumActive)
                     {
                         if (premiumAmountText != null)
                         {
                             if (tierData.premiumReward.rewardData.Type == RewardType.Attachment)
                                 premiumAmountText.text = "ATTACHMENT";
                             else if (manager.RewardTypesToShowAmountText.Contains(tierData.premiumReward.rewardData.Type))
-                                premiumAmountText.text = premiumAmountText.text = tierData.premiumReward.amount.ToString("N0");
+                                premiumAmountText.text = tierData.premiumReward.amount.ToString("N0");
                             else
                                 premiumAmountText.text = "";
                         }
@@ -283,117 +405,128 @@ namespace VertigoCase.UI
                     }
                 }
             }
-            else
+            else if (levelNodeImage != null)
             {
-                if (levelNodeImage != null) levelNodeImage.gameObject.SetActive(true);
-            }
-
-            bool isLevelUnlocked = tierData.isInstantReward ? manager.IsPremiumActive : manager.CurrentLevel >= tierData.level;
-            bool hasPremiumActive = manager.IsPremiumActive;
-
-            // Update level complete/locked badge graphics
-            if (levelNodeImage != null && !tierData.isInstantReward)
-                levelNodeImage.sprite = isLevelUnlocked
+                levelNodeImage.gameObject.SetActive(true);
+                levelNodeImage.sprite = state.isLevelUnlocked
                     ? manager.LevelCompletedSprite
                     : manager.LevelLockedSprite;
+            }
 
-            bool freeClaimed = tierData.freeReward != null && tierData.freeReward.isClaimed;
-            bool premiumClaimed = tierData.premiumReward != null && tierData.premiumReward.isClaimed;
-            bool freeClaimablePulse = !tierData.isInstantReward && isLevelUnlocked && !freeClaimed;
-            bool premiumClaimable = isLevelUnlocked && hasPremiumActive && tierData.premiumReward != null && !premiumClaimed;
+            RefreshAttachmentLabel(tierData.freeReward, freeAmountText, state.isLevelUnlocked);
+            RefreshAttachmentLabel(tierData.premiumReward, premiumAmountText, state.isLevelUnlocked);
 
-            // Attachment cards read "ATTACHMENT" while their tier is still locked and flip to
-            // "UNLOCK NOW" the moment the player reaches the tier level (the reward is claimable).
-            RefreshAttachmentLabel(tierData.freeReward, freeAmountText, isLevelUnlocked);
-            RefreshAttachmentLabel(tierData.premiumReward, premiumAmountText, isLevelUnlocked);
-
-            // --- Free Reward UI State ---
             if (!tierData.isInstantReward)
             {
-                if (freeLockOverlay != null) freeLockOverlay.SetActive(!isLevelUnlocked);
+                if (freeLockOverlay != null) freeLockOverlay.SetActive(!state.isLevelUnlocked);
                 if (freeTickOverlay != null)
                 {
                     bool wasActive = freeTickOverlay.activeSelf;
-                    if (!wasActive && freeClaimed && isInitialized)
+                    if (!wasActive && state.freeClaimed && isInitialized)
                     {
                         freeTickOverlay.SetActive(true);
                         StartCoroutine(PopAnimationRoutine(freeTickOverlay.transform));
                     }
                     else
                     {
-                        freeTickOverlay.SetActive(freeClaimed);
-                        if (!freeClaimed) freeTickOverlay.transform.localScale = Vector3.one;
+                        freeTickOverlay.SetActive(state.freeClaimed);
+                        if (!state.freeClaimed) freeTickOverlay.transform.localScale = Vector3.one;
                     }
                 }
 
-                // Card background stays on its rarity (or highlighted tier flag) — never swaps on level unlock.
-                ApplyCardBackgroundSprite(freeCardBg, tierData.freeReward, freeClaimed);
-
-                if (freeCardBg != null)
-                {
-                    freeCardBg.material = ResolveCardSweepMaterial(freeClaimed, freeClaimablePulse);
-                }
+                ApplyCardBackgroundSprite(freeCardBg, tierData.freeReward, state.freeClaimed);
             }
 
-            SetClaimPulseActive(freeCardBg, freeClaimablePulse);
-
-            // --- Premium Reward UI State ---
-            bool premiumLocked = !isLevelUnlocked || !hasPremiumActive;
-
-            if (premiumLockOverlay != null) premiumLockOverlay.SetActive(premiumLocked);
+            if (premiumLockOverlay != null) premiumLockOverlay.SetActive(state.premiumLocked);
             if (premiumTickOverlay != null)
             {
                 bool wasActive = premiumTickOverlay.activeSelf;
-                if (!wasActive && premiumClaimed && isInitialized)
+                if (!wasActive && state.premiumClaimed && isInitialized)
                 {
                     premiumTickOverlay.SetActive(true);
                     StartCoroutine(PopAnimationRoutine(premiumTickOverlay.transform));
                 }
                 else
                 {
-                    premiumTickOverlay.SetActive(premiumClaimed);
-                    if (!premiumClaimed) premiumTickOverlay.transform.localScale = Vector3.one;
+                    premiumTickOverlay.SetActive(state.premiumClaimed);
+                    if (!state.premiumClaimed) premiumTickOverlay.transform.localScale = Vector3.one;
                 }
             }
 
-            ApplyCardBackgroundSprite(premiumCardBg, tierData.premiumReward, premiumClaimed);
+            ApplyCardBackgroundSprite(premiumCardBg, tierData.premiumReward, state.premiumClaimed);
+            SetRedDotActive(freeRedDot, state.showFreeRedDot);
+            SetRedDotActive(premiumRedDot, state.showPremiumRedDot);
+        }
 
-            if (premiumCardBg != null)
+        private void UpdateNodeEffectState(NodeClaimState state)
+        {
+            bool showEffects = manager.IsNearViewport(GetViewportAnchor());
+            UpdateNodeEffectState(
+                state,
+                showEffects,
+                showEffects && state.freeClaimablePulse,
+                showEffects && state.premiumClaimable);
+        }
+
+        private void UpdateNodeEffectState(
+            NodeClaimState state,
+            bool showEffects,
+            bool showFreeGlow,
+            bool showPremiumGlow)
+        {
+            bool showFreePulse = showFreeGlow;
+            bool showPremiumPulse = showPremiumGlow;
+
+            // Default UI material on cards; claim shine is a short-lived overlay (see PlayClaimShine).
+            if (!tierData.isInstantReward && !freeClaimShineActive)
             {
-                premiumCardBg.material = ResolveCardSweepMaterial(premiumClaimed, premiumClaimable);
+                ApplyCardMaterial(freeCardBg, null, ref assignedFreeCardMaterial);
             }
 
-            // --- Red Dot Notification Badges ---
-            bool showFreeRedDot = isLevelUnlocked && 
-                                  tierData.freeReward != null && 
-                                  tierData.freeReward.rewardData != null && 
-                                  !freeClaimed;
-
-            bool showPremiumRedDot = false;
-            if (tierData.premiumReward != null && tierData.premiumReward.rewardData != null)
+            if (!premiumClaimShineActive)
             {
-                if (tierData.isInstantReward)
-                {
-                    // Instant showcase cards keep the badge until the player actually claims them.
-                    showPremiumRedDot = !premiumClaimed;
-                }
-                else
-                {
-                    // Standard premium rewards show when unlocked and unclaimed
-                    showPremiumRedDot = isLevelUnlocked && !premiumClaimed;
-                }
+                ApplyCardMaterial(premiumCardBg, null, ref assignedPremiumCardMaterial);
             }
 
-            SetRedDotActive(freeRedDot, showFreeRedDot);
-            SetRedDotActive(premiumRedDot, showPremiumRedDot);
+            if (!effectStateInitialized || lastShowFreePulse != showFreePulse)
+            {
+                lastShowFreePulse = showFreePulse;
+                SetClaimPulseActive(freeCardBg, showFreePulse);
+            }
 
-            SetClaimPulseActive(premiumCardBg, premiumClaimable);
+            if (!effectStateInitialized || lastShowPremiumPulse != showPremiumPulse)
+            {
+                lastShowPremiumPulse = showPremiumPulse;
+                SetClaimPulseActive(premiumCardBg, showPremiumPulse);
+            }
 
-            // Glow + pulse only on actually claimable rewards (not locked-premium teasers).
-            bool showFreeGlow = freeClaimablePulse;
-            bool showPremiumGlow = premiumClaimable;
-            ApplyCardGlow(freeGlow, tierData.freeReward, tierData.isHighlighted, showFreeGlow);
-            ApplyCardGlow(premiumGlow, tierData.premiumReward, tierData.isHighlighted, showPremiumGlow);
+            if (!effectStateInitialized || lastShowFreeGlow != showFreeGlow)
+            {
+                lastShowFreeGlow = showFreeGlow;
+                ApplyCardGlow(freeGlow, tierData.freeReward, tierData.isHighlighted, showFreeGlow, ref assignedFreeGlowMaterial);
+            }
+
+            if (!effectStateInitialized || lastShowPremiumGlow != showPremiumGlow)
+            {
+                lastShowPremiumGlow = showPremiumGlow;
+                ApplyCardGlow(premiumGlow, tierData.premiumReward, tierData.isHighlighted, showPremiumGlow, ref assignedPremiumGlowMaterial);
+            }
+
+            effectStateInitialized = true;
+        }
+
+        /// <summary>
+        /// Assigns a UI material without reading <see cref="Graphic.material"/> (getter creates instances).
+        /// </summary>
+        private static void ApplyCardMaterial(Image image, Material material, ref Material assigned)
+        {
+            if (image == null || assigned == material)
+            {
+                return;
+            }
+
+            assigned = material;
+            image.material = material;
         }
 
         /// <summary>
@@ -402,7 +535,7 @@ namespace VertigoCase.UI
         /// applied through the Image vertex color so no per-card material copies are created.
         /// Hidden once the reward is claimed or unavailable.
         /// </summary>
-        private void ApplyCardGlow(Image glow, RewardSlot slot, bool isHighlighted, bool show)
+        private void ApplyCardGlow(Image glow, RewardSlot slot, bool isHighlighted, bool show, ref Material assignedMaterial)
         {
             if (glow == null) return;
 
@@ -412,7 +545,9 @@ namespace VertigoCase.UI
             {
                 Material glowMat = manager.CardGlowMaterial;
                 if (glowMat != null)
-                    glow.material = glowMat;
+                {
+                    ApplyCardMaterial(glow, glowMat, ref assignedMaterial);
+                }
 
                 Color tint = isHighlighted
                     ? manager.HighlightedCardColor
@@ -422,7 +557,6 @@ namespace VertigoCase.UI
 
                 // Keep the halo behind the card draw order.
                 glow.rectTransform.SetSiblingIndex(0);
-                glow.SetMaterialDirty();
             }
 
             glow.gameObject.SetActive(show);
@@ -601,23 +735,95 @@ namespace VertigoCase.UI
                 cardBg.sprite = manager.GetCardSpriteByRarity(slot.rewardData.Rarity);
         }
 
-        /// <summary>
-        /// Picks the shine/sweep material for a card background. Collectable/highlighted cards keep
-        /// their dedicated sweep (only while it should be shown), while the other (rarity) cards use
-        /// their own sweep material so they can shine with a different look. Claimed cards get none.
-        /// </summary>
-        private Material ResolveCardSweepMaterial(bool isClaimed, bool showSweep)
+        private void OnRewardClicked(bool isPremium)
         {
-            if (isClaimed || !showSweep) return null;
+            manager.OnRewardClicked(this, isPremium);
+        }
+
+        /// <summary>
+        /// Plays a short <c>Sh_Shine</c> sweep on the reward card. Called automatically when the
+        /// player claims; you can also invoke this from other scripts or animation events.
+        /// Duration and on/off are configured on <see cref="BattlePassManager"/> (Claim Shine).
+        /// </summary>
+        public void PlayClaimShine(bool isPremium)
+        {
+            if (manager == null || !manager.EnableClaimShine)
+            {
+                return;
+            }
+
+            if (isPremium)
+            {
+                if (premiumClaimShineRoutine != null)
+                {
+                    StopCoroutine(premiumClaimShineRoutine);
+                }
+
+                premiumClaimShineRoutine = StartCoroutine(ClaimShineRoutine(premiumCardBg, tierData.premiumReward, isPremiumTrack: true));
+            }
+            else
+            {
+                if (freeClaimShineRoutine != null)
+                {
+                    StopCoroutine(freeClaimShineRoutine);
+                }
+
+                freeClaimShineRoutine = StartCoroutine(ClaimShineRoutine(freeCardBg, tierData.freeReward, isPremiumTrack: false));
+            }
+        }
+
+        private Material ResolveClaimShineMaterial(RewardSlot slot)
+        {
+            if (slot == null || slot.rewardData == null || manager == null)
+            {
+                return null;
+            }
+
+            if (manager.ClaimShineMaterial != null)
+            {
+                return manager.ClaimShineMaterial;
+            }
 
             return tierData.isHighlighted
                 ? manager.CardSweepMaterial
                 : manager.RarityCardSweepMaterial;
         }
 
-        private void OnRewardClicked(bool isPremium)
+        private IEnumerator ClaimShineRoutine(Image cardBg, RewardSlot slot, bool isPremiumTrack)
         {
-            manager.OnRewardClicked(this, isPremium);
+            Material shineMat = ResolveClaimShineMaterial(slot);
+            if (cardBg == null || shineMat == null)
+            {
+                yield break;
+            }
+
+            if (isPremiumTrack)
+            {
+                premiumClaimShineActive = true;
+                ApplyCardMaterial(cardBg, shineMat, ref assignedPremiumCardMaterial);
+            }
+            else
+            {
+                freeClaimShineActive = true;
+                ApplyCardMaterial(cardBg, shineMat, ref assignedFreeCardMaterial);
+            }
+
+            yield return new WaitForSecondsRealtime(manager.ClaimShineDuration);
+
+            if (isPremiumTrack)
+            {
+                premiumClaimShineActive = false;
+                ApplyCardMaterial(cardBg, null, ref assignedPremiumCardMaterial);
+                premiumClaimShineRoutine = null;
+            }
+            else
+            {
+                freeClaimShineActive = false;
+                ApplyCardMaterial(cardBg, null, ref assignedFreeCardMaterial);
+                freeClaimShineRoutine = null;
+            }
+
+            UpdateNodeEffectState();
         }
 
         private IEnumerator PopAnimationRoutine(Transform target)

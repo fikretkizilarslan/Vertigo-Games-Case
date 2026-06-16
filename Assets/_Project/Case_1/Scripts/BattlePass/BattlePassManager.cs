@@ -48,6 +48,9 @@ namespace VertigoCase.UI
         public Material CardSweepMaterial => cardSweepMaterial;
         public Material RarityCardSweepMaterial => rarityCardSweepMaterial;
         public Material CardGlowMaterial => cardGlowMaterial;
+        public bool EnableClaimShine => enableClaimShine;
+        public float ClaimShineDuration => claimShineDuration;
+        public Material ClaimShineMaterial => claimShineMaterial;
         public Color HighlightedCardColor => colorHighlighted;
 
         /// <summary>Maps a reward rarity to the tint used by the shared card glow material.</summary>
@@ -118,6 +121,12 @@ namespace VertigoCase.UI
         [SerializeField] private GameObject freeClaimVfxPrefab;
         [Tooltip("Claim VFX spawned when a PREMIUM reward card is claimed.")]
         [SerializeField] private GameObject premiumClaimVfxPrefab;
+        [Tooltip("Brief Sh_Shine sweep on the card when a reward is claimed.")]
+        [SerializeField] private bool enableClaimShine = true;
+        [Tooltip("Sh_Shine material played on the card when claimed. Leave empty to fall back to Card Sweep / Rarity Card Sweep by tier.")]
+        [SerializeField] private Material claimShineMaterial;
+        [Tooltip("How long the shine material stays on the card after claim (seconds, unscaled).")]
+        [Min(0.05f)] [SerializeField] private float claimShineDuration = 0.75f;
 
         [Header("VFX & Particles - Click")]
         [Tooltip("Click VFX spawned when the DIAMOND skip button (Btn_XP_Skip) is tapped.")]
@@ -276,7 +285,7 @@ namespace VertigoCase.UI
             
             if (scrollRect != null)
             {
-                scrollRect.onValueChanged.AddListener((vec) => UpdateFloatingIndicatorTarget());
+                scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
             }
 
             StartCoroutine(SeasonCountdownRoutine());
@@ -290,7 +299,6 @@ namespace VertigoCase.UI
             }
             Canvas.ForceUpdateCanvases();
 
-            AutoAttachLocalUVModifiers();
             UpdateAllUI();
 
             StartCoroutine(StartupRevealRoutine());
@@ -352,24 +360,6 @@ namespace VertigoCase.UI
             roadCanvasGroup.alpha = 1f;
         }
 
-        private void AutoAttachLocalUVModifiers()
-        {
-            Graphic[] graphics = FindObjectsByType<Graphic>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (Graphic graphic in graphics)
-            {
-                if (graphic != null && graphic.material != null && graphic.material.shader != null)
-                {
-                    if (graphic.material.shader.name == "Case1/Sh_Shine")
-                    {
-                        if (graphic.GetComponent<UILocalUVModifier>() == null)
-                        {
-                            graphic.gameObject.AddComponent<UILocalUVModifier>();
-                        }
-                    }
-                }
-            }
-        }
-
         private void SpawnRoadNodes()
         {
             if (contentContainer == null) return;
@@ -406,7 +396,6 @@ namespace VertigoCase.UI
 
         public void UpdateAllUI()
         {
-            // Refresh all UI elements
             foreach (var node in instantiatedNodes)
             {
                 node.UpdateNodeVisualState();
@@ -415,6 +404,49 @@ namespace VertigoCase.UI
             UpdateProgressLine();
             UpdateFloatingIndicatorTarget();
             UpdateTopXpPanel();
+        }
+
+        /// <summary>
+        /// Refreshes glow / pulse only for nodes currently near the scroll viewport.
+        /// Keeps batch count low when premium unlocks many claimable cards off-screen.
+        /// </summary>
+        public void RefreshVisibleNodeEffects()
+        {
+            foreach (var node in instantiatedNodes)
+            {
+                node.UpdateNodeEffectState();
+            }
+        }
+
+        /// <summary>
+        /// Updates lock overlays, badges and red dots without touching custom card materials.
+        /// </summary>
+        public void RefreshNodeCoreStates()
+        {
+            foreach (var node in instantiatedNodes)
+            {
+                node.UpdateNodeCoreState();
+            }
+        }
+
+        public bool IsNearViewport(RectTransform anchor, float margin = 420f)
+        {
+            if (anchor == null || scrollRect == null || scrollRect.viewport == null)
+            {
+                return true;
+            }
+
+            RectTransform viewport = scrollRect.viewport;
+            Vector3 local = viewport.InverseTransformPoint(anchor.position);
+            float left = -viewport.pivot.x * viewport.rect.width - margin;
+            float right = (1f - viewport.pivot.x) * viewport.rect.width + margin;
+            return local.x >= left && local.x <= right;
+        }
+
+        private void OnScrollValueChanged(Vector2 _)
+        {
+            UpdateFloatingIndicatorTarget();
+            RefreshVisibleNodeEffects();
         }
 
         private int GetNodeIndexForLevel(int level)
@@ -691,6 +723,15 @@ namespace VertigoCase.UI
             SpawnClaimVFX(node, isPremium);
 
             UpdateAllUI();
+            node.PlayClaimShine(isPremium);
+        }
+
+        /// <summary>
+        /// Plays the short claim shine on a node. Safe to call from other scripts / animation events.
+        /// </summary>
+        public void PlayClaimShine(BattlePassNode node, bool isPremium)
+        {
+            node?.PlayClaimShine(isPremium);
         }
 
         /// <summary>
@@ -887,9 +928,18 @@ namespace VertigoCase.UI
 
         private IEnumerator CompletePremiumActivationDeferred()
         {
-            // Spread the 40-node UI refresh off the burst completion frame to avoid a visible hitch.
             yield return null;
-            UpdateAllUI();
+
+            // Cheap pass first: remove lock overlays immediately without enabling off-screen VFX.
+            RefreshNodeCoreStates();
+            UpdateProgressLine();
+            UpdateTopXpPanel();
+            UpdateFloatingIndicatorTarget();
+
+            yield return null;
+
+            // Only viewport cards get glow / pulse (avoids +40 batch spike).
+            RefreshVisibleNodeEffects();
         }
 
         /// <summary>
