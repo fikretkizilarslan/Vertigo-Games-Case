@@ -6,8 +6,9 @@ using UnityEngine.UI;
 namespace VertigoCase.UI
 {
     /// <summary>
-    /// One-shot premium-offer hero moment: dim overlay, lock icon pop, shake, explode.
-    /// VFX can be parented under <see cref="vfxSlot"/>; it is toggled at the burst frame.
+    /// One-shot premium-offer hero moment wired in the scene under the battle-pass canvas.
+    /// Uses a dedicated dim backdrop plus a fully opaque lock icon so the parent CanvasGroup
+    /// does not wash out the lock.
     /// </summary>
     [DisallowMultipleComponent]
     public class OfferBurstSequence : MonoBehaviour
@@ -16,46 +17,44 @@ namespace VertigoCase.UI
         [SerializeField] private RectTransform lockRect;
         [SerializeField] private CanvasGroup overlayGroup;
         [SerializeField] private CanvasGroup lockGroup;
+        [SerializeField] private Image dimBackdrop;
         [SerializeField] private GameObject vfxSlot;
         [SerializeField] private Image lockImage;
-        [SerializeField] private Sprite lockSprite;
 
         [Header("Timing")]
-        [SerializeField] private float dimAlpha = 0.45f;
+        [SerializeField] private float dimAlpha = 0.68f;
         [SerializeField] private float popInDuration = 0.22f;
         [SerializeField] private float shakeDuration = 0.32f;
         [SerializeField] private float explodeDuration = 0.28f;
         [SerializeField] private float fadeOutDuration = 0.2f;
 
-        private RectTransform sequenceRect;
         private Coroutine playRoutine;
         private Vector3 lockBaseScale = Vector3.one;
         private Quaternion lockBaseRotation = Quaternion.identity;
+        private bool isInitialized;
 
         public bool IsPlaying => playRoutine != null;
 
-        public void Configure(Sprite sprite)
-        {
-            if (sprite == null) return;
-            lockSprite = sprite;
-            EnsureHierarchy();
-            if (lockImage != null)
-            {
-                lockImage.sprite = lockSprite;
-            }
-        }
-
         private void Awake()
         {
-            EnsureHierarchy();
-            CaptureBase();
-            ResetToIdle();
+            Initialize();
+        }
+
+        private void OnEnable()
+        {
+            if (isInitialized)
+            {
+                ResetToIdle();
+            }
         }
 
         public void Play(Action onComplete = null)
         {
-            EnsureHierarchy();
-            CaptureBase();
+            if (!Initialize())
+            {
+                onComplete?.Invoke();
+                return;
+            }
 
             if (playRoutine != null)
             {
@@ -65,73 +64,34 @@ namespace VertigoCase.UI
             playRoutine = StartCoroutine(PlayRoutine(onComplete));
         }
 
-        private void EnsureHierarchy()
+        private bool Initialize()
         {
-            if (sequenceRect == null)
+            if (dimBackdrop == null)
             {
-                sequenceRect = transform as RectTransform;
+                Transform dimTransform = transform.Find("Img_Dim");
+                if (dimTransform != null)
+                {
+                    dimBackdrop = dimTransform.GetComponent<Image>();
+                }
             }
 
-            if (sequenceRect == null)
+            if (lockRect == null)
             {
-                sequenceRect = gameObject.AddComponent<RectTransform>();
+                Transform lockTransform = transform.Find("Img_Lock");
+                if (lockTransform != null)
+                {
+                    lockRect = lockTransform as RectTransform;
+                }
             }
-
-            Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas == null)
-            {
-                canvas = FindFirstObjectByType<Canvas>();
-            }
-
-            if (canvas != null && transform.parent != canvas.transform)
-            {
-                transform.SetParent(canvas.transform, false);
-            }
-
-            StretchToParent(sequenceRect);
 
             if (overlayGroup == null)
             {
                 overlayGroup = GetComponent<CanvasGroup>();
-                if (overlayGroup == null)
-                {
-                    overlayGroup = gameObject.AddComponent<CanvasGroup>();
-                }
-            }
-
-            if (lockRect == null)
-            {
-                Transform existing = transform.Find("Img_Lock");
-                if (existing != null)
-                {
-                    lockRect = existing as RectTransform;
-                }
-            }
-
-            if (lockRect == null)
-            {
-                GameObject lockGo = new GameObject("Img_Lock", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
-                lockGo.transform.SetParent(transform, false);
-                lockRect = lockGo.GetComponent<RectTransform>();
-                lockRect.anchorMin = new Vector2(0.5f, 0.5f);
-                lockRect.anchorMax = new Vector2(0.5f, 0.5f);
-                lockRect.pivot = new Vector2(0.5f, 0.5f);
-                lockRect.sizeDelta = new Vector2(180f, 180f);
-                lockRect.anchoredPosition = Vector2.zero;
-
-                lockGroup = lockGo.GetComponent<CanvasGroup>();
-                lockImage = lockGo.GetComponent<Image>();
-                lockImage.raycastTarget = false;
-                lockImage.preserveAspect = true;
             }
 
             if (lockGroup == null && lockRect != null)
             {
                 lockGroup = lockRect.GetComponent<CanvasGroup>();
-                if (lockGroup == null)
-                {
-                    lockGroup = lockRect.gameObject.AddComponent<CanvasGroup>();
-                }
             }
 
             if (lockImage == null && lockRect != null)
@@ -139,40 +99,35 @@ namespace VertigoCase.UI
                 lockImage = lockRect.GetComponent<Image>();
             }
 
-            if (lockImage != null && lockSprite != null)
-            {
-                lockImage.sprite = lockSprite;
-            }
-
             if (vfxSlot == null)
             {
                 Transform slot = transform.Find("Grp_VFX_Slot");
-                vfxSlot = slot != null ? slot.gameObject : null;
+                if (slot != null)
+                {
+                    vfxSlot = slot.gameObject;
+                }
             }
 
-            if (vfxSlot == null)
+            if (lockRect == null || overlayGroup == null || lockGroup == null || dimBackdrop == null)
             {
-                GameObject slotGo = new GameObject("Grp_VFX_Slot", typeof(RectTransform));
-                slotGo.transform.SetParent(transform, false);
-                RectTransform slotRect = slotGo.GetComponent<RectTransform>();
-                slotRect.anchorMin = new Vector2(0.5f, 0.5f);
-                slotRect.anchorMax = new Vector2(0.5f, 0.5f);
-                slotRect.pivot = new Vector2(0.5f, 0.5f);
-                slotRect.sizeDelta = new Vector2(256f, 256f);
-                slotRect.anchoredPosition = Vector2.zero;
-                vfxSlot = slotGo;
+                Debug.LogWarning("[OfferBurstSequence] Scene references are missing. Assign Grp_OfferBurst hierarchy in BattlePass Scene.");
+                return false;
             }
 
-            transform.SetAsLastSibling();
-        }
+            lockGroup.ignoreParentGroups = true;
 
-        private void CaptureBase()
-        {
-            if (lockRect != null)
+            if (lockImage != null)
             {
-                lockBaseScale = lockRect.localScale;
-                lockBaseRotation = lockRect.localRotation;
+                Color lockColor = lockImage.color;
+                lockColor.a = 1f;
+                lockImage.color = lockColor;
             }
+
+            lockBaseScale = lockRect.localScale.sqrMagnitude > 0.0001f ? lockRect.localScale : Vector3.one;
+            lockBaseRotation = lockRect.localRotation;
+            isInitialized = true;
+            ResetToIdle();
+            return true;
         }
 
         private void ResetToIdle()
@@ -183,6 +138,8 @@ namespace VertigoCase.UI
                 overlayGroup.blocksRaycasts = false;
                 overlayGroup.interactable = false;
             }
+
+            SetDimAlpha(0f);
 
             if (lockGroup != null)
             {
@@ -201,15 +158,25 @@ namespace VertigoCase.UI
             }
         }
 
+        private void SetDimAlpha(float alpha)
+        {
+            if (dimBackdrop == null) return;
+
+            Color c = dimBackdrop.color;
+            c.r = 0f;
+            c.g = 0f;
+            c.b = 0f;
+            c.a = alpha;
+            dimBackdrop.color = c;
+        }
+
         private IEnumerator PlayRoutine(Action onComplete)
         {
             ResetToIdle();
 
-            if (overlayGroup != null)
-            {
-                overlayGroup.blocksRaycasts = true;
-                overlayGroup.interactable = true;
-            }
+            overlayGroup.alpha = 1f;
+            overlayGroup.blocksRaycasts = true;
+            overlayGroup.interactable = true;
 
             float elapsed = 0f;
             while (elapsed < popInDuration)
@@ -219,28 +186,15 @@ namespace VertigoCase.UI
                 float eased = 1f - Mathf.Pow(1f - t, 3f);
                 float overshoot = Mathf.Lerp(0f, 1.15f, eased);
 
-                if (overlayGroup != null)
-                {
-                    overlayGroup.alpha = dimAlpha * eased;
-                }
-
-                if (lockGroup != null)
-                {
-                    lockGroup.alpha = eased;
-                }
-
-                if (lockRect != null)
-                {
-                    lockRect.localScale = lockBaseScale * overshoot;
-                }
-
+                SetDimAlpha(dimAlpha * eased);
+                lockGroup.alpha = 1f;
+                lockRect.localScale = lockBaseScale * overshoot;
                 yield return null;
             }
 
-            if (lockRect != null)
-            {
-                lockRect.localScale = lockBaseScale;
-            }
+            SetDimAlpha(dimAlpha);
+            lockGroup.alpha = 1f;
+            lockRect.localScale = lockBaseScale;
 
             elapsed = 0f;
             while (elapsed < shakeDuration)
@@ -248,19 +202,11 @@ namespace VertigoCase.UI
                 elapsed += Time.unscaledDeltaTime;
                 float t = elapsed / shakeDuration;
                 float shake = Mathf.Sin(t * Mathf.PI * 10f) * (1f - t) * 12f;
-
-                if (lockRect != null)
-                {
-                    lockRect.localRotation = lockBaseRotation * Quaternion.Euler(0f, 0f, shake);
-                }
-
+                lockRect.localRotation = lockBaseRotation * Quaternion.Euler(0f, 0f, shake);
                 yield return null;
             }
 
-            if (lockRect != null)
-            {
-                lockRect.localRotation = lockBaseRotation;
-            }
+            lockRect.localRotation = lockBaseRotation;
 
             if (vfxSlot != null)
             {
@@ -274,16 +220,8 @@ namespace VertigoCase.UI
                 float t = Mathf.Clamp01(elapsed / explodeDuration);
                 float burst = 1f + t * 0.85f;
 
-                if (lockRect != null)
-                {
-                    lockRect.localScale = lockBaseScale * burst;
-                }
-
-                if (lockGroup != null)
-                {
-                    lockGroup.alpha = 1f - t;
-                }
-
+                lockRect.localScale = lockBaseScale * burst;
+                lockGroup.alpha = 1f - t;
                 yield return null;
             }
 
@@ -292,29 +230,13 @@ namespace VertigoCase.UI
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / fadeOutDuration);
-
-                if (overlayGroup != null)
-                {
-                    overlayGroup.alpha = dimAlpha * (1f - t);
-                }
-
+                SetDimAlpha(dimAlpha * (1f - t));
                 yield return null;
             }
 
             ResetToIdle();
             playRoutine = null;
             onComplete?.Invoke();
-        }
-
-        private static void StretchToParent(RectTransform rect)
-        {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.localScale = Vector3.one;
-            rect.localRotation = Quaternion.identity;
         }
     }
 }

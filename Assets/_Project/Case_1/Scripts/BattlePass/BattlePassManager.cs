@@ -126,9 +126,8 @@ namespace VertigoCase.UI
         [Header("Premium Offer")]
         [Tooltip("Offer button (scene: Btn_Offer_Get). Tapping it activates the premium track. Auto-resolved by name when left empty.")]
         [SerializeField] private Button offerButton;
-        [Tooltip("One-shot lock pop / burst played the first time premium is unlocked.")]
+        [Tooltip("Scene: Grp_OfferBurst — lock pop / burst played the first time premium is unlocked.")]
         [SerializeField] private OfferBurstSequence offerBurstSequence;
-        [SerializeField] private Sprite offerLockSprite;
 
         [Header("UI Customization")]
         [SerializeField] private List<RewardType> rewardTypesToShowAmountText = new List<RewardType>
@@ -839,33 +838,9 @@ namespace VertigoCase.UI
                 offerBurstSequence = FindFirstObjectByType<OfferBurstSequence>(FindObjectsInactive.Include);
             }
 
-            if (offerBurstSequence != null)
+            if (offerBurstSequence == null)
             {
-                if (offerLockSprite != null)
-                {
-                    offerBurstSequence.Configure(offerLockSprite);
-                }
-                return;
-            }
-
-            Canvas canvas = scrollRect != null ? scrollRect.GetComponentInParent<Canvas>() : null;
-            if (canvas == null)
-            {
-                canvas = FindFirstObjectByType<Canvas>();
-            }
-
-            if (canvas == null)
-            {
-                return;
-            }
-
-            GameObject burstRoot = new GameObject("Grp_OfferBurst", typeof(RectTransform), typeof(CanvasGroup), typeof(OfferBurstSequence));
-            burstRoot.transform.SetParent(canvas.transform, false);
-            offerBurstSequence = burstRoot.GetComponent<OfferBurstSequence>();
-
-            if (offerLockSprite != null)
-            {
-                offerBurstSequence.Configure(offerLockSprite);
+                Debug.LogWarning("[BattlePassManager] OfferBurstSequence not found in scene. Assign Grp_OfferBurst or premium unlock will skip the lock burst.");
             }
         }
 
@@ -903,11 +878,17 @@ namespace VertigoCase.UI
         {
             if (offerButton != null)
             {
-                PlayClickFeedback(offerButton.transform, offerButton.transform.position, null);
                 offerButton.interactable = true;
             }
 
             isPremiumActive = true;
+            StartCoroutine(CompletePremiumActivationDeferred());
+        }
+
+        private IEnumerator CompletePremiumActivationDeferred()
+        {
+            // Spread the 40-node UI refresh off the burst completion frame to avoid a visible hitch.
+            yield return null;
             UpdateAllUI();
         }
 
