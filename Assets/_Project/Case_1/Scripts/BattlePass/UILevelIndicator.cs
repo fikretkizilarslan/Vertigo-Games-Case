@@ -31,6 +31,8 @@ namespace VertigoCase.UI
 
         public void SetTarget(RectTransform targetNode, int level)
         {
+            if (targetLevelNode == targetNode && currentLevelNumber == level) return;
+
             targetLevelNode = targetNode;
             currentLevelNumber = level;
             if (indicatorText != null)

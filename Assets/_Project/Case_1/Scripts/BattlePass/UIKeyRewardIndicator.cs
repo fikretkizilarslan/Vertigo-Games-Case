@@ -72,6 +72,8 @@ namespace VertigoCase.UI
 
         public void SetTarget(RectTransform targetNode, Sprite rewardIcon)
         {
+            if (targetRewardNode == targetNode && rewardIconImage != null && rewardIconImage.sprite == rewardIcon) return;
+
             targetRewardNode = targetNode;
             if (rewardIconImage != null)
             {

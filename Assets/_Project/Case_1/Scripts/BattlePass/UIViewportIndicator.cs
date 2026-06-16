@@ -11,7 +11,7 @@ namespace VertigoCase.UI
     /// animation and pointer-press cancellation. Concrete indicators decide which node they track
     /// and how they clamp/orient themselves every frame.
     /// </summary>
-    public abstract class UIViewportIndicator : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
+    public abstract class UIViewportIndicator : MonoBehaviour, IPointerClickHandler
     {
         [Header("References")]
         [SerializeField] protected ScrollRect scrollRect;
@@ -33,7 +33,6 @@ namespace VertigoCase.UI
         protected RectTransform indicatorRect;
         protected CanvasGroup canvasGroup;
         private Coroutine snapCoroutine;
-        private bool ignorePressCancelUntilRelease;
 
         /// <summary>The road node this indicator currently tracks and scrolls to.</summary>
         protected abstract RectTransform TargetNode { get; }
@@ -57,13 +56,7 @@ namespace VertigoCase.UI
         protected virtual void Update()
         {
             // Cancel snap animation if the user drags/touches the screen during the snap.
-            bool isPressed = IsPointerPressed();
-            if (!isPressed)
-            {
-                ignorePressCancelUntilRelease = false;
-            }
-
-            if (snapCoroutine != null && isPressed && !ignorePressCancelUntilRelease)
+            if (snapCoroutine != null && IsPointerPressed())
             {
                 StopCoroutine(snapCoroutine);
                 snapCoroutine = null;
@@ -130,11 +123,6 @@ namespace VertigoCase.UI
             ScrollToTarget();
         }
 
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            ScrollToTarget();
-        }
-
         protected void ScrollToTarget()
         {
             RectTransform target = TargetNode;
@@ -158,7 +146,6 @@ namespace VertigoCase.UI
             {
                 StopCoroutine(snapCoroutine);
             }
-            ignorePressCancelUntilRelease = true;
             snapCoroutine = StartCoroutine(SnapToPositionRoutine(clampedTargetNormalized));
         }
 

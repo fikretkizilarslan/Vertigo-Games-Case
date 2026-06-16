@@ -299,6 +299,8 @@ namespace VertigoCase.UI
 
             bool freeClaimed = tierData.freeReward != null && tierData.freeReward.isClaimed;
             bool premiumClaimed = tierData.premiumReward != null && tierData.premiumReward.isClaimed;
+            bool freeClaimablePulse = !tierData.isInstantReward && isLevelUnlocked && !freeClaimed;
+            bool premiumClaimable = isLevelUnlocked && hasPremiumActive && tierData.premiumReward != null && !premiumClaimed;
 
             // Attachment cards read "ATTACHMENT" while their tier is still locked and flip to
             // "UNLOCK NOW" the moment the player reaches the tier level (the reward is claimable).
@@ -308,8 +310,6 @@ namespace VertigoCase.UI
             // --- Free Reward UI State ---
             if (!tierData.isInstantReward)
             {
-                bool freeClaimable = isLevelUnlocked && !freeClaimed;
-
                 if (freeLockOverlay != null) freeLockOverlay.SetActive(!isLevelUnlocked);
                 if (freeTickOverlay != null)
                 {
@@ -331,15 +331,13 @@ namespace VertigoCase.UI
 
                 if (freeCardBg != null)
                 {
-                    freeCardBg.material = ResolveCardSweepMaterial(freeClaimed, freeClaimable);
+                    freeCardBg.material = ResolveCardSweepMaterial(freeClaimed, freeClaimablePulse);
                 }
             }
 
-            bool freeClaimablePulse = !tierData.isInstantReward && isLevelUnlocked && !freeClaimed;
             SetClaimPulseActive(freeCardBg, freeClaimablePulse);
 
             // --- Premium Reward UI State ---
-            bool premiumClaimable = isLevelUnlocked && hasPremiumActive && !premiumClaimed;
             bool premiumLocked = !isLevelUnlocked || !hasPremiumActive;
 
             if (premiumLockOverlay != null) premiumLockOverlay.SetActive(premiumLocked);
@@ -362,10 +360,7 @@ namespace VertigoCase.UI
 
             if (premiumCardBg != null)
             {
-                bool showPremiumSweep = tierData.isInstantReward
-                    ? !premiumClaimed
-                    : isLevelUnlocked && !premiumClaimed;
-                premiumCardBg.material = ResolveCardSweepMaterial(premiumClaimed, showPremiumSweep);
+                premiumCardBg.material = ResolveCardSweepMaterial(premiumClaimed, premiumClaimable);
             }
 
             // --- Red Dot Notification Badges ---
@@ -394,10 +389,11 @@ namespace VertigoCase.UI
 
             SetClaimPulseActive(premiumCardBg, premiumClaimable);
 
-            // Glow follows the same visibility as the red-dot badge (instant premium included).
-            bool showFreeGlow = showFreeRedDot && !tierData.isInstantReward;
+            // Glow + pulse only on actually claimable rewards (not locked-premium teasers).
+            bool showFreeGlow = freeClaimablePulse;
+            bool showPremiumGlow = premiumClaimable;
             ApplyCardGlow(freeGlow, tierData.freeReward, tierData.isHighlighted, showFreeGlow);
-            ApplyCardGlow(premiumGlow, tierData.premiumReward, tierData.isHighlighted, showPremiumRedDot);
+            ApplyCardGlow(premiumGlow, tierData.premiumReward, tierData.isHighlighted, showPremiumGlow);
         }
 
         /// <summary>

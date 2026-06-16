@@ -126,6 +126,9 @@ namespace VertigoCase.UI
         [Header("Premium Offer")]
         [Tooltip("Offer button (scene: Btn_Offer_Get). Tapping it activates the premium track. Auto-resolved by name when left empty.")]
         [SerializeField] private Button offerButton;
+        [Tooltip("One-shot lock pop / burst played the first time premium is unlocked.")]
+        [SerializeField] private OfferBurstSequence offerBurstSequence;
+        [SerializeField] private Sprite offerLockSprite;
 
         [Header("UI Customization")]
         [SerializeField] private List<RewardType> rewardTypesToShowAmountText = new List<RewardType>
@@ -148,6 +151,15 @@ namespace VertigoCase.UI
         private float initialLineLocalZ;
         private readonly Vector3[] skipButtonCorners = new Vector3[4];
         private readonly Vector3[] levelNodeCorners = new Vector3[4];
+        private Vector3[] m_Corners;
+        private WaitForSeconds m_WaitAnimateDelay;
+
+        // LateUpdate performance caching
+        private float m_LastScrollPos = -1f;
+        private int m_LastScreenWidth = -1;
+        private int m_LastScreenHeight = -1;
+        private int m_LastLevel = -1;
+        private int m_LastXp = -1;
 
         public int CurrentLevel => currentLevel;
         public bool IsPremiumActive => isPremiumActive;
@@ -226,6 +238,9 @@ namespace VertigoCase.UI
                 initialLineLocalZ = lineGradient.localPosition.z;
             }
 
+            m_Corners = new Vector3[4];
+            m_WaitAnimateDelay = new WaitForSeconds(0.5f);
+
             ResolveDiamondWallet();
             ResolveGoldWallet();
 
@@ -235,6 +250,7 @@ namespace VertigoCase.UI
             }
 
             ResolveOfferButton();
+            ResolveOfferBurst();
 
             // Keep the road hidden while it is being built so the first-frame layout pop is not visible.
             PrepareRoadReveal();
@@ -453,9 +469,26 @@ namespace VertigoCase.UI
 
         private void LateUpdate()
         {
-            // Refreshes alignments on LateUpdate to support dynamic screen resizing
-            if (instantiatedNodes != null && instantiatedNodes.Count > 0)
+            if (instantiatedNodes == null || instantiatedNodes.Count == 0) return;
+
+            float currentScroll = scrollRect != null ? scrollRect.horizontalNormalizedPosition : 0f;
+            int screenWidth = Screen.width;
+            int screenHeight = Screen.height;
+
+            // Run alignment logic only when coordinates, size, or level progress actually change,
+            // preventing constant per-frame Canvas and ScrollRect hierarchy dirtying.
+            if (currentScroll != m_LastScrollPos ||
+                screenWidth != m_LastScreenWidth ||
+                screenHeight != m_LastScreenHeight ||
+                currentLevel != m_LastLevel ||
+                currentXp != m_LastXp)
             {
+                m_LastScrollPos = currentScroll;
+                m_LastScreenWidth = screenWidth;
+                m_LastScreenHeight = screenHeight;
+                m_LastLevel = currentLevel;
+                m_LastXp = currentXp;
+
                 UpdateProgressLine();
                 UpdateFloatingIndicatorTarget();
             }
@@ -463,14 +496,12 @@ namespace VertigoCase.UI
 
         public Vector3 GetProgressFillEndWorldPosition()
         {
-            if (roadSlider == null || instantiatedNodes.Count == 0 || roadSlider.fillRect == null) return Vector3.zero;
+            if (roadSlider == null || instantiatedNodes.Count == 0 || roadSlider.fillRect == null || m_Corners == null) return Vector3.zero;
 
-            // Retrieve the right edge world position of the slider fill area
-            Vector3[] corners = new Vector3[4];
-            roadSlider.fillRect.GetWorldCorners(corners);
-            
+            roadSlider.fillRect.GetWorldCorners(m_Corners);
+
             // Midpoint of right-top and right-bottom corners is the end of fill
-            return (corners[2] + corners[3]) / 2f;
+            return (m_Corners[2] + m_Corners[3]) / 2f;
         }
 
         private void UpdateFloatingIndicatorTarget()
@@ -801,6 +832,43 @@ namespace VertigoCase.UI
             }
         }
 
+        private void ResolveOfferBurst()
+        {
+            if (offerBurstSequence == null)
+            {
+                offerBurstSequence = FindFirstObjectByType<OfferBurstSequence>(FindObjectsInactive.Include);
+            }
+
+            if (offerBurstSequence != null)
+            {
+                if (offerLockSprite != null)
+                {
+                    offerBurstSequence.Configure(offerLockSprite);
+                }
+                return;
+            }
+
+            Canvas canvas = scrollRect != null ? scrollRect.GetComponentInParent<Canvas>() : null;
+            if (canvas == null)
+            {
+                canvas = FindFirstObjectByType<Canvas>();
+            }
+
+            if (canvas == null)
+            {
+                return;
+            }
+
+            GameObject burstRoot = new GameObject("Grp_OfferBurst", typeof(RectTransform), typeof(CanvasGroup), typeof(OfferBurstSequence));
+            burstRoot.transform.SetParent(canvas.transform, false);
+            offerBurstSequence = burstRoot.GetComponent<OfferBurstSequence>();
+
+            if (offerLockSprite != null)
+            {
+                offerBurstSequence.Configure(offerLockSprite);
+            }
+        }
+
         /// <summary>
         /// Unlocks the premium track on the first <c>Btn_Offer_Get</c> tap, then refreshes every
         /// node so premium rewards become claimable.
@@ -817,9 +885,26 @@ namespace VertigoCase.UI
                 return;
             }
 
+            if (offerBurstSequence != null && !offerBurstSequence.IsPlaying)
+            {
+                if (offerButton != null)
+                {
+                    offerButton.interactable = false;
+                }
+
+                offerBurstSequence.Play(CompletePremiumActivation);
+                return;
+            }
+
+            CompletePremiumActivation();
+        }
+
+        private void CompletePremiumActivation()
+        {
             if (offerButton != null)
             {
                 PlayClickFeedback(offerButton.transform, offerButton.transform.position, null);
+                offerButton.interactable = true;
             }
 
             isPremiumActive = true;
@@ -990,9 +1075,43 @@ namespace VertigoCase.UI
         {
             if (scrollRect == null || instantiatedNodes.Count == 0) yield break;
 
-            // Start from the left edge, then smoothly reveal toward the current level.
             scrollRect.horizontalNormalizedPosition = 0f;
-            yield return ScrollToLevelRoutine(currentLevel, 0.5f, 1.5f);
+            yield return null;
+
+            int currentLevelIndex = GetNodeIndexForLevel(currentLevel);
+            BattlePassNode currentNode = instantiatedNodes[currentLevelIndex];
+
+            RectTransform contentRect = scrollRect.content;
+            RectTransform viewportRect = scrollRect.viewport;
+            float contentWidth = contentRect.rect.width;
+            float viewportWidth = viewportRect.rect.width;
+
+            if (contentWidth <= viewportWidth) yield break;
+
+            float targetLocalX = contentRect.InverseTransformPoint(currentNode.LevelNodeAnchor.position).x;
+            float distanceFromLeft = targetLocalX + (contentRect.pivot.x * contentWidth);
+            float desiredScrollPos = distanceFromLeft - (viewportWidth / 2f);
+            float targetNormalized = desiredScrollPos / (contentWidth - viewportWidth);
+            targetNormalized = Mathf.Clamp01(targetNormalized);
+
+            yield return m_WaitAnimateDelay;
+
+            float duration = 1.5f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+
+                // Ease Out Cubic scroll interpolation.
+                float easeT = 1f - Mathf.Pow(1f - t, 3f);
+
+                scrollRect.horizontalNormalizedPosition = Mathf.Lerp(0f, targetNormalized, easeT);
+                yield return null;
+            }
+
+            scrollRect.horizontalNormalizedPosition = targetNormalized;
         }
 
         /// <summary>
