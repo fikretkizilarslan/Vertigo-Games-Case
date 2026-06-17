@@ -1,3 +1,3 @@
 # Case 2 — Weapon VFX
 
-Tüm case dokümantasyonu için bkz. [`Case_1/README.md`](../Case_1/README.md)
+Ana dokümantasyon için bkz. [README.md](../../../README.md) (repo kökü).

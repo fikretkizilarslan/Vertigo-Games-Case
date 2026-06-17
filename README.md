@@ -1,24 +1,55 @@
-# Vertigo Games — Battle Pass Case
+# Technical Artist Case — Vertigo Games
 
-Unity UI case study: scrollable Battle Pass road, premium unlock flow, currency fly animations, and mobile-minded rendering optimizations.
+Bu proje, Vertigo Games Technical Artist case çalışmasını kapsamaktadır.
 
-## Scenes
+**Unity sürümü:** `6000.3.10f1`
 
-- `Assets/_Project/Case_1/Scenes/BattlePass Scene.unity` — main Battle Pass UI
-- Case 2 — weapon showcase (separate scene)
+## Sahneler
 
-## Startup behaviour
+| Case | Sahne |
+|---|---|
+| Case 1 — Battle Pass UI | `Assets/_Project/Case_1/Scenes/BattlePass Scene.unity` |
+| Case 2 — Weapon VFX | `Assets/_Project/Case_2/Scenes/Weapon_VFX_Scene.unity` |
 
-The road builds at runtime from tier data (~44 nodes). During build, layout driving is disabled so `HorizontalLayoutGroup` + `ContentSizeFitter` do not re-solve on every instantiate; the final layout is rebuilt once when all nodes are ready.
+İlgili sahneyi açarak **Play** düğmesine basmanız yeterlidir.
 
-`startupRevealDuration` is set to **0** — the road appears instantly when ready (no fade-in).
+## Klasör yapısı
 
-In the Unity Editor, Play mode may still feel slightly slower than a device build because of domain reload. On a real build this cost is lower.
+- **Case 1** — `Assets/_Project/Case_1/` — `Scripts/`, `ScriptableObjects/`, `Shaders/Hlsl/`, `Prefabs/UI/`, `Materials/`
+- **Case 2** — `Assets/_Project/Case_2/` — `Scripts/`, `Materials/`, `Models/FBX/`, `Textures/`, `Atlas/`
 
-For production, this pattern would typically move to **object pooling** or **async preload** behind a loading screen; here it demonstrates runtime assembly and layout-safe batching for a portfolio slice.
+---
 
-## Notable systems
+## Case 1 — Battle Pass UI
 
-- `BattlePassVisualConfig` — ScriptableObject for card sprites, materials, and rarity colors
-- `CurrencyWalletFlyAnimator` — gold / diamond / gem collect & spend animations
-- Viewport-culled card glow to limit SetPass calls when premium is active
+Play başında premium kapalı gelir. Bazı düşük seviye ödüller test kolaylığı için önceden alınmış olabilir.
+
+**Test edilmesi gerekenler:**
+
+- **Kaydırma** — Yolu sol tuşla sürükleyiniz. Görünür kartlarda glow/pulse açık, dışarıdakilerde kapalı olmalıdır.
+- **Claim** — Açık kartlara tıklayınız; tik, cüzdan güncellemesi ve kısa shine efekti çalışmalıdır.
+- **Premium** — Sol paneldeki **GET** → offer burst → **CLAIM** ile premium açılır.
+- **XP Skip** — `Btn_XP_Skip` ile elmas harcayıp bir seviye atlayınız; yol o seviyeye kaymalıdır.
+- **Seviye & XP** — `BattlePassManager` üzerinden `Current Level` ve `Current XP` değiştirerek ilerlemeyi test edebilirsiniz.
+
+Ödül ve yol verileri `ScriptableObjects/` altındaki asset'lerde tutulur (`Season1Data`, `DefaultPlayerProfile`, `Reward_*`).
+
+---
+
+## Case 2 — Weapon VFX
+
+Silah showcase sahnesi; etrafındaki VFX efektleri bu case'de yer alır.
+
+**Test edilmesi gerekenler:**
+
+- **Kamera** — `CaseCameraController` ile sol tık döndürme, tekerlek zoom. Dokunmatikte pinch zoom desteklenir.
+- **Weapon VFX** — `spcl_rif_mcx_topscorer` etrafındaki flow, wind, glow ve particle efektlerini inceleyiniz.
+- **Arka plan** — `BackGround` gradient animasyonu ve `Weapon_Title` metni düzgün görünmelidir.
+
+---
+
+## Performans & Geliştirme
+
+Viewport dışı kartlarda efektler kapatılır, yol batch spawn ile kurulur. VFX texture'ları Sprite Atlas'ta toplanmıştır; build'de draw call düşük kalır.
+
+Kod tasarımı aşamasında yapay zeka desteğinden yararlanılmıştır. Geliştirme sürecinde **Cursor** ve **Antigravity** programları kullanılmıştır.
