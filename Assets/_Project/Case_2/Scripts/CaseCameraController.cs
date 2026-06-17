@@ -7,6 +7,7 @@ namespace BattlePass.Showcase
 {
     /// <summary>
     /// Weapon VFX showcase sahnesinde orbit kamera: döndürme ve yakınlaştırma.
+    /// Zoom limitleri sahne/editördeki başlangıç mesafesine göre hesaplanır.
     /// </summary>
     public class CaseCameraController : MonoBehaviour
     {
@@ -15,25 +16,48 @@ namespace BattlePass.Showcase
 
         [Header("Orbit Settings")]
         public float rotationSpeed = 5f;
-        public float zoomSpeed = 2f;
-        public float minZoom = 2f;
-        public float maxZoom = 10f;
 
-        private float currentYaw = 90f;
+        [Tooltip("Tekerlek hassasiyeti. 1 = orta hız, düşük = yavaş, yüksek = hızlı.")]
+        [SerializeField] private float zoomSpeed = 1.2f;
+
+        [Tooltip("Zoom hedefine yaklaşma süresi (sn). Düşük = daha seri, yüksek = daha yumuşak.")]
+        [SerializeField] private float zoomSmoothTime = 0.1f;
+
+        [Tooltip("Başlangıç mesafesinin bu katına kadar yakınlaşır (ör. 0.6 = %40 yakın).")]
+        [SerializeField] private float minZoomMultiplier = 0.6f;
+
+        [Tooltip("Başlangıç mesafesinin bu katına kadar uzaklaşır (ör. 1.15 = %15 uzak).")]
+        [SerializeField] private float maxZoomMultiplier = 1.15f;
+
+        private float currentYaw;
         private float currentPitch;
-        private float distance = 0.8f;
+        private float distance;
+        private float targetDistance;
+        private float zoomVelocity;
+        private float minDistance;
+        private float maxDistance;
 
-        private void Start()
+        private void Awake()
+        {
+            CaptureInitialOrbitFromTransform();
+        }
+
+        private void CaptureInitialOrbitFromTransform()
         {
             if (target == null)
                 return;
 
             Vector3 offset = transform.position - target.position;
-            if (offset.sqrMagnitude <= 0.0001f)
+            float initialDistance = offset.magnitude;
+            if (initialDistance <= 0.0001f)
                 return;
 
-            distance = offset.magnitude;
-            Quaternion lookRotation = Quaternion.LookRotation(target.position - transform.position, Vector3.up);
+            distance = initialDistance;
+            targetDistance = initialDistance;
+            minDistance = initialDistance * Mathf.Max(0.1f, minZoomMultiplier);
+            maxDistance = initialDistance * Mathf.Max(minZoomMultiplier, maxZoomMultiplier);
+
+            Quaternion lookRotation = Quaternion.LookRotation(-offset.normalized, Vector3.up);
             Vector3 euler = lookRotation.eulerAngles;
             currentPitch = euler.x > 180f ? euler.x - 360f : euler.x;
             currentYaw = euler.y;
@@ -55,7 +79,8 @@ namespace BattlePass.Showcase
             else
                 HandleMouseInput();
 
-            distance = Mathf.Clamp(distance, minZoom, maxZoom);
+            distance = Mathf.SmoothDamp(distance, targetDistance, ref zoomVelocity, zoomSmoothTime);
+            distance = Mathf.Clamp(distance, minDistance, maxDistance);
             currentPitch = Mathf.Clamp(currentPitch, -30f, 80f);
         }
 
@@ -74,7 +99,25 @@ namespace BattlePass.Showcase
 
             float scroll = mouse.scroll.ReadValue().y;
             if (Mathf.Abs(scroll) > 0.01f)
-                distance -= scroll * zoomSpeed * 0.001f;
+                ApplyZoomScroll(scroll);
+        }
+
+        private void ApplyZoomScroll(float scroll)
+        {
+            const float scrollWheelStep = 120f;
+            const float zoomPerNotch = 0.085f;
+
+            float notches = scroll / scrollWheelStep;
+            float step = notches * zoomSpeed * zoomPerNotch;
+            targetDistance *= 1f - step;
+            targetDistance = Mathf.Clamp(targetDistance, minDistance, maxDistance);
+        }
+
+        private void ApplyZoomPinch(float pinchDeltaPixels)
+        {
+            float step = pinchDeltaPixels * zoomSpeed * 0.0004f;
+            targetDistance *= 1f - step;
+            targetDistance = Mathf.Clamp(targetDistance, minDistance, maxDistance);
         }
 
         private void HandleTouchInput()
@@ -110,9 +153,9 @@ namespace BattlePass.Showcase
             Vector2 prevT0 = p0 - d0;
             Vector2 prevT1 = p1 - d1;
 
-            float prevDistance = Vector2.Distance(prevT0, prevT1);
-            float currDistance = Vector2.Distance(p0, p1);
-            distance -= (currDistance - prevDistance) * zoomSpeed * 0.01f;
+            float prevPinch = Vector2.Distance(prevT0, prevT1);
+            float currPinch = Vector2.Distance(p0, p1);
+            ApplyZoomPinch(currPinch - prevPinch);
         }
 
         private void UpdateCameraPosition()

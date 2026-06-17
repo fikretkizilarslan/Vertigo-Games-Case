@@ -56,7 +56,7 @@ Material:
     - _Cull: 0
     - _DstBlend: 1
     - _DstBlendAlpha: 1
-    - _Line_Intensity: 9.64
+    - _Line_Intensity: 15
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Speed: 1
@@ -70,8 +70,8 @@ Material:
     - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - _LineTilling_Offset: {r: 1, g: 1, b: 1, a: 0}
-    - _Line_Color: {r: 1, g: 0.9167996, b: 0, a: 1}
+    - _LineTilling_Offset: {r: 1, g: 1, b: 2, a: 0}
+    - _Line_Color: {r: 0.7459787, g: 1, b: 0, a: 1}
     - _Move_Axis: {r: 0, g: 0.01, b: 0.01, a: 0}
     - _Wind_Color: {r: 0.8867924, g: 0.6329263, b: 0, a: 1}
     - _Wind_Tilling_Offset: {r: 1, g: 1, b: 1, a: 0}

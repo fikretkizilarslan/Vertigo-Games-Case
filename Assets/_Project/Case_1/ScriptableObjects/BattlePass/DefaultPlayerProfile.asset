@@ -16,6 +16,6 @@ MonoBehaviour:
   currentXp: 0
   xpPerLevel: 100
   isPremiumActive: 1
-  goldBalance: 91050
-  diamondBalance: 254
-  gemBalance: 488
+  goldBalance: 95950
+  diamondBalance: 307
+  gemBalance: 526

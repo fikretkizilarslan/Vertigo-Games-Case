@@ -27,7 +27,6 @@ namespace BattlePass.UI
         private const string TicketVfxPrefabPath = "Assets/_Project/Case_1/Prefabs/UI/VFX/Ps_Ticket.prefab";
         private const string FontAssetPath = "Assets/Share/Font/Gotham Bold SDF.asset";
 
-        [MenuItem("BattlePass/Setup Offer Burst Reward UI")]
         public static void SetupRewardUi()
         {
             OfferBurstSequence sequence = Object.FindFirstObjectByType<OfferBurstSequence>(FindObjectsInactive.Include);

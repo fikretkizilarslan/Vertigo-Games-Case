@@ -11,12 +11,12 @@ Bu proje, Vertigo Games Technical Artist case çalışmasını kapsamaktadır.
 | Case 1 — Battle Pass UI | `Assets/_Project/Case_1/Scenes/BattlePass Scene.unity` |
 | Case 2 — Weapon VFX | `Assets/_Project/Case_2/Scenes/Weapon_VFX_Scene.unity` |
 
-İlgili sahneyi açarak **Play** düğmesine basmanız yeterlidir.
+İlgili sahneyi açarak **Play** düğmesine basmanız yeterlidir. Her iki sahne de Play başında arka plan müziğini otomatik oynatır (`Scene Audio`).
 
 ## Klasör yapısı
 
-- **Case 1** — `Assets/_Project/Case_1/` — `Scripts/`, `ScriptableObjects/`, `Shaders/Hlsl/`, `Prefabs/UI/`, `Materials/`
-- **Case 2** — `Assets/_Project/Case_2/` — `Scripts/`, `Materials/`, `Models/FBX/`, `Textures/`, `Atlas/`
+- **Case 1** — `Assets/_Project/Case_1/` — `Scripts/`, `ScriptableObjects/`, `Shaders/Hlsl/`, `Prefabs/UI/`, `Materials/`, `Audio/`
+- **Case 2** — `Assets/_Project/Case_2/` — `Scripts/`, `Materials/`, `Models/FBX/`, `Textures/`, `Atlas/`, `Audio/`
 
 ---
 
@@ -31,6 +31,7 @@ Play başında premium kapalı gelir. Bazı düşük seviye ödüller test kolay
 - **Premium** — Sol paneldeki **GET** → offer burst → **CLAIM** ile premium açılır.
 - **XP Skip** — `Btn_XP_Skip` ile elmas harcayıp bir seviye atlayınız; yol o seviyeye kaymalıdır.
 - **Seviye & XP** — `BattlePassManager` üzerinden `Current Level` ve `Current XP` değiştirerek ilerlemeyi test edebilirsiniz.
+- **Ses** — Play başında `Scene Audio` üzerinden arka plan müziği başlar (`Audio/Audio_Architect_Vertigo_Games_-_Glory_KLICKAUD.mp3`). Ses seviyesi Hierarchy → `Scene Audio` → Audio Source üzerinden ayarlanabilir.
 
 Ödül ve yol verileri `ScriptableObjects/` altındaki asset'lerde tutulur (`Season1Data`, `DefaultPlayerProfile`, `Reward_*`).
 
@@ -45,6 +46,7 @@ Silah showcase sahnesi; etrafındaki VFX efektleri bu case'de yer alır.
 - **Kamera** — `CaseCameraController` ile sol tık döndürme, tekerlek zoom. Dokunmatikte pinch zoom desteklenir.
 - **Weapon VFX** — `spcl_rif_mcx_topscorer` etrafındaki flow, wind, glow ve particle efektlerini inceleyiniz.
 - **Arka plan** — `BackGround` gradient animasyonu ve `Weapon_Title` metni düzgün görünmelidir.
+- **Ses** — Play başında `Scene Audio` üzerinden arka plan müziği başlar (`Audio/Vertigo_Games_Audio_Architect_-_Kick_-_Off_KLICKAUD.mp3`). Ses seviyesi Hierarchy → `Scene Audio` → Audio Source üzerinden ayarlanabilir.
 
 ---
 

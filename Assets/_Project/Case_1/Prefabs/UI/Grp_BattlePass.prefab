@@ -355,19 +355,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
       propertyPath: m_fontSize
-      value: 12
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_fontStyle
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
       propertyPath: m_fontSizeMax
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 10.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
       propertyPath: m_wordSpacing
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
       propertyPath: m_characterSpacing
       value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3695408711308728112, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
       propertyPath: m_Name

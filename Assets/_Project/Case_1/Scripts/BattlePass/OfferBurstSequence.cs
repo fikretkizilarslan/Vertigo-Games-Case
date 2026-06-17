@@ -270,7 +270,7 @@ namespace BattlePass.UI
 
             if (lockRect == null || overlayGroup == null || lockGroup == null || solidFill == null)
             {
-                Debug.LogWarning("[OfferBurstSequence] Scene references are missing. Run BattlePass/Setup Offer Burst Reward UI or assign Grp_OfferBurst in the Inspector.");
+                Debug.LogWarning("[OfferBurstSequence] Scene references are missing. Assign Grp_OfferBurst references in the Inspector.");
                 return false;
             }
 
