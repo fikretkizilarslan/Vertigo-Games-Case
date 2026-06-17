@@ -233,7 +233,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -307, y: -56}
+  m_AnchoredPosition: {x: -307, y: 192}
   m_SizeDelta: {x: 200, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &68968891
@@ -6963,7 +6963,6 @@ MonoBehaviour:
   iconImage: {fileID: 718044831}
   costText: {fileID: 1749638674}
   skipButton: {fileID: 0}
-  clickVfxRoot: {fileID: 0}
 --- !u!114 &402715329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8379,6 +8378,7 @@ MonoBehaviour:
   diamondBalance: 100
   goldCountText: {fileID: 0}
   goldBalance: 3000
+  walletFlyAnimator: {fileID: 0}
   roadCanvasGroup: {fileID: 0}
   startupRevealDuration: 0.2
   nodePrefab: {fileID: 7555761151618658622, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
@@ -8387,7 +8387,6 @@ MonoBehaviour:
   enableClaimShine: 1
   claimShineMaterial: {fileID: 2100000, guid: ebada803dd45b0445bf039c23b078b46, type: 2}
   claimShineDuration: 0.8
-  diamondClickVfxPrefab: {fileID: 1171788405397929026, guid: 6bd235dd3fa017046a1db8fc38a4b143, type: 3}
   offerButton: {fileID: 1608658033}
   offerBurstSequence: {fileID: 910000004}
   rewardTypesToShowAmountText: 000000000100000005000000
@@ -22727,7 +22726,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -386.32, y: -55.999992}
+  m_AnchoredPosition: {x: -386.32, y: 192}
   m_SizeDelta: {x: 200, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1543045395

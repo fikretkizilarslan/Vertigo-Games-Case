@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -27,12 +26,7 @@ namespace VertigoCase.UI
         [Tooltip("Button used to detect skip taps. Auto-resolved from this GameObject when left empty.")]
         [SerializeField] private Button skipButton;
 
-        [Header("Click VFX")]
-        [Tooltip("Particle burst parented under this badge (scene: Ps_Xp_Button). Auto-resolved by name when left empty.")]
-        [SerializeField] private GameObject clickVfxRoot;
-
         private Action _onSkipRequested;
-        private Coroutine clickVfxRoutine;
 
         /// <summary>
         /// Connects the tap callback invoked when the player taps the skip badge.
@@ -74,90 +68,6 @@ namespace VertigoCase.UI
             }
         }
 
-        private void Awake()
-        {
-            ResolveClickVfxRoot();
-        }
-
-        /// <summary>
-        /// Plays the embedded click VFX centered on this badge, rendered behind the icon and cost label.
-        /// </summary>
-        public void PlayClickVfx()
-        {
-            ResolveClickVfxRoot();
-            if (clickVfxRoot == null)
-            {
-                return;
-            }
-
-            if (clickVfxRoutine != null)
-            {
-                StopCoroutine(clickVfxRoutine);
-            }
-
-            clickVfxRoutine = StartCoroutine(PlayClickVfxRoutine());
-        }
-
-        private void ResolveClickVfxRoot()
-        {
-            if (clickVfxRoot != null)
-            {
-                return;
-            }
-
-            Transform vfxTransform = transform.Find("Ps_Xp_Button");
-            if (vfxTransform != null)
-            {
-                clickVfxRoot = vfxTransform.gameObject;
-            }
-        }
-
-        private IEnumerator PlayClickVfxRoutine()
-        {
-            Transform vfxTransform = clickVfxRoot.transform;
-            vfxTransform.SetAsFirstSibling();
-            vfxTransform.localPosition = Vector3.zero;
-
-            RectTransform vfxRect = vfxTransform as RectTransform;
-            if (vfxRect != null)
-            {
-                vfxRect.anchorMin = new Vector2(0.5f, 0.5f);
-                vfxRect.anchorMax = new Vector2(0.5f, 0.5f);
-                vfxRect.pivot = new Vector2(0.5f, 0.5f);
-                vfxRect.anchoredPosition = Vector2.zero;
-            }
-
-            clickVfxRoot.SetActive(true);
-
-            ParticleSystem[] particleSystems = clickVfxRoot.GetComponentsInChildren<ParticleSystem>(true);
-            float duration = 0.5f;
-
-            foreach (ParticleSystem ps in particleSystems)
-            {
-                if (ps == null)
-                {
-                    continue;
-                }
-
-                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                ps.Play(true);
-
-                ParticleSystem.MainModule main = ps.main;
-                float psDuration = main.duration;
-                if (!main.loop)
-                {
-                    psDuration += Mathf.Max(main.startLifetime.constant, main.startLifetime.constantMax);
-                }
-
-                duration = Mathf.Max(duration, psDuration);
-            }
-
-            yield return new WaitForSecondsRealtime(duration);
-
-            clickVfxRoot.SetActive(false);
-            clickVfxRoutine = null;
-        }
-
         private void HandleSkipClicked()
         {
             _onSkipRequested?.Invoke();
@@ -165,12 +75,6 @@ namespace VertigoCase.UI
 
         private void OnDestroy()
         {
-            if (clickVfxRoutine != null)
-            {
-                StopCoroutine(clickVfxRoutine);
-                clickVfxRoutine = null;
-            }
-
             if (skipButton != null)
             {
                 skipButton.onClick.RemoveListener(HandleSkipClicked);

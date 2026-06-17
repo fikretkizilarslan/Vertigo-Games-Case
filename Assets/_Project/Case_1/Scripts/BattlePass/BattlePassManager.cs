@@ -107,6 +107,10 @@ namespace VertigoCase.UI
         [Tooltip("Player's current gold balance, topped up when a gold reward card is claimed.")]
         [Min(0)] [SerializeField] private int goldBalance = 0;
 
+        [Header("Currency Fly Animation")]
+        [Tooltip("DOTween fly animation for gold / diamond wallet changes. Auto-added on this GameObject when empty.")]
+        [SerializeField] private CurrencyWalletFlyAnimator walletFlyAnimator;
+
         [Header("Startup")]
         [Tooltip("Road scroll-view canvas group, faded in once the road finishes building to hide the first-frame layout pop. Auto-resolved from the ScrollRect when empty.")]
         [SerializeField] private CanvasGroup roadCanvasGroup;
@@ -127,10 +131,6 @@ namespace VertigoCase.UI
         [SerializeField] private Material claimShineMaterial;
         [Tooltip("How long the shine material stays on the card after claim (seconds, unscaled).")]
         [Min(0.05f)] [SerializeField] private float claimShineDuration = 0.75f;
-
-        [Header("VFX & Particles - Click")]
-        [Tooltip("Click VFX spawned when the DIAMOND skip button (Btn_XP_Skip) is tapped.")]
-        [SerializeField] private GameObject diamondClickVfxPrefab;
 
         [Header("Premium Offer")]
         [Tooltip("Offer button (scene: Btn_Offer_Get). Tapping it activates the premium track. Auto-resolved by name when left empty.")]
@@ -251,6 +251,8 @@ namespace VertigoCase.UI
 
             ResolveDiamondWallet();
             ResolveGoldWallet();
+            EnsureWalletFlyAnimator();
+            walletFlyAnimator?.SyncDisplay(goldBalance, diamondBalance);
 
             if (levelSkipButton != null)
             {
@@ -749,13 +751,48 @@ namespace VertigoCase.UI
 
             if (IsDiamondReward(slot.rewardData))
             {
+                int fromBalance = diamondBalance;
                 diamondBalance += amount;
-                RefreshDiamondCounter();
+                AnimateWalletChange(WalletCurrencyType.Diamond, fromBalance, diamondBalance);
             }
             else if (IsGoldReward(slot.rewardData))
             {
+                int fromBalance = goldBalance;
                 goldBalance += amount;
+                AnimateWalletChange(WalletCurrencyType.Gold, fromBalance, goldBalance);
+            }
+        }
+
+        private void EnsureWalletFlyAnimator()
+        {
+            if (walletFlyAnimator == null)
+            {
+                walletFlyAnimator = GetComponent<CurrencyWalletFlyAnimator>();
+            }
+
+            if (walletFlyAnimator == null)
+            {
+                walletFlyAnimator = gameObject.AddComponent<CurrencyWalletFlyAnimator>();
+            }
+        }
+
+        private void AnimateWalletChange(WalletCurrencyType currency, int fromValue, int toValue)
+        {
+            EnsureWalletFlyAnimator();
+
+            if (walletFlyAnimator != null)
+            {
+                walletFlyAnimator.PlayChange(currency, fromValue, toValue);
+                return;
+            }
+
+            if (currency == WalletCurrencyType.Gold)
+            {
                 RefreshGoldCounter();
+            }
+            else
+            {
+                RefreshDiamondCounter();
             }
         }
 
@@ -895,7 +932,7 @@ namespace VertigoCase.UI
             {
                 if (offerButton != null)
                 {
-                    PlayClickFeedback(offerButton.transform, offerButton.transform.position, null);
+                    PlayClickFeedback(offerButton.transform);
                 }
 
                 return;
@@ -952,13 +989,13 @@ namespace VertigoCase.UI
             if (currentLevel >= generateLevelCount) return;
             if (diamondBalance < gemCostPerLevel) return;
 
+            int fromBalance = diamondBalance;
             diamondBalance -= gemCostPerLevel;
-            RefreshDiamondCounter();
+            AnimateWalletChange(WalletCurrencyType.Diamond, fromBalance, diamondBalance);
 
             if (levelSkipButton != null)
             {
-                PlayClickFeedback(levelSkipButton.transform, levelSkipButton.transform.position, null);
-                levelSkipButton.PlayClickVfx();
+                PlayClickFeedback(levelSkipButton.transform);
             }
 
             currentLevel = Mathf.Min(currentLevel + 1, generateLevelCount);
@@ -974,37 +1011,29 @@ namespace VertigoCase.UI
         }
 
         /// <summary>
-        /// Plays the shared button-tap feedback: an instant scale punch on the tapped button
-        /// (always visible, needs no asset) plus an optional click VFX burst supplied by the caller
-        /// (the offer button and the diamond skip button each pass their own prefab).
+        /// Plays the shared button-tap feedback: an instant scale punch on the tapped button.
         /// </summary>
-        /// <param name="buttonTransform">Transform of the tapped button (punched for feedback).</param>
-        /// <param name="worldPosition">World position used to spawn the click VFX.</param>
-        /// <param name="clickVfxPrefab">Click VFX prefab to spawn for this specific button (no-op when null).</param>
-        private void PlayClickFeedback(Transform buttonTransform, Vector3 worldPosition, GameObject clickVfxPrefab)
+        private void PlayClickFeedback(Transform buttonTransform)
         {
-            if (buttonTransform != null)
+            if (buttonTransform == null)
             {
-                if (!punchBaseScales.TryGetValue(buttonTransform, out Vector3 baseScale))
-                {
-                    baseScale = buttonTransform.localScale;
-                    punchBaseScales[buttonTransform] = baseScale;
-                }
-
-                if (activePunchRoutines.TryGetValue(buttonTransform, out Coroutine running) && running != null)
-                {
-                    StopCoroutine(running);
-                    buttonTransform.localScale = baseScale;
-                }
-
-                activePunchRoutines[buttonTransform] = StartCoroutine(
-                    PunchScaleRoutine(buttonTransform, baseScale, 0.18f, 0.22f));
+                return;
             }
 
-            if (clickVfxPrefab != null)
+            if (!punchBaseScales.TryGetValue(buttonTransform, out Vector3 baseScale))
             {
-                SpawnVfxAt(clickVfxPrefab, worldPosition);
+                baseScale = buttonTransform.localScale;
+                punchBaseScales[buttonTransform] = baseScale;
             }
+
+            if (activePunchRoutines.TryGetValue(buttonTransform, out Coroutine running) && running != null)
+            {
+                StopCoroutine(running);
+                buttonTransform.localScale = baseScale;
+            }
+
+            activePunchRoutines[buttonTransform] = StartCoroutine(
+                PunchScaleRoutine(buttonTransform, baseScale, 0.18f, 0.22f));
         }
 
         /// <summary>
