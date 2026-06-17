@@ -6,6 +6,11 @@ Bu proje, Vertigo Games Technical Artist case çalışmasını kapsamaktadır.
 
 ## Sahneler
 
+
+
+
+
+
 | Case | Sahne |
 |---|---|
 | Case 1 — Battle Pass UI | `Assets/_Project/Case_1/Scenes/BattlePass Scene.unity` |
