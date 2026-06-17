@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -9,7 +10,8 @@ namespace VertigoCase.UI
     public enum WalletCurrencyType
     {
         Gold,
-        Diamond
+        Diamond,
+        Gem
     }
 
     /// <summary>
@@ -23,14 +25,18 @@ namespace VertigoCase.UI
         [Header("Targets")]
         [SerializeField] private RectTransform goldIconTarget;
         [SerializeField] private RectTransform diamondIconTarget;
+        [SerializeField] private RectTransform gemIconTarget;
         [SerializeField] private TextMeshProUGUI goldCountText;
         [SerializeField] private TextMeshProUGUI diamondCountText;
+        [SerializeField] private TextMeshProUGUI gemCountText;
 
         [Header("Fly Sprites")]
         [Tooltip("Sprite used for flying gold icons. Falls back to the header gold icon sprite when empty.")]
         [SerializeField] private Sprite goldFlySprite;
         [Tooltip("Sprite used for flying diamond icons. Falls back to the header diamond icon sprite when empty.")]
         [SerializeField] private Sprite diamondFlySprite;
+        [Tooltip("Sprite used for flying gem icons. Falls back to Img_Gem when empty.")]
+        [SerializeField] private Sprite gemFlySprite;
 
         [Header("Fly Layer")]
         [SerializeField] private Canvas rootCanvas;
@@ -53,10 +59,13 @@ namespace VertigoCase.UI
         private int activeFlyTweens;
         private int displayedGold;
         private int displayedDiamond;
+        private int displayedGem;
         private Vector3 goldIconBaseScale = Vector3.one;
         private Vector3 diamondIconBaseScale = Vector3.one;
+        private Vector3 gemIconBaseScale = Vector3.one;
         private Tween goldPunchTween;
         private Tween diamondPunchTween;
+        private Tween gemPunchTween;
         private Tween counterStepTween;
         private bool referencesResolved;
 
@@ -66,23 +75,26 @@ namespace VertigoCase.UI
         }
 
         /// <summary>Syncs the visible counters without playing an animation.</summary>
-        public void SyncDisplay(int gold, int diamond)
+        public void SyncDisplay(int gold, int diamond, int gem = 0)
         {
             ResolveReferences();
             RepairOversizedIcons();
             displayedGold = gold;
             displayedDiamond = diamond;
+            displayedGem = gem;
             WriteGoldText(displayedGold);
             WriteDiamondText(displayedDiamond);
+            WriteGemText(displayedGem);
         }
 
         /// <summary>
         /// Animates a wallet change from <paramref name="fromValue"/> to <paramref name="toValue"/>.
         /// </summary>
-        public void PlayChange(WalletCurrencyType currency, int fromValue, int toValue)
+        public void PlayChange(WalletCurrencyType currency, int fromValue, int toValue, Action onComplete = null)
         {
             if (fromValue == toValue)
             {
+                onComplete?.Invoke();
                 return;
             }
 
@@ -91,11 +103,22 @@ namespace VertigoCase.UI
             StopActiveFlies();
 
             bool isGain = toValue > fromValue;
+            bool completionInvoked = false;
+            void InvokeComplete()
+            {
+                if (completionInvoked)
+                {
+                    return;
+                }
+
+                completionInvoked = true;
+                onComplete?.Invoke();
+            }
 
             // Spending only steps the counter down — no reverse fly from header icon to center.
             if (!isGain)
             {
-                PlayCounterStepOnly(currency, fromValue, toValue);
+                PlayCounterStepOnly(currency, fromValue, toValue, InvokeComplete);
                 return;
             }
 
@@ -111,6 +134,7 @@ namespace VertigoCase.UI
             if (iconTarget == null || layer == null)
             {
                 SetCounter(currency, toValue);
+                InvokeComplete();
                 return;
             }
 
@@ -145,7 +169,7 @@ namespace VertigoCase.UI
 
                 flySequence.Append(flyRect.DOScale(1f, 0.12f).SetEase(Ease.OutBack));
                 flySequence.Append(
-                    flyRect.DOAnchorPos(endPos, flyDuration + Random.Range(-0.04f, 0.04f))
+                    flyRect.DOAnchorPos(endPos, flyDuration + UnityEngine.Random.Range(-0.04f, 0.04f))
                         .SetEase(flyEase));
 
                 flySequence.OnComplete(() =>
@@ -165,6 +189,7 @@ namespace VertigoCase.UI
                         SetCounter(currency, toValue);
                         ResetIconScale(currency);
                         activeFlyTweens = 0;
+                        InvokeComplete();
                     }
                 });
             }
@@ -173,7 +198,7 @@ namespace VertigoCase.UI
         /// <summary>
         /// Steps the wallet label down one integer at a time without spawning fly icons.
         /// </summary>
-        private void PlayCounterStepOnly(WalletCurrencyType currency, int fromValue, int toValue)
+        private void PlayCounterStepOnly(WalletCurrencyType currency, int fromValue, int toValue, Action onComplete = null)
         {
             int delta = fromValue - toValue;
             int stepCount = Mathf.Min(maxFlyIcons, Mathf.Max(1, delta));
@@ -202,6 +227,7 @@ namespace VertigoCase.UI
                 {
                     SetCounter(currency, toValue);
                     counterStepTween = null;
+                    onComplete?.Invoke();
                 });
         }
 
@@ -222,6 +248,11 @@ namespace VertigoCase.UI
                 diamondCountText = GameObject.Find("Txt_Count_Diamond")?.GetComponent<TextMeshProUGUI>();
             }
 
+            if (gemCountText == null)
+            {
+                gemCountText = GameObject.Find("Txt_Count_Gem")?.GetComponent<TextMeshProUGUI>();
+            }
+
             if (goldIconTarget == null)
             {
                 goldIconTarget = FindIconUnderGroup("Grp_Gold", "Img_Gold");
@@ -232,6 +263,11 @@ namespace VertigoCase.UI
                 diamondIconTarget = FindIconUnderGroup("Grp_Diamond", "Img_Diamond");
             }
 
+            if (gemIconTarget == null)
+            {
+                gemIconTarget = FindIconUnderGroup("Grp_Gem", "Img_Gem");
+            }
+
             if (goldFlySprite == null && goldIconTarget != null)
             {
                 goldFlySprite = goldIconTarget.GetComponent<Image>()?.sprite;
@@ -240,6 +276,11 @@ namespace VertigoCase.UI
             if (diamondFlySprite == null && diamondIconTarget != null)
             {
                 diamondFlySprite = diamondIconTarget.GetComponent<Image>()?.sprite;
+            }
+
+            if (gemFlySprite == null && gemIconTarget != null)
+            {
+                gemFlySprite = gemIconTarget.GetComponent<Image>()?.sprite;
             }
 
             if (rootCanvas == null)
@@ -259,6 +300,11 @@ namespace VertigoCase.UI
             if (diamondIconTarget != null)
             {
                 CaptureBaseScale(diamondIconTarget, ref diamondIconBaseScale, !referencesResolved);
+            }
+
+            if (gemIconTarget != null)
+            {
+                CaptureBaseScale(gemIconTarget, ref gemIconBaseScale, !referencesResolved);
             }
 
             referencesResolved = true;
@@ -285,6 +331,11 @@ namespace VertigoCase.UI
             if (diamondIconTarget != null && diamondIconTarget.localScale.x > diamondIconBaseScale.x * 1.02f)
             {
                 diamondIconTarget.localScale = diamondIconBaseScale;
+            }
+
+            if (gemIconTarget != null && gemIconTarget.localScale.x > gemIconBaseScale.x * 1.02f)
+            {
+                gemIconTarget.localScale = gemIconBaseScale;
             }
         }
 
@@ -344,25 +395,50 @@ namespace VertigoCase.UI
 
         private RectTransform GetIconTarget(WalletCurrencyType currency)
         {
-            return currency == WalletCurrencyType.Gold ? goldIconTarget : diamondIconTarget;
+            switch (currency)
+            {
+                case WalletCurrencyType.Gold:
+                    return goldIconTarget;
+                case WalletCurrencyType.Diamond:
+                    return diamondIconTarget;
+                case WalletCurrencyType.Gem:
+                    return gemIconTarget;
+                default:
+                    return null;
+            }
         }
 
         private Sprite GetFlySprite(WalletCurrencyType currency)
         {
-            return currency == WalletCurrencyType.Gold ? goldFlySprite : diamondFlySprite;
+            switch (currency)
+            {
+                case WalletCurrencyType.Gold:
+                    return goldFlySprite;
+                case WalletCurrencyType.Diamond:
+                    return diamondFlySprite;
+                case WalletCurrencyType.Gem:
+                    return gemFlySprite;
+                default:
+                    return null;
+            }
         }
 
         private void SetCounter(WalletCurrencyType currency, int value)
         {
-            if (currency == WalletCurrencyType.Gold)
+            switch (currency)
             {
-                displayedGold = value;
-                WriteGoldText(displayedGold);
-            }
-            else
-            {
-                displayedDiamond = value;
-                WriteDiamondText(displayedDiamond);
+                case WalletCurrencyType.Gold:
+                    displayedGold = value;
+                    WriteGoldText(displayedGold);
+                    break;
+                case WalletCurrencyType.Diamond:
+                    displayedDiamond = value;
+                    WriteDiamondText(displayedDiamond);
+                    break;
+                case WalletCurrencyType.Gem:
+                    displayedGem = value;
+                    WriteGemText(displayedGem);
+                    break;
             }
         }
 
@@ -382,6 +458,14 @@ namespace VertigoCase.UI
             }
         }
 
+        private void WriteGemText(int value)
+        {
+            if (gemCountText != null)
+            {
+                gemCountText.text = value.ToString();
+            }
+        }
+
         private void PunchIcon(WalletCurrencyType currency)
         {
             RectTransform icon = GetIconTarget(currency);
@@ -390,8 +474,8 @@ namespace VertigoCase.UI
                 return;
             }
 
-            Vector3 baseScale = currency == WalletCurrencyType.Gold ? goldIconBaseScale : diamondIconBaseScale;
-            Tween runningTween = currency == WalletCurrencyType.Gold ? goldPunchTween : diamondPunchTween;
+            Vector3 baseScale = GetBaseScale(currency);
+            Tween runningTween = GetPunchTween(currency);
 
             if (runningTween != null && runningTween.IsActive())
             {
@@ -400,14 +484,52 @@ namespace VertigoCase.UI
 
             icon.localScale = baseScale;
             Tween pulseTween = CreateIconPulseTween(icon, baseScale);
+            SetPunchTween(currency, pulseTween);
+        }
 
-            if (currency == WalletCurrencyType.Gold)
+        private Vector3 GetBaseScale(WalletCurrencyType currency)
+        {
+            switch (currency)
             {
-                goldPunchTween = pulseTween;
+                case WalletCurrencyType.Gold:
+                    return goldIconBaseScale;
+                case WalletCurrencyType.Diamond:
+                    return diamondIconBaseScale;
+                case WalletCurrencyType.Gem:
+                    return gemIconBaseScale;
+                default:
+                    return Vector3.one;
             }
-            else
+        }
+
+        private Tween GetPunchTween(WalletCurrencyType currency)
+        {
+            switch (currency)
             {
-                diamondPunchTween = pulseTween;
+                case WalletCurrencyType.Gold:
+                    return goldPunchTween;
+                case WalletCurrencyType.Diamond:
+                    return diamondPunchTween;
+                case WalletCurrencyType.Gem:
+                    return gemPunchTween;
+                default:
+                    return null;
+            }
+        }
+
+        private void SetPunchTween(WalletCurrencyType currency, Tween tween)
+        {
+            switch (currency)
+            {
+                case WalletCurrencyType.Gold:
+                    goldPunchTween = tween;
+                    break;
+                case WalletCurrencyType.Diamond:
+                    diamondPunchTween = tween;
+                    break;
+                case WalletCurrencyType.Gem:
+                    gemPunchTween = tween;
+                    break;
             }
         }
 
@@ -439,33 +561,18 @@ namespace VertigoCase.UI
 
         private void ResetIconScale(WalletCurrencyType currency)
         {
-            if (currency == WalletCurrencyType.Gold)
+            Tween runningTween = GetPunchTween(currency);
+            if (runningTween != null && runningTween.IsActive())
             {
-                if (goldPunchTween != null && goldPunchTween.IsActive())
-                {
-                    goldPunchTween.Kill();
-                }
-
-                goldPunchTween = null;
-
-                if (goldIconTarget != null)
-                {
-                    goldIconTarget.localScale = goldIconBaseScale;
-                }
+                runningTween.Kill();
             }
-            else
+
+            SetPunchTween(currency, null);
+
+            RectTransform icon = GetIconTarget(currency);
+            if (icon != null)
             {
-                if (diamondPunchTween != null && diamondPunchTween.IsActive())
-                {
-                    diamondPunchTween.Kill();
-                }
-
-                diamondPunchTween = null;
-
-                if (diamondIconTarget != null)
-                {
-                    diamondIconTarget.localScale = diamondIconBaseScale;
-                }
+                icon.localScale = GetBaseScale(currency);
             }
         }
 
@@ -519,6 +626,7 @@ namespace VertigoCase.UI
 
             ResetIconScale(WalletCurrencyType.Gold);
             ResetIconScale(WalletCurrencyType.Diamond);
+            ResetIconScale(WalletCurrencyType.Gem);
 
             foreach (Image pooled in flyIconPool)
             {
@@ -559,7 +667,7 @@ namespace VertigoCase.UI
 
         private static Vector2 RandomInsideCircle(float radius)
         {
-            return Random.insideUnitCircle * radius;
+            return UnityEngine.Random.insideUnitCircle * radius;
         }
 
         private static int[] BuildIncrements(int total, int count)

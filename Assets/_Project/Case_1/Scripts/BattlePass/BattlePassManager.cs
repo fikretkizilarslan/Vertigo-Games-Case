@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -106,6 +107,12 @@ namespace VertigoCase.UI
         [SerializeField] private TextMeshProUGUI goldCountText;
         [Tooltip("Player's current gold balance, topped up when a gold reward card is claimed.")]
         [Min(0)] [SerializeField] private int goldBalance = 0;
+
+        [Header("Lucky Gem Wallet")]
+        [Tooltip("Header gem counter (scene: Txt_Count_Gem). Wallet UI: Grp_Gem — hidden until revealed.")]
+        [SerializeField] private TextMeshProUGUI gemCountText;
+        [Min(0)] [SerializeField] private int gemBalance = 0;
+        [SerializeField] private GemWalletController gemWalletController;
 
         [Header("Currency Fly Animation")]
         [Tooltip("DOTween fly animation for gold / diamond wallet changes. Auto-added on this GameObject when empty.")]
@@ -251,8 +258,11 @@ namespace VertigoCase.UI
 
             ResolveDiamondWallet();
             ResolveGoldWallet();
+            ResolveGemWallet();
             EnsureWalletFlyAnimator();
-            walletFlyAnimator?.SyncDisplay(goldBalance, diamondBalance);
+            EnsureGemWalletController();
+            walletFlyAnimator?.SyncDisplay(goldBalance, diamondBalance, gemBalance);
+            gemWalletController?.HideImmediate();
 
             if (levelSkipButton != null)
             {
@@ -761,6 +771,44 @@ namespace VertigoCase.UI
                 goldBalance += amount;
                 AnimateWalletChange(WalletCurrencyType.Gold, fromBalance, goldBalance);
             }
+            else if (IsLuckyGemReward(slot.rewardData))
+            {
+                int fromBalance = gemBalance;
+                gemBalance += amount;
+                CreditLuckyGemReward(fromBalance, gemBalance);
+            }
+        }
+
+        private void CreditLuckyGemReward(int fromBalance, int toBalance)
+        {
+            EnsureGemWalletController();
+            if (gemWalletController != null)
+            {
+                gemWalletController.RevealWallet(() =>
+                {
+                    Canvas.ForceUpdateCanvases();
+                    AnimateWalletChange(WalletCurrencyType.Gem, fromBalance, toBalance, () =>
+                    {
+                        gemWalletController.HideWalletAnimated();
+                    });
+                });
+                return;
+            }
+
+            AnimateWalletChange(WalletCurrencyType.Gem, fromBalance, toBalance);
+        }
+
+        private void EnsureGemWalletController()
+        {
+            if (gemWalletController == null)
+            {
+                gemWalletController = GetComponent<GemWalletController>();
+            }
+
+            if (gemWalletController == null)
+            {
+                gemWalletController = gameObject.AddComponent<GemWalletController>();
+            }
         }
 
         private void EnsureWalletFlyAnimator()
@@ -776,13 +824,13 @@ namespace VertigoCase.UI
             }
         }
 
-        private void AnimateWalletChange(WalletCurrencyType currency, int fromValue, int toValue)
+        private void AnimateWalletChange(WalletCurrencyType currency, int fromValue, int toValue, Action onComplete = null)
         {
             EnsureWalletFlyAnimator();
 
             if (walletFlyAnimator != null)
             {
-                walletFlyAnimator.PlayChange(currency, fromValue, toValue);
+                walletFlyAnimator.PlayChange(currency, fromValue, toValue, onComplete);
                 return;
             }
 
@@ -790,10 +838,16 @@ namespace VertigoCase.UI
             {
                 RefreshGoldCounter();
             }
-            else
+            else if (currency == WalletCurrencyType.Diamond)
             {
                 RefreshDiamondCounter();
             }
+            else
+            {
+                RefreshGemCounter();
+            }
+
+            onComplete?.Invoke();
         }
 
         /// <summary>
@@ -816,6 +870,27 @@ namespace VertigoCase.UI
         private bool IsGoldReward(RewardItemSO reward)
         {
             return RewardNameContains(reward, "gold");
+        }
+
+        /// <summary>
+        /// Identifies Lucky Gem currency rewards (not diamonds).
+        /// </summary>
+        private bool IsLuckyGemReward(RewardItemSO reward)
+        {
+            if (reward == null)
+            {
+                return false;
+            }
+
+            if (IsDiamondReward(reward) || IsGoldReward(reward))
+            {
+                return false;
+            }
+
+            string displayName = reward.DisplayName != null ? reward.DisplayName.ToLowerInvariant() : string.Empty;
+            string assetName = reward.name != null ? reward.name.ToLowerInvariant() : string.Empty;
+            return displayName.Contains("lucky") || displayName.Contains("gem")
+                || assetName.Contains("lucky") || assetName.Contains("gem");
         }
 
         /// <summary>
@@ -884,6 +959,28 @@ namespace VertigoCase.UI
             if (goldCountText != null)
             {
                 goldCountText.text = goldBalance.ToString("N0");
+            }
+        }
+
+        private void ResolveGemWallet()
+        {
+            if (gemCountText == null)
+            {
+                GameObject gemCounter = GameObject.Find("Txt_Count_Gem");
+                if (gemCounter != null)
+                {
+                    gemCountText = gemCounter.GetComponent<TextMeshProUGUI>();
+                }
+            }
+
+            RefreshGemCounter();
+        }
+
+        private void RefreshGemCounter()
+        {
+            if (gemCountText != null)
+            {
+                gemCountText.text = gemBalance.ToString();
             }
         }
 
