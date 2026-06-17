@@ -22,7 +22,7 @@ namespace BattlePass.UI
         private const string ClaimLabelName = "Txt_Claim";
 
         private const string TicketGlowSpritePath = "Assets/_Project/Case_1/Sprite/Used/Icons/ui_icon_battlepass_glow.png";
-        private const string TicketSpritePath = "Assets/_Project/Case_1/Sprite/Used/Icons/ui_icon_battlepass_shadow.png";
+        private const string TicketSpritePath = "Assets/_Project/Case_1/Sprite/Used/Icons/ui_icon_subscription_small.png";
         private const string ClaimButtonSpritePath = "Assets/_Project/Case_1/Sprite/Used/Buttons/ui_button_blue.png";
         private const string TicketVfxPrefabPath = "Assets/_Project/Case_1/Prefabs/UI/VFX/Ps_Ticket.prefab";
         private const string FontAssetPath = "Assets/Share/Font/Gotham Bold SDF.asset";
@@ -38,6 +38,8 @@ namespace BattlePass.UI
             }
 
             Transform root = sequence.transform;
+            EnsureLockBurstVfx(root);
+            EnsureExplosionGlow(root, out RectTransform explosionGlowRect, out CanvasGroup explosionGlowGroup);
             Transform rewardGroup = EnsureRewardGroup(root);
             Transform ticketGroup = EnsureTicketGroup(rewardGroup);
             EnsureTicketVfx(ticketGroup);
@@ -46,7 +48,7 @@ namespace BattlePass.UI
             TMP_Text premiumText = EnsurePremiumText(rewardGroup);
             Button claimButton = EnsureClaimButton(rewardGroup);
 
-            WireSequence(sequence, rewardGroup, ticketGroup, glow, ticket, premiumText, claimButton);
+            WireSequence(sequence, rewardGroup, ticketGroup, glow, ticket, premiumText, claimButton, root.Find("Grp_VFX_Slot")?.gameObject, explosionGlowRect, explosionGlowGroup);
 
             EditorUtility.SetDirty(sequence);
             EditorUtility.SetDirty(root.gameObject);
@@ -274,6 +276,108 @@ namespace BattlePass.UI
             return button;
         }
 
+        private static void EnsureLockBurstVfx(Transform root)
+        {
+            Transform slot = root.Find("Grp_VFX_Slot");
+            if (slot == null)
+            {
+                GameObject slotGo = new GameObject("Grp_VFX_Slot", typeof(RectTransform));
+                Undo.RegisterCreatedObjectUndo(slotGo, "Create Grp_VFX_Slot");
+                slot = slotGo.transform;
+                slot.SetParent(root, false);
+                RectTransform rect = slotGo.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.sizeDelta = new Vector2(256f, 256f);
+            }
+
+            // Check if there is already a particle system child
+            if (slot.childCount > 0)
+            {
+                // Already has a child VFX
+                return;
+            }
+
+            // Load and instantiate Ps_Claim_Premium prefab
+            string prefabPath = "Assets/_Project/Case_1/Prefabs/UI/VFX/Ps_Claim_Premium.prefab";
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefab != null)
+            {
+                GameObject instance = PrefabUtility.InstantiatePrefab(prefab, slot) as GameObject;
+                if (instance != null)
+                {
+                    Undo.RegisterCreatedObjectUndo(instance, "Instantiate Lock Burst VFX");
+                    instance.name = "Ps_Lock_Burst";
+                    RectTransform vfxRect = instance.GetComponent<RectTransform>();
+                    if (vfxRect != null)
+                    {
+                        vfxRect.anchorMin = new Vector2(0.5f, 0.5f);
+                        vfxRect.anchorMax = new Vector2(0.5f, 0.5f);
+                        vfxRect.pivot = new Vector2(0.5f, 0.5f);
+                        vfxRect.anchoredPosition = Vector2.zero;
+                        vfxRect.localScale = Vector3.one;
+                    }
+
+                    // Apply UI sorting layer and order (201) so it renders correctly
+                    ParticleSystemRenderer[] renderers = instance.GetComponentsInChildren<ParticleSystemRenderer>(true);
+                    foreach (var renderer in renderers)
+                    {
+                        renderer.sortingLayerName = "UI";
+                        renderer.sortingOrder = 201;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[OfferBurstSceneSetup] Could not load prefab at {prefabPath}.");
+            }
+        }
+
+        private static void EnsureExplosionGlow(Transform root, out RectTransform glowRect, out CanvasGroup glowGroup)
+        {
+            Transform slot = root.Find("Grp_VFX_Slot");
+            if (slot == null)
+            {
+                glowRect = null;
+                glowGroup = null;
+                return;
+            }
+
+            Transform existing = slot.Find("Img_Explosion_Glow");
+            GameObject go;
+            if (existing != null)
+            {
+                go = existing.gameObject;
+            }
+            else
+            {
+                go = new GameObject("Img_Explosion_Glow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+                Undo.RegisterCreatedObjectUndo(go, "Create Img_Explosion_Glow");
+                go.transform.SetParent(slot, false);
+            }
+
+            glowRect = go.GetComponent<RectTransform>();
+            glowRect.anchorMin = new Vector2(0.5f, 0.5f);
+            glowRect.anchorMax = new Vector2(0.5f, 0.5f);
+            glowRect.pivot = new Vector2(0.5f, 0.5f);
+            glowRect.anchoredPosition = Vector2.zero;
+            glowRect.sizeDelta = new Vector2(256f, 256f);
+            glowRect.localScale = Vector3.one;
+
+            Image image = go.GetComponent<Image>();
+            image.sprite = LoadSprite(TicketGlowSpritePath);
+            image.preserveAspect = false; // Allow stretched billboard sizing
+            image.color = new Color(1f, 0.9f, 0.4f, 1f); // Bright golden glow color
+            image.raycastTarget = false;
+
+            glowGroup = go.GetComponent<CanvasGroup>();
+            glowGroup.alpha = 0f;
+            glowGroup.blocksRaycasts = false;
+            glowGroup.interactable = false;
+        }
+
         private static void WireSequence(
             OfferBurstSequence sequence,
             Transform rewardGroup,
@@ -281,7 +385,10 @@ namespace BattlePass.UI
             Image glow,
             Image ticket,
             TMP_Text premiumText,
-            Button claimButton)
+            Button claimButton,
+            GameObject lockBurstVfxSlot,
+            RectTransform explosionGlowRect,
+            CanvasGroup explosionGlowGroup)
         {
             SerializedObject so = new SerializedObject(sequence);
             so.FindProperty("rewardRevealGroup").objectReferenceValue = rewardGroup.GetComponent<CanvasGroup>();
@@ -292,6 +399,9 @@ namespace BattlePass.UI
             so.FindProperty("premiumStatusText").objectReferenceValue = premiumText;
             so.FindProperty("claimButton").objectReferenceValue = claimButton;
             so.FindProperty("claimButtonLabel").objectReferenceValue = claimButton.GetComponentInChildren<TMP_Text>(true);
+            so.FindProperty("lockBurstVfxSlot").objectReferenceValue = lockBurstVfxSlot;
+            so.FindProperty("explosionGlowRect").objectReferenceValue = explosionGlowRect;
+            so.FindProperty("explosionGlowGroup").objectReferenceValue = explosionGlowGroup;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

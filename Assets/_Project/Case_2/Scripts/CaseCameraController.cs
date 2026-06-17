@@ -5,7 +5,10 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 namespace BattlePass.Showcase
 {
-    public class ShowcaseCameraController : MonoBehaviour
+    /// <summary>
+    /// Weapon VFX showcase sahnesinde orbit kamera: döndürme ve yakınlaştırma.
+    /// </summary>
+    public class CaseCameraController : MonoBehaviour
     {
         [Header("Target")]
         public Transform target;

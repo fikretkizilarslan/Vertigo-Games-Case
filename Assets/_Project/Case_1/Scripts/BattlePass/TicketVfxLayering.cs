@@ -51,6 +51,7 @@ namespace BattlePass.UI
             {
                 renderer.enabled = true;
                 renderer.sortingOrder = particleSortingOrder;
+                renderer.sortingLayerName = "UI";
             }
         }
 

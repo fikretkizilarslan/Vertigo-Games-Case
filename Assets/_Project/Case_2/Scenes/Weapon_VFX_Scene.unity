@@ -10942,9 +10942,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 853720272}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: f83d1c4e2b5a6478890abcde1234567, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattlePass.Showcase.CaseCameraController
+  target: {fileID: 960404854}
+  rotationSpeed: 5
+  zoomSpeed: 2
+  minZoom: 2
+  maxZoom: 10
 --- !u!1 &896892041
 GameObject:
   m_ObjectHideFlags: 0

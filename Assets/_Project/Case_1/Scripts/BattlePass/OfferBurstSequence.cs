@@ -24,6 +24,10 @@ namespace BattlePass.UI
         [SerializeField] private CanvasGroup lockGroup;
         [SerializeField] private Image lockImage;
         [SerializeField] private GameObject lockBurstVfxSlot;
+        [SerializeField] private RectTransform explosionGlowRect;
+        [SerializeField] private CanvasGroup explosionGlowGroup;
+        [SerializeField] private ParticleSystem implodeVfx;
+        [SerializeField] private ParticleSystem explodeGlowVfx;
 
         [Header("Reward Reveal")]
         [SerializeField] private CanvasGroup rewardRevealGroup;
@@ -55,10 +59,17 @@ namespace BattlePass.UI
         [SerializeField] private float claimButtonDelay = 0.12f;
         [SerializeField] private float fadeOutDuration = 0.22f;
 
+        [Header("Floating Bobbing Animation")]
+        [SerializeField] private bool enableBobbing = true;
+        [SerializeField] private float bobbingSpeed = 3f;
+        [SerializeField] private float bobbingAmplitude = 18f;
+
         private Coroutine playRoutine;
         private Vector3 lockBaseScale = Vector3.one;
         private Quaternion lockBaseRotation = Quaternion.identity;
         private Vector3 ticketBaseScale = Vector3.one;
+        private Vector2 ticketBaseAnchoredPosition = Vector2.zero;
+        private Vector3 explosionGlowBaseScale = Vector3.one;
         private Color solidBaseColor = Color.white;
         private Color patternBaseColor = Color.white;
         private bool isInitialized;
@@ -69,15 +80,16 @@ namespace BattlePass.UI
 
         private void Awake()
         {
-            if (gameObject.activeInHierarchy)
-            {
-                Initialize();
-            }
+            Initialize();
         }
 
         private void OnEnable()
         {
-            if (isInitialized && playRoutine == null)
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+            else if (playRoutine == null)
             {
                 ResetToIdle();
             }
@@ -280,16 +292,7 @@ namespace BattlePass.UI
                 lockImage.color = lockColor;
             }
 
-            if (premiumStatusText != null && !string.IsNullOrWhiteSpace(premiumStatusMessage))
-            {
-                premiumStatusText.text = premiumStatusMessage;
-                ConfigurePremiumStatusText(premiumStatusText);
-            }
-
-            if (claimButtonLabel != null && !string.IsNullOrWhiteSpace(claimLabel))
-            {
-                claimButtonLabel.text = claimLabel;
-            }
+            // Text content and formatting overrides are skipped here so that they can be fully customized manually in the Inspector/Editor.
 
             lockBaseScale = lockRect.localScale.sqrMagnitude > 0.0001f ? lockRect.localScale : Vector3.one;
             lockBaseRotation = lockRect.localRotation;
@@ -297,10 +300,34 @@ namespace BattlePass.UI
                 ? ticketRoot.localScale
                 : Vector3.one;
 
+            if (ticketRoot != null)
+            {
+                ticketBaseAnchoredPosition = ticketRoot.anchoredPosition;
+            }
+
+            if (explosionGlowRect != null)
+            {
+                explosionGlowBaseScale = explosionGlowRect.localScale.sqrMagnitude > 0.0001f
+                    ? explosionGlowRect.localScale
+                    : Vector3.one;
+            }
+
             if (claimButton != null)
             {
                 claimButton.onClick.RemoveListener(OnClaimClicked);
                 claimButton.onClick.AddListener(OnClaimClicked);
+            }
+
+            if (implodeVfx == null)
+            {
+                Transform implodeTrans = transform.Find("Ps_Lock_Implode");
+                if (implodeTrans != null) implodeVfx = implodeTrans.GetComponent<ParticleSystem>();
+            }
+
+            if (explodeGlowVfx == null)
+            {
+                Transform explodeTrans = transform.Find("Ps_Lock_Explode_Glow");
+                if (explodeTrans != null) explodeGlowVfx = explodeTrans.GetComponent<ParticleSystem>();
             }
 
             RemoveNestedSortingCanvases();
@@ -361,23 +388,7 @@ namespace BattlePass.UI
 
         private void ConfigurePremiumStatusText(TMP_Text text)
         {
-            text.enableAutoSizing = true;
-            text.fontSizeMin = 24f;
-            text.fontSizeMax = 40f;
-            text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.overflowMode = TextOverflowModes.Overflow;
-            text.alignment = TextAlignmentOptions.Center;
-            text.raycastTarget = false;
-
-            if (text.rectTransform != null)
-            {
-                RectTransform rect = text.rectTransform;
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(0f, -150f);
-                rect.sizeDelta = new Vector2(640f, 72f);
-            }
+            // Empty body so that it does not overwrite the font, size, auto-sizing, wrapping, or layout set in the Inspector.
         }
 
         private void EnsureOverlayCanvasOnTop()
@@ -398,6 +409,11 @@ namespace BattlePass.UI
 
         private void RemoveNestedSortingCanvases()
         {
+            if (rewardRevealGroup != null)
+            {
+                DestroySortingCanvas(rewardRevealGroup.gameObject);
+            }
+
             if (ticketRoot != null)
             {
                 DestroySortingCanvas(ticketRoot.gameObject);
@@ -436,8 +452,20 @@ namespace BattlePass.UI
                 return;
             }
 
-            TicketVfxLayeringUtility.ApplySortingOnly(ticketRoot, 4);
-            TicketVfxLayeringUtility.RemoveTicketForegroundCanvas(ticketRoot);
+            // Render particles (Ps_Ticket) in front of the background dim overlay (overlaySortingOrder + 1)
+            TicketVfxLayeringUtility.ApplySortingOnly(ticketRoot, overlaySortingOrder + 1);
+
+            // Render the main ticket image (Img_Ticket) on top of the particles by giving it a nested Canvas at overlaySortingOrder + 2
+            if (ticketImage != null)
+            {
+                if (!ticketImage.TryGetComponent(out Canvas ticketCanvas))
+                {
+                    ticketCanvas = ticketImage.gameObject.AddComponent<Canvas>();
+                }
+                ticketCanvas.overrideSorting = true;
+                ticketCanvas.sortingOrder = overlaySortingOrder + 2;
+                ticketCanvas.sortingLayerName = "UI";
+            }
         }
 
         private void HideBattlePassMainPanel()
@@ -467,6 +495,11 @@ namespace BattlePass.UI
             if (solidFill != null)
             {
                 solidFill.raycastTarget = blocksInput;
+            }
+
+            if (patternOverlay != null)
+            {
+                patternOverlay.raycastTarget = blocksInput;
             }
         }
 
@@ -512,6 +545,26 @@ namespace BattlePass.UI
                 lockBurstVfxSlot.SetActive(false);
             }
 
+            if (implodeVfx != null)
+            {
+                StopImplodeVfx();
+            }
+
+            if (explodeGlowVfx != null)
+            {
+                explodeGlowVfx.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+
+            if (explosionGlowRect != null)
+            {
+                explosionGlowRect.gameObject.SetActive(false);
+                explosionGlowRect.localScale = explosionGlowBaseScale;
+                if (explosionGlowGroup != null)
+                {
+                    explosionGlowGroup.alpha = 0f;
+                }
+            }
+
             if (ticketVfxRoot != null)
             {
                 ticketVfxRoot.SetActive(false);
@@ -520,6 +573,11 @@ namespace BattlePass.UI
             if (claimButton != null)
             {
                 claimButton.interactable = false;
+            }
+
+            if (ticketRoot != null)
+            {
+                ticketRoot.anchoredPosition = ticketBaseAnchoredPosition;
             }
         }
 
@@ -539,6 +597,36 @@ namespace BattlePass.UI
                 Color c = patternBaseColor;
                 c.a = a;
                 patternOverlay.color = c;
+            }
+        }
+
+        private void PlayImplodeVfx()
+        {
+            if (implodeVfx == null)
+                return;
+
+            implodeVfx.Play(true);
+
+            ParticleSystem[] childSystems = implodeVfx.GetComponentsInChildren<ParticleSystem>(true);
+            for (int i = 0; i < childSystems.Length; i++)
+            {
+                if (childSystems[i] != implodeVfx)
+                    childSystems[i].Play(true);
+            }
+        }
+
+        private void StopImplodeVfx()
+        {
+            if (implodeVfx == null)
+                return;
+
+            implodeVfx.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+            ParticleSystem[] childSystems = implodeVfx.GetComponentsInChildren<ParticleSystem>(true);
+            for (int i = 0; i < childSystems.Length; i++)
+            {
+                if (childSystems[i] != implodeVfx)
+                    childSystems[i].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             }
         }
 
@@ -585,6 +673,7 @@ namespace BattlePass.UI
             SetBackdropAlpha(backdropMaxAlpha);
             lockGroup.alpha = 1f;
             lockRect.localScale = lockBaseScale;
+            PlayImplodeVfx();
 
             elapsed = 0f;
             while (elapsed < shakeDuration)
@@ -598,35 +687,91 @@ namespace BattlePass.UI
 
             lockRect.localRotation = lockBaseRotation;
 
+            // Anticipation squeeze before the lock bursts open.
+            elapsed = 0f;
+            float squeezeDuration = 0.22f;
+            while (elapsed < squeezeDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / squeezeDuration);
+                
+                // Squash and stretch anticipation:
+                // Phase 1 (0 to 0.35): squash flat (X wide, Y short)
+                // Phase 2 (0.35 to 1.0): pull inward (shrink) and stretch (X very thin, Y stretched, overall scale small)
+                Vector3 currentTargetScale;
+                if (t < 0.35f)
+                {
+                    float nt = t / 0.35f;
+                    float ease = nt * nt * (3f - 2f * nt);
+                    currentTargetScale = Vector3.Lerp(Vector3.one, new Vector3(1.35f, 0.65f, 1f), ease);
+                }
+                else
+                {
+                    float nt = (t - 0.35f) / 0.65f;
+                    float ease = nt * nt; // Accelerate pull inward
+                    Vector3 startScale = new Vector3(1.35f, 0.65f, 1f);
+                    Vector3 endScale = new Vector3(0.15f, 1.85f, 1f); // Extremely squeezed X, stretched Y, very thin
+                    currentTargetScale = Vector3.Lerp(startScale, endScale, ease);
+                }
+
+                lockRect.localScale = Vector3.Scale(lockBaseScale, currentTargetScale);
+                yield return null;
+            }
+
             if (lockBurstVfxSlot != null)
             {
                 lockBurstVfxSlot.SetActive(true);
             }
 
+            if (explodeGlowVfx != null)
+            {
+                explodeGlowVfx.Play(true);
+            }
+
+            if (explosionGlowRect != null)
+            {
+                explosionGlowRect.gameObject.SetActive(true);
+                if (explosionGlowGroup != null)
+                {
+                    explosionGlowGroup.alpha = 1f;
+                }
+            }
+
             elapsed = 0f;
-            const float burstPeakPortion = 0.32f;
             while (elapsed < explodeDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / explodeDuration);
 
-                if (t < burstPeakPortion)
+                // Lock explosion: scale up rapidly and fade out
+                float easedScale = 1f - Mathf.Pow(1f - t, 3f); // Ease out cubic
+                lockRect.localScale = Vector3.Scale(lockBaseScale, Vector3.Lerp(new Vector3(0.15f, 1.85f, 1f), lockBaseScale * lockBurstPeakScale, easedScale));
+                lockGroup.alpha = 1f - t * t; // Fade out quadratic
+
+                // Rotate during explosion
+                lockRect.localRotation = lockBaseRotation * Quaternion.Euler(0f, 0f, t * lockBurstRotation);
+
+                // Billboard glow stretching
+                if (explosionGlowRect != null)
                 {
-                    float peakT = t / burstPeakPortion;
-                    float easedPeak = 1f - Mathf.Pow(1f - peakT, 2f);
-                    lockRect.localScale = lockBaseScale * Mathf.Lerp(1f, lockBurstPeakScale, easedPeak);
-                    lockGroup.alpha = 1f;
-                }
-                else
-                {
-                    float fadeT = (t - burstPeakPortion) / (1f - burstPeakPortion);
-                    float easedFade = fadeT * fadeT;
-                    lockRect.localScale = lockBaseScale * Mathf.Lerp(lockBurstPeakScale, 0f, easedFade);
-                    lockGroup.alpha = 1f - easedFade;
-                    lockRect.localRotation = lockBaseRotation * Quaternion.Euler(0f, 0f, easedFade * lockBurstRotation);
+                    // Stretch X (horizontal) from 0.2 to 12.0, Y (vertical) from 4.5 to 0.05
+                    // This creates a beautiful bright flash streak
+                    float stretchX = Mathf.Lerp(0.2f, 12f, t);
+                    float stretchY = Mathf.Lerp(4.5f, 0.05f, t);
+                    explosionGlowRect.localScale = Vector3.Scale(explosionGlowBaseScale, new Vector3(stretchX, stretchY, 1f));
+
+                    if (explosionGlowGroup != null)
+                    {
+                        explosionGlowGroup.alpha = Mathf.Clamp01(1f - t);
+                    }
                 }
 
                 yield return null;
+            }
+
+            if (explosionGlowRect != null)
+            {
+                explosionGlowRect.gameObject.SetActive(false);
             }
 
             lockRect.localScale = Vector3.zero;
@@ -655,34 +800,35 @@ namespace BattlePass.UI
             SetRewardRevealVisible(true, 1f);
             SetBackdropBlocksInput(false);
 
-            if (claimButtonDelay > 0f)
-            {
-                yield return new WaitForSecondsRealtime(claimButtonDelay);
-            }
-
-            if (claimButton != null)
-            {
-                claimButton.interactable = true;
-            }
+            float bobTime = 0f;
+            float delayElapsed = 0f;
+            bool claimButtonEnabled = false;
 
             claimRequested = false;
             while (!claimRequested)
             {
-                yield return null;
-            }
+                float dt = Time.unscaledDeltaTime;
+                bobTime += dt;
 
-            if (claimButton != null)
-            {
-                claimButton.interactable = false;
-            }
+                if (!claimButtonEnabled)
+                {
+                    delayElapsed += dt;
+                    if (delayElapsed >= claimButtonDelay)
+                    {
+                        if (claimButton != null)
+                        {
+                            claimButton.interactable = true;
+                        }
+                        claimButtonEnabled = true;
+                    }
+                }
 
-            elapsed = 0f;
-            while (elapsed < fadeOutDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                float t = Mathf.Clamp01(elapsed / fadeOutDuration);
-                SetBackdropAlpha(backdropMaxAlpha * (1f - t));
-                SetRewardRevealVisible(true, 1f - t);
+                if (enableBobbing && ticketRoot != null)
+                {
+                    float offset = Mathf.Sin(bobTime * bobbingSpeed) * bobbingAmplitude;
+                    ticketRoot.anchoredPosition = ticketBaseAnchoredPosition + new Vector2(0f, offset);
+                }
+
                 yield return null;
             }
 
@@ -690,5 +836,201 @@ namespace BattlePass.UI
             playRoutine = null;
             onComplete?.Invoke();
         }
+
+#if UNITY_EDITOR
+        [ContextMenu("Setup Particle Effects")]
+        public void SetupParticleEffects()
+        {
+            if (lockBurstVfxSlot == null)
+            {
+                Transform slot = FindChildByPath("Grp_VFX_Slot");
+                if (slot != null) lockBurstVfxSlot = slot.gameObject;
+            }
+
+            if (lockBurstVfxSlot == null) return;
+
+            // Clean up any old ones that were placed under Grp_VFX_Slot
+            if (lockBurstVfxSlot != null)
+            {
+                Transform oldImplode = lockBurstVfxSlot.transform.Find("Ps_Lock_Implode");
+                if (oldImplode != null) DestroyImmediate(oldImplode.gameObject);
+
+                Transform oldExplode = lockBurstVfxSlot.transform.Find("Ps_Lock_Explode_Glow");
+                if (oldExplode != null) DestroyImmediate(oldExplode.gameObject);
+            }
+
+            // 1. Ps_Lock_Implode
+            Transform implodeTrans = transform.Find("Ps_Lock_Implode");
+            if (implodeTrans != null && !(implodeTrans is RectTransform))
+            {
+                DestroyImmediate(implodeTrans.gameObject);
+                implodeTrans = null;
+            }
+            bool isNewImplode = false;
+            if (implodeTrans == null)
+            {
+                GameObject go = new GameObject("Ps_Lock_Implode", typeof(RectTransform));
+                go.layer = 5;
+                go.transform.SetParent(transform, false);
+                implodeTrans = go.transform;
+                isNewImplode = true;
+            }
+            implodeTrans.gameObject.layer = 5;
+            implodeVfx = implodeTrans.GetComponent<ParticleSystem>();
+            if (implodeVfx == null)
+            {
+                implodeVfx = implodeTrans.gameObject.AddComponent<ParticleSystem>();
+                isNewImplode = true;
+            }
+
+            Canvas implodeCanvas = implodeTrans.GetComponent<Canvas>();
+            if (implodeCanvas == null) implodeCanvas = implodeTrans.gameObject.AddComponent<Canvas>();
+            implodeCanvas.overrideSorting = true;
+            implodeCanvas.sortingLayerName = "UI";
+            implodeCanvas.sortingOrder = overlaySortingOrder + 1;
+
+            if (isNewImplode)
+            {
+                ConfigureImplodeVfx();
+            }
+
+            // 2. Ps_Lock_Explode_Glow
+            Transform explodeTrans = transform.Find("Ps_Lock_Explode_Glow");
+            if (explodeTrans != null && !(explodeTrans is RectTransform))
+            {
+                DestroyImmediate(explodeTrans.gameObject);
+                explodeTrans = null;
+            }
+            bool isNewExplode = false;
+            if (explodeTrans == null)
+            {
+                GameObject go = new GameObject("Ps_Lock_Explode_Glow", typeof(RectTransform));
+                go.layer = 5;
+                go.transform.SetParent(transform, false);
+                explodeTrans = go.transform;
+                isNewExplode = true;
+            }
+            explodeTrans.gameObject.layer = 5;
+            explodeGlowVfx = explodeTrans.GetComponent<ParticleSystem>();
+            if (explodeGlowVfx == null)
+            {
+                explodeGlowVfx = explodeTrans.gameObject.AddComponent<ParticleSystem>();
+                isNewExplode = true;
+            }
+
+            Canvas explodeCanvas = explodeTrans.GetComponent<Canvas>();
+            if (explodeCanvas == null) explodeCanvas = explodeTrans.gameObject.AddComponent<Canvas>();
+            explodeCanvas.overrideSorting = true;
+            explodeCanvas.sortingLayerName = "UI";
+            explodeCanvas.sortingOrder = overlaySortingOrder + 1;
+
+            if (isNewExplode)
+            {
+                ConfigureExplodeGlowVfx();
+            }
+
+            UnityEditor.EditorUtility.SetDirty(this);
+            if (lockBurstVfxSlot != null) UnityEditor.EditorUtility.SetDirty(lockBurstVfxSlot);
+            if (implodeVfx != null) UnityEditor.EditorUtility.SetDirty(implodeVfx.gameObject);
+            if (explodeGlowVfx != null) UnityEditor.EditorUtility.SetDirty(explodeGlowVfx.gameObject);
+        }
+
+        private void ConfigureImplodeVfx()
+        {
+            if (implodeVfx == null) return;
+
+            var main = implodeVfx.main;
+            main.loop = false;
+            main.duration = 0.25f;
+            main.startLifetime = 0.25f;
+            main.startSpeed = -8.0f; // pull inward
+            main.startSize = 1.5f;
+            main.maxParticles = 100;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+            main.playOnAwake = false;
+
+            var emission = implodeVfx.emission;
+            emission.enabled = true;
+            emission.rateOverTime = 0;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 30) });
+
+            var shape = implodeVfx.shape;
+            shape.enabled = true;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 1.8f;
+            shape.radiusThickness = 0.05f;
+
+            var size = implodeVfx.sizeOverLifetime;
+            size.enabled = true;
+            AnimationCurve sizeCurve = new AnimationCurve();
+            sizeCurve.AddKey(0f, 1f);
+            sizeCurve.AddKey(1f, 0.2f);
+            size.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+
+            var renderer = implodeVfx.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.renderMode = ParticleSystemRenderMode.Stretch;
+                renderer.lengthScale = 3.5f;
+                renderer.velocityScale = 0.4f;
+                renderer.sortingLayerName = "UI";
+                renderer.sortingOrder = overlaySortingOrder + 1;
+
+                Material mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Case_1/Materials/VFX/Mt_Uı_VFX.mat");
+                if (mat != null) renderer.material = mat;
+            }
+        }
+
+        private void ConfigureExplodeGlowVfx()
+        {
+            if (explodeGlowVfx == null) return;
+
+            var main = explodeGlowVfx.main;
+            main.loop = false;
+            main.duration = 0.4f;
+            main.startLifetime = 0.4f;
+            main.startSpeed = 0f;
+            main.startSize = 1.0f;
+            main.maxParticles = 5;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+            main.playOnAwake = false;
+
+            var emission = explodeGlowVfx.emission;
+            emission.enabled = true;
+            emission.rateOverTime = 0;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 1) });
+
+            var shape = explodeGlowVfx.shape;
+            shape.enabled = false;
+
+            var size = explodeGlowVfx.sizeOverLifetime;
+            size.enabled = true;
+            AnimationCurve sizeCurve = new AnimationCurve();
+            sizeCurve.AddKey(0f, 0.2f);
+            sizeCurve.AddKey(0.15f, 6.0f); // Expands very fast
+            sizeCurve.AddKey(1f, 8.0f); // Continues growing slightly
+            size.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+
+            var color = explodeGlowVfx.colorOverLifetime;
+            color.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0f, 1f) }
+            );
+            color.color = grad;
+
+            var renderer = explodeGlowVfx.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.renderMode = ParticleSystemRenderMode.Billboard;
+                renderer.sortingLayerName = "UI";
+                renderer.sortingOrder = overlaySortingOrder + 1;
+
+                Material mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Case_1/Materials/VFX/Mt_Uı_VFX.mat");
+                if (mat != null) renderer.material = mat;
+            }
+        }
+#endif
     }
 }

@@ -52,10 +52,10 @@ namespace BattlePass.UI
         private Material assignedPremiumCardMaterial;
         private Material assignedFreeGlowMaterial;
         private Material assignedPremiumGlowMaterial;
-        private bool freeClaimShineActive;
-        private bool premiumClaimShineActive;
         private Coroutine freeClaimShineRoutine;
         private Coroutine premiumClaimShineRoutine;
+        private Material freeClaimShineInstance;
+        private Material premiumClaimShineInstance;
 
         public RectTransform LevelNodeAnchor => levelNodeAnchor;
         public BattlePassTierData TierData => tierData;
@@ -97,9 +97,9 @@ namespace BattlePass.UI
                     freeCardBg.transform.parent.gameObject.SetActive(false);
             }
 
-            // Prefabs bake Sh_Shine on highlighted cards; default UI material batches better on mobile.
-            ApplyCardMaterial(freeCardBg, null, ref assignedFreeCardMaterial);
-            ApplyCardMaterial(premiumCardBg, null, ref assignedPremiumCardMaterial);
+            // Prefabs may bake Sh_Shine; runtime state is driven by UpdateNodeEffectState.
+            ClearCardMaterial(freeCardBg, ref assignedFreeCardMaterial, ref freeClaimShineInstance);
+            ClearCardMaterial(premiumCardBg, ref assignedPremiumCardMaterial, ref premiumClaimShineInstance);
             effectStateInitialized = false;
 
             // Auto-assign red dots when they were not wired in the Inspector (prefab uses Img_Reddot).
@@ -133,6 +133,12 @@ namespace BattlePass.UI
 
             UpdateNodeVisualState();
             isInitialized = true;
+        }
+
+        private void OnDisable()
+        {
+            StopClaimShine(freeCardBg, ref freeClaimShineRoutine, ref freeClaimShineInstance, ref assignedFreeCardMaterial);
+            StopClaimShine(premiumCardBg, ref premiumClaimShineRoutine, ref premiumClaimShineInstance, ref assignedPremiumCardMaterial);
         }
 
         /// <summary>
@@ -477,15 +483,25 @@ namespace BattlePass.UI
             bool showFreePulse = showFreeGlow;
             bool showPremiumPulse = showPremiumGlow;
 
-            // Default UI material on cards; claim shine is a short-lived overlay (see PlayClaimShine).
-            if (!tierData.isInstantReward && !freeClaimShineActive)
+            // Claimable cards use shared sweep materials; claimed/locked cards use default UI material.
+            if (!tierData.isInstantReward && freeClaimShineRoutine == null)
             {
-                ApplyCardMaterial(freeCardBg, null, ref assignedFreeCardMaterial);
+                UpdateCardSweepShine(
+                    freeCardBg,
+                    tierData.freeReward,
+                    showFreePulse,
+                    ref assignedFreeCardMaterial,
+                    ref freeClaimShineInstance);
             }
 
-            if (!premiumClaimShineActive)
+            if (premiumClaimShineRoutine == null)
             {
-                ApplyCardMaterial(premiumCardBg, null, ref assignedPremiumCardMaterial);
+                UpdateCardSweepShine(
+                    premiumCardBg,
+                    tierData.premiumReward,
+                    showPremiumPulse,
+                    ref assignedPremiumCardMaterial,
+                    ref premiumClaimShineInstance);
             }
 
             if (!effectStateInitialized || lastShowFreePulse != showFreePulse)
@@ -527,6 +543,88 @@ namespace BattlePass.UI
 
             assigned = material;
             image.material = material;
+        }
+
+        /// <summary>
+        /// Applies the looping Sh_Shine sweep on claimable cards; clears it once claimed or locked.
+        /// Skipped while <see cref="PlayClaimShine"/> owns the card material.
+        /// </summary>
+        private void UpdateCardSweepShine(
+            Image cardBg,
+            RewardSlot slot,
+            bool showShine,
+            ref Material assigned,
+            ref Material claimShineInstance)
+        {
+            if (cardBg == null)
+            {
+                return;
+            }
+
+            if (showShine)
+            {
+                Material sweepMaterial = ResolveCardSweepMaterial(slot);
+                ApplyCardMaterial(cardBg, sweepMaterial, ref assigned);
+            }
+            else
+            {
+                ClearCardMaterial(cardBg, ref assigned, ref claimShineInstance);
+            }
+        }
+
+        private Material ResolveCardSweepMaterial(RewardSlot slot)
+        {
+            if (slot == null || slot.rewardData == null || manager == null)
+            {
+                return null;
+            }
+
+            return tierData.isHighlighted
+                ? manager.CardSweepMaterial
+                : manager.RarityCardSweepMaterial;
+        }
+
+        /// <summary>
+        /// Removes any claim-shine instance and restores the card to the default UI material.
+        /// </summary>
+        private static void ClearCardMaterial(Image image, ref Material assigned, ref Material shineInstance)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            if (shineInstance != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Object.Destroy(shineInstance);
+                }
+                else
+                {
+                    Object.DestroyImmediate(shineInstance);
+                }
+
+                shineInstance = null;
+            }
+
+            assigned = null;
+            image.material = null;
+        }
+
+        private void StopClaimShine(
+            Image cardBg,
+            ref Coroutine routine,
+            ref Material shineInstance,
+            ref Material assigned)
+        {
+            if (routine != null)
+            {
+                StopCoroutine(routine);
+                routine = null;
+            }
+
+            ClearCardMaterial(cardBg, ref assigned, ref shineInstance);
         }
 
         /// <summary>
@@ -754,21 +852,25 @@ namespace BattlePass.UI
 
             if (isPremium)
             {
-                if (premiumClaimShineRoutine != null)
-                {
-                    StopCoroutine(premiumClaimShineRoutine);
-                }
+                StopClaimShine(
+                    premiumCardBg,
+                    ref premiumClaimShineRoutine,
+                    ref premiumClaimShineInstance,
+                    ref assignedPremiumCardMaterial);
 
-                premiumClaimShineRoutine = StartCoroutine(ClaimShineRoutine(premiumCardBg, tierData.premiumReward, isPremiumTrack: true));
+                premiumClaimShineRoutine = StartCoroutine(
+                    ClaimShineRoutine(premiumCardBg, tierData.premiumReward, isPremiumTrack: true));
             }
             else
             {
-                if (freeClaimShineRoutine != null)
-                {
-                    StopCoroutine(freeClaimShineRoutine);
-                }
+                StopClaimShine(
+                    freeCardBg,
+                    ref freeClaimShineRoutine,
+                    ref freeClaimShineInstance,
+                    ref assignedFreeCardMaterial);
 
-                freeClaimShineRoutine = StartCoroutine(ClaimShineRoutine(freeCardBg, tierData.freeReward, isPremiumTrack: false));
+                freeClaimShineRoutine = StartCoroutine(
+                    ClaimShineRoutine(freeCardBg, tierData.freeReward, isPremiumTrack: false));
             }
         }
 
@@ -797,33 +899,38 @@ namespace BattlePass.UI
                 yield break;
             }
 
-            if (isPremiumTrack)
-            {
-                premiumClaimShineActive = true;
-                ApplyCardMaterial(cardBg, shineMat, ref assignedPremiumCardMaterial);
-            }
-            else
-            {
-                freeClaimShineActive = true;
-                ApplyCardMaterial(cardBg, shineMat, ref assignedFreeCardMaterial);
-            }
-
-            yield return new WaitForSecondsRealtime(manager.ClaimShineDuration);
+            Material runtimeShine = new Material(shineMat);
 
             if (isPremiumTrack)
             {
-                premiumClaimShineActive = false;
-                ApplyCardMaterial(cardBg, null, ref assignedPremiumCardMaterial);
-                premiumClaimShineRoutine = null;
+                premiumClaimShineInstance = runtimeShine;
+                ApplyCardMaterial(cardBg, runtimeShine, ref assignedPremiumCardMaterial);
             }
             else
             {
-                freeClaimShineActive = false;
-                ApplyCardMaterial(cardBg, null, ref assignedFreeCardMaterial);
-                freeClaimShineRoutine = null;
+                freeClaimShineInstance = runtimeShine;
+                ApplyCardMaterial(cardBg, runtimeShine, ref assignedFreeCardMaterial);
             }
 
-            UpdateNodeEffectState();
+            try
+            {
+                yield return new WaitForSecondsRealtime(manager.ClaimShineDuration);
+            }
+            finally
+            {
+                if (isPremiumTrack)
+                {
+                    premiumClaimShineRoutine = null;
+                    ClearCardMaterial(cardBg, ref assignedPremiumCardMaterial, ref premiumClaimShineInstance);
+                }
+                else
+                {
+                    freeClaimShineRoutine = null;
+                    ClearCardMaterial(cardBg, ref assignedFreeCardMaterial, ref freeClaimShineInstance);
+                }
+
+                UpdateNodeEffectState();
+            }
         }
 
         private IEnumerator PopAnimationRoutine(Transform target)

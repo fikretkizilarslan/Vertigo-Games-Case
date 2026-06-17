@@ -198,6 +198,8 @@ namespace BattlePass.UI
         [SerializeField] private Button offerButton;
         [Tooltip("Scene: Grp_OfferBurst — lock pop / burst played the first time premium is unlocked.")]
         [SerializeField] private OfferBurstSequence offerBurstSequence;
+        [Tooltip("Text showing premium active/inactive status on the banner. Auto-resolved by name when left empty.")]
+        [SerializeField] private TextMeshProUGUI premiumStatusBannerText;
 
         [Header("UI Customization")]
         [SerializeField] private List<RewardType> rewardTypesToShowAmountText = new List<RewardType>
@@ -284,6 +286,9 @@ namespace BattlePass.UI
 
         private void Start()
         {
+            // Always start with premium closed (inactive) on game launch
+            isPremiumActive = false;
+
             // Let the ScriptableObject values edited in the Inspector be the runtime source of truth.
 
             if (seasonDataSO != null && seasonDataSO.tiers != null)
@@ -334,6 +339,8 @@ namespace BattlePass.UI
 
             ResolveOfferButton();
             ResolveOfferBurst();
+            ResolvePremiumStatusBanner();
+            UpdatePremiumStatusBanner();
 
             // Keep the road hidden while it is being built so the first-frame layout pop is not visible.
             PrepareRoadReveal();
@@ -866,8 +873,8 @@ namespace BattlePass.UI
             // Spawn claim VFX if configured
             SpawnClaimVFX(node, isPremium);
 
-            UpdateAllUI();
             node.PlayClaimShine(isPremium);
+            UpdateAllUI();
         }
 
         /// <summary>
@@ -1347,6 +1354,26 @@ namespace BattlePass.UI
             }
 
             scrollRect.horizontalNormalizedPosition = targetNormalized;
+        }
+
+        private void ResolvePremiumStatusBanner()
+        {
+            if (premiumStatusBannerText == null)
+            {
+                GameObject statusGo = GameObject.Find("Txt_Banner_Premium_Inactive");
+                if (statusGo != null)
+                {
+                    premiumStatusBannerText = statusGo.GetComponent<TextMeshProUGUI>();
+                }
+            }
+        }
+
+        public void UpdatePremiumStatusBanner()
+        {
+            if (premiumStatusBannerText != null)
+            {
+                premiumStatusBannerText.text = isPremiumActive ? "ACTIVE" : "INACTIVE";
+            }
         }
 
         // ── Season countdown & XP panel ────────────────────────────────────────

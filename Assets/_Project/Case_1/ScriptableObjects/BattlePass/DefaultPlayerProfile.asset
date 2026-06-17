@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b5ae5ea9e64c04caf360cfa5e42b17, type: 3}
   m_Name: DefaultPlayerProfile
   m_EditorClassIdentifier: Assembly-CSharp::BattlePass.UI.PlayerProfileSO
-  currentLevel: 11
+  currentLevel: 23
   currentXp: 0
   xpPerLevel: 100
-  isPremiumActive: 0
-  goldBalance: 23200
-  diamondBalance: 82
-  gemBalance: 11
+  isPremiumActive: 1
+  goldBalance: 91050
+  diamondBalance: 254
+  gemBalance: 488

@@ -35,31 +35,31 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BorderDim: 0.495
+    - _BorderDim: 0.257
     - _ColorMask: 15
-    - _CoreAlphaLift: 1
+    - _CoreAlphaLift: 1.5
     - _DstBlend: 10
     - _EnableVignette: 1
     - _ScrollAngle: -697.3
     - _ScrollAspect: 1.7
     - _SrcBlend: 5
     - _Stencil: 0
-    - _StencilComp: 8
+    - _StencilComp: 7.1
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _UseUIAlphaClip: 0
     - _VignetteAspect: 1.7
-    - _VignetteBloom: 0
-    - _VignetteEmitStrength: 0
+    - _VignetteBloom: 0.33
+    - _VignetteEmitStrength: 0.15
     - _VignetteFeather: 3.6
     - _VignetteInvert: 1
     - _VignetteMode: 0
-    - _VignettePower: 1.04
+    - _VignettePower: 1.03
     - _VignetteRadius: 0.56
     - _VignetteShape: 0
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.5372549}
     - _ScrollBias: {r: 0, g: 0, b: 0, a: 0}
     - _ScrollRepeat: {r: 5, g: 3, b: 0, a: 0}
     - _ScrollVelocity: {r: 0, g: -0.05, b: 0, a: 0}
@@ -67,6 +67,6 @@ Material:
     - _VignetteEmitColor: {r: 13.928808, g: 13.928808, b: 13.928808, a: 1}
     - _VignetteMapOffset: {r: 1.37, g: 0, b: 0, a: 0}
     - _VignetteMapScale: {r: -2.2, g: 0.85, b: 0, a: 0}
-    - _VignetteTint: {r: 0.92, g: 0.75, b: 1, a: 1}
+    - _VignetteTint: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -112,6 +112,7 @@ namespace BattlePass.UI
             }
 
             isPremiumActive = true;
+            UpdatePremiumStatusBanner();
             StartCoroutine(CompletePremiumActivationDeferred());
         }
 

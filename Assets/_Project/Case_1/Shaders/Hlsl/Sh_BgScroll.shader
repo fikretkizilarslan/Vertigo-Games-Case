@@ -23,7 +23,7 @@ Shader "Case1/Sh_BgScroll"
         _VignetteAnchor ("Vignette Center", Vector) = (0.5, 0.5, 0, 0)
         [Toggle] _VignetteInvert ("Invert (core fade)", Float) = 1
         _BorderDim ("Border Dim", Range(0, 1)) = 0.45
-        _CoreAlphaLift ("Core Alpha Lift", Range(1, 12)) = 6.5
+        _CoreAlphaLift ("Core Alpha Lift", Range(0, 12)) = 6.5
 
         [Header(Vignette Procedural)]
         [Enum(Radial,0, VerticalBand,1)] _VignetteShape ("Shape", Float) = 0

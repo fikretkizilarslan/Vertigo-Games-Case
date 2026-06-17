@@ -353,6 +353,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_fontSize
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_wordSpacing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213615592463877223, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
+      propertyPath: m_characterSpacing
+      value: -10
+      objectReference: {fileID: 0}
     - target: {fileID: 3695408711308728112, guid: fcf169a72450fed428553b7dff42edb4, type: 3}
       propertyPath: m_Name
       value: Grp_Free
