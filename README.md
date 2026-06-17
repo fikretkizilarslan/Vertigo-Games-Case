@@ -1,3 +1,5 @@
+
+https://github.com/user-attachments/assets/107167c8-98e8-4dc7-a396-76444b923a52
 # Technical Artist Case — Vertigo Games
 
 Bu proje, Vertigo Games Technical Artist case çalışmasını kapsamaktadır.
@@ -6,6 +8,13 @@ Bu proje, Vertigo Games Technical Artist case çalışmasını kapsamaktadır.
 
 ## Sahneler
 
+Case-1
+
+https://youtu.be/DB2foto2EWY
+
+Case-2
+
+https://github.com/user-attachments/assets/42a918a6-03bd-40e9-a394-62c8873cf6b7
 
 
 
