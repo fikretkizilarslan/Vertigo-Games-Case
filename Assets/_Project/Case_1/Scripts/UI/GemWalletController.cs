@@ -35,6 +35,10 @@ namespace BattlePass.UI
         private Tween walletTween;
         private bool isRevealed;
 
+        // Prevents each missing-reference warning from firing more than once per session.
+        private bool _hasWarnedGrpGem;
+        private bool _hasWarnedRevealButton;
+
         public bool IsRevealed => isRevealed;
 
         private void Awake()
@@ -195,6 +199,13 @@ namespace BattlePass.UI
         {
             if (grpGem == null)
             {
+                if (!_hasWarnedGrpGem)
+                {
+                    Debug.LogWarning(
+                        "[GemWalletController] Grp_Gem not wired in Inspector — " +
+                        "falling back to GameObject.Find. Assign the grpGem field directly to avoid this search.");
+                    _hasWarnedGrpGem = true;
+                }
                 GameObject found = GameObject.Find("Grp_Gem");
                 if (found != null)
                 {
@@ -210,6 +221,13 @@ namespace BattlePass.UI
 
             if (gemRevealButton == null)
             {
+                if (!_hasWarnedRevealButton)
+                {
+                    Debug.LogWarning(
+                        "[GemWalletController] Btn_Gem_Reveal not wired in Inspector — " +
+                        "falling back to GameObject.Find. Assign the gemRevealButton field directly to avoid this search.");
+                    _hasWarnedRevealButton = true;
+                }
                 GameObject teaser = GameObject.Find("Btn_Gem_Reveal");
                 if (teaser != null)
                 {

@@ -10,7 +10,7 @@ using TMPro;
 
 namespace BattlePass.UI
 {
-    public class BattlePassManager : MonoBehaviour
+    public partial class BattlePassManager : MonoBehaviour
     {
         [Header("Player Data (Runtime Demo)")]
         [Min(0)] [SerializeField] private int currentLevel = 1;
@@ -94,6 +94,8 @@ namespace BattlePass.UI
 
         [Header("Prefabs")]
         [SerializeField] private GameObject nodePrefab;
+        [Tooltip("VFX object pool. Auto-added when left empty. Replaces Instantiate+Destroy for claim VFX, keeping GC allocations flat on mobile.")]
+        [SerializeField] private VfxPool vfxPool;
 
         [Header("VFX & Particles - Claim")]
         [Tooltip("Claim VFX spawned when a FREE reward card is claimed.")]
@@ -224,6 +226,7 @@ namespace BattlePass.UI
             ResolveGemWallet();
             EnsureWalletFlyAnimator();
             EnsureGemWalletController();
+            EnsureVfxPool();
             walletFlyAnimator?.SyncDisplay(goldBalance, diamondBalance, gemBalance);
             gemWalletController?.HideImmediate();
 
@@ -883,41 +886,47 @@ namespace BattlePass.UI
         }
 
         /// <summary>
-        /// Identifies whether a reward is the diamond/hard currency by matching its display or asset
-        /// name, so claimed diamond cards can be routed into the header diamond wallet.
+        /// Identifies whether a reward is the diamond/hard currency.
+        /// Checks <see cref="CurrencySubtype"/> first for an explicit mapping;
+        /// falls back to display-name / asset-name matching for legacy assets
+        /// that do not have the field set.
         /// </summary>
-        /// <param name="reward">Reward item to test.</param>
-        /// <returns>True when the reward represents diamonds.</returns>
         private bool IsDiamondReward(RewardItemSO reward)
         {
+            if (reward.CurrencySubtype == CurrencySubtype.Diamond) return true;
+            if (reward.CurrencySubtype != CurrencySubtype.None) return false;
             return RewardNameContains(reward, "diamond");
         }
 
         /// <summary>
-        /// Identifies whether a reward is the gold/soft currency by matching its display or asset
-        /// name, so claimed gold cards can be routed into the header gold wallet.
+        /// Identifies whether a reward is the gold/soft currency.
+        /// Checks <see cref="CurrencySubtype"/> first for an explicit mapping;
+        /// falls back to display-name / asset-name matching for legacy assets
+        /// that do not have the field set.
         /// </summary>
-        /// <param name="reward">Reward item to test.</param>
-        /// <returns>True when the reward represents gold.</returns>
         private bool IsGoldReward(RewardItemSO reward)
         {
+            if (reward.CurrencySubtype == CurrencySubtype.Gold) return true;
+            if (reward.CurrencySubtype != CurrencySubtype.None) return false;
             return RewardNameContains(reward, "gold");
         }
 
         /// <summary>
-        /// Identifies Lucky Gem currency rewards (not diamonds).
+        /// Identifies Lucky Gem currency rewards (not gold, not diamond).
+        /// Checks <see cref="CurrencySubtype"/> first for an explicit mapping;
+        /// falls back to display-name / asset-name matching for legacy assets
+        /// that do not have the field set.
         /// </summary>
         private bool IsLuckyGemReward(RewardItemSO reward)
         {
-            if (reward == null)
-            {
-                return false;
-            }
+            if (reward == null) return false;
 
-            if (IsDiamondReward(reward) || IsGoldReward(reward))
-            {
-                return false;
-            }
+            // Explicit enum check — no string parsing needed.
+            if (reward.CurrencySubtype == CurrencySubtype.LuckyGem) return true;
+            if (reward.CurrencySubtype == CurrencySubtype.Gold || reward.CurrencySubtype == CurrencySubtype.Diamond) return false;
+
+            // Legacy fallback: exclude known non-gem currencies first, then name-match.
+            if (IsDiamondReward(reward) || IsGoldReward(reward)) return false;
 
             string displayName = reward.DisplayName != null ? reward.DisplayName.ToLowerInvariant() : string.Empty;
             string assetName = reward.name != null ? reward.name.ToLowerInvariant() : string.Empty;
@@ -944,6 +953,9 @@ namespace BattlePass.UI
         {
             if (diamondCountText == null)
             {
+                Debug.LogWarning(
+                    "[BattlePassManager] Txt_Count_Diamond not wired in Inspector — " +
+                    "falling back to GameObject.Find. Assign diamondCountText directly to avoid this search.");
                 GameObject diamondCounter = GameObject.Find("Txt_Count_Diamond");
                 if (diamondCounter != null)
                 {
@@ -973,6 +985,9 @@ namespace BattlePass.UI
         {
             if (goldCountText == null)
             {
+                Debug.LogWarning(
+                    "[BattlePassManager] Txt_Count_Gold not wired in Inspector — " +
+                    "falling back to GameObject.Find. Assign goldCountText directly to avoid this search.");
                 GameObject goldCounter = GameObject.Find("Txt_Count_Gold");
                 if (goldCounter != null)
                 {
@@ -998,6 +1013,9 @@ namespace BattlePass.UI
         {
             if (gemCountText == null)
             {
+                Debug.LogWarning(
+                    "[BattlePassManager] Txt_Count_Gem not wired in Inspector — " +
+                    "falling back to GameObject.Find. Assign gemCountText directly to avoid this search.");
                 GameObject gemCounter = GameObject.Find("Txt_Count_Gem");
                 if (gemCounter != null)
                 {
@@ -1016,97 +1034,10 @@ namespace BattlePass.UI
             }
         }
 
-        /// <summary>
-        /// Resolves the premium offer button (scene: <c>Btn_Offer_Get</c>) when it has not been
-        /// wired in the Inspector and connects its tap to <see cref="ActivatePremium"/>.
-        /// </summary>
-        private void ResolveOfferButton()
-        {
-            if (offerButton == null)
-            {
-                GameObject offerGo = GameObject.Find("Btn_Offer_Get");
-                if (offerGo != null)
-                {
-                    offerButton = offerGo.GetComponent<Button>();
-                }
-            }
-
-            if (offerButton != null)
-            {
-                offerButton.onClick.RemoveListener(ActivatePremium);
-                offerButton.onClick.AddListener(ActivatePremium);
-            }
-        }
-
-        private void ResolveOfferBurst()
-        {
-            if (offerBurstSequence == null)
-            {
-                offerBurstSequence = FindFirstObjectByType<OfferBurstSequence>(FindObjectsInactive.Include);
-            }
-
-            if (offerBurstSequence == null)
-            {
-                Debug.LogWarning("[BattlePassManager] OfferBurstSequence not found in scene. Assign Grp_OfferBurst or premium unlock will skip the lock burst.");
-            }
-        }
-
-        /// <summary>
-        /// Unlocks the premium track on the first <c>Btn_Offer_Get</c> tap, then refreshes every
-        /// node so premium rewards become claimable.
-        /// </summary>
-        public void ActivatePremium()
-        {
-            if (isPremiumActive)
-            {
-                if (offerButton != null)
-                {
-                    PlayClickFeedback(offerButton.transform);
-                }
-
-                return;
-            }
-
-            if (offerBurstSequence != null && !offerBurstSequence.IsPlaying)
-            {
-                if (offerButton != null)
-                {
-                    offerButton.interactable = false;
-                }
-
-                offerBurstSequence.Play(CompletePremiumActivation);
-                return;
-            }
-
-            CompletePremiumActivation();
-        }
-
-        private void CompletePremiumActivation()
-        {
-            if (offerButton != null)
-            {
-                offerButton.interactable = true;
-            }
-
-            isPremiumActive = true;
-            StartCoroutine(CompletePremiumActivationDeferred());
-        }
-
-        private IEnumerator CompletePremiumActivationDeferred()
-        {
-            yield return null;
-
-            // Cheap pass first: remove lock overlays immediately without enabling off-screen VFX.
-            RefreshNodeCoreStates();
-            UpdateProgressLine();
-            UpdateTopXpPanel();
-            UpdateFloatingIndicatorTarget();
-
-            yield return null;
-
-            // Only viewport cards get glow / pulse (avoids +40 batch spike).
-            RefreshVisibleNodeEffects();
-        }
+        // ── Premium offer flow ─────────────────────────────────────────────────
+        // See BattlePassManager.Premium.cs (partial class)
+        // ResolveOfferButton · ResolveOfferBurst · ActivatePremium
+        // CompletePremiumActivation · CompletePremiumActivationDeferred
 
         /// <summary>
         /// Tap handler for the <c>Btn_XP_Skip</c> badge: spends <see cref="gemCostPerLevel"/>
@@ -1209,24 +1140,31 @@ namespace BattlePass.UI
         }
 
         /// <summary>
-        /// Instantiates a VFX prefab at the given world position under this manager and auto-destroys
-        /// it once its longest particle system has finished. Shared by claim VFX and click VFX.
+        /// Spawns a VFX prefab via the <see cref="VfxPool"/>, falling back to
+        /// Instantiate+Destroy when the pool is unavailable.
+        /// Shared by claim VFX (<see cref="SpawnClaimVFX"/>) and any future click VFX.
         /// </summary>
         /// <param name="prefab">VFX prefab to spawn (no-op when null).</param>
-        /// <param name="worldPosition">World position to place the spawned VFX at.</param>
+        /// <param name="worldPosition">World position to place the VFX at.</param>
         private void SpawnVfxAt(GameObject prefab, Vector3 worldPosition)
         {
             if (prefab == null) return;
 
-            // Spawn the VFX instance under this manager's canvas hierarchy
+            // Prefer the pool to avoid per-claim GC allocations on mobile.
+            if (vfxPool != null)
+            {
+                vfxPool.Get(prefab, worldPosition);
+                return;
+            }
+
+            // Fallback: legacy Instantiate + Destroy when no pool is assigned.
             GameObject vfxInstance = Instantiate(prefab, transform);
             if (vfxInstance == null) return;
 
             vfxInstance.transform.position = worldPosition;
 
-            // Auto-destroy after the longest active particle system finishes playing
             ParticleSystem[] allPS = vfxInstance.GetComponentsInChildren<ParticleSystem>();
-            float duration = 3.0f; // Default fallback if no particle systems found
+            float duration = 3.0f;
 
             if (allPS != null && allPS.Length > 0)
             {
@@ -1234,30 +1172,34 @@ namespace BattlePass.UI
                 foreach (var ps in allPS)
                 {
                     if (ps == null) continue;
-
                     var main = ps.main;
                     float psDuration = main.duration;
-
-                    // If it's not looping, account for the start lifetime offset
                     if (!main.loop)
                     {
                         float lifetime = Mathf.Max(main.startLifetime.constant, main.startLifetime.constantMax);
                         psDuration += lifetime;
                     }
-
-                    if (psDuration > maxDuration)
-                    {
-                        maxDuration = psDuration;
-                    }
+                    if (psDuration > maxDuration) maxDuration = psDuration;
                 }
-
-                if (maxDuration > 0f)
-                {
-                    duration = maxDuration;
-                }
+                if (maxDuration > 0f) duration = maxDuration;
             }
 
             Destroy(vfxInstance, duration);
+        }
+
+        /// <summary>
+        /// Ensures a <see cref="VfxPool"/> is attached to this GameObject.
+        /// Auto-adds the component when it has not been wired in the Inspector,
+        /// so the first claim VFX never falls back to the legacy Instantiate path.
+        /// </summary>
+        private void EnsureVfxPool()
+        {
+            if (vfxPool != null) return;
+            vfxPool = GetComponent<VfxPool>();
+            if (vfxPool == null)
+            {
+                vfxPool = gameObject.AddComponent<VfxPool>();
+            }
         }
 
         /// <summary>
@@ -1310,60 +1252,8 @@ namespace BattlePass.UI
             scrollRect.horizontalNormalizedPosition = targetNormalized;
         }
 
-        private void UpdateTopXpPanel()
-        {
-            if (topXpSlider != null)
-            {
-                topXpSlider.minValue = 0;
-                topXpSlider.maxValue = xpPerLevel;
-                topXpSlider.value = currentXp;
-            }
-
-            if (topXpText != null)
-            {
-                topXpText.text = $"{currentXp}/{xpPerLevel}";
-            }
-
-            if (topTargetLevelText != null)
-            {
-                topTargetLevelText.text = (currentLevel + 1).ToString();
-            }
-        }
-
-        private IEnumerator SeasonCountdownRoutine()
-        {
-            if (string.IsNullOrEmpty(seasonEndDateTime)) yield break;
-
-            System.DateTime targetDate;
-            if (!System.DateTime.TryParse(seasonEndDateTime, out targetDate))
-            {
-                Debug.LogWarning($"[BattlePassManager] Invalid DateTime format: {seasonEndDateTime}");
-                yield break;
-            }
-
-            while (true)
-            {
-                System.TimeSpan diff = targetDate - System.DateTime.Now;
-                if (diff.TotalSeconds <= 0)
-                {
-                    if (topTimeLeftText != null) topTimeLeftText.text = "SEASON ENDED";
-                    yield break;
-                }
-
-                if (topTimeLeftText != null)
-                {
-                    if (diff.TotalDays >= 1)
-                    {
-                        topTimeLeftText.text = $"{Mathf.FloorToInt((float)diff.TotalDays)}d {diff.Hours:D2}h";
-                    }
-                    else
-                    {
-                        topTimeLeftText.text = $"{diff.Hours:D2}h {diff.Minutes:D2}m {diff.Seconds:D2}s";
-                    }
-                }
-
-                yield return new WaitForSeconds(1.0f);
-            }
-        }
+        // ── Season countdown & XP panel ────────────────────────────────────────
+        // See BattlePassManager.Season.cs (partial class)
+        // UpdateTopXpPanel · SeasonCountdownRoutine
     }
 }

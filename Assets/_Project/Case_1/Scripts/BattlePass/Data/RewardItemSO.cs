@@ -14,6 +14,20 @@ namespace BattlePass.UI
     }
 
     /// <summary>
+    /// Identifies which wallet a Currency reward credits when claimed.
+    /// Set this on every RewardItemSO whose Type is Currency so the routing
+    /// no longer relies on display-name string matching.
+    /// Non-currency items should be left as None.
+    /// </summary>
+    public enum CurrencySubtype
+    {
+        None,       // Not a currency, or use legacy name-based routing
+        Gold,       // Soft currency — credits the gold wallet
+        Diamond,    // Hard currency — credits the diamond wallet (spent to skip levels)
+        LuckyGem    // Special currency — credits the gem wallet (revealed via GemWalletController)
+    }
+
+    /// <summary>
     /// ScriptableObject defining a single reward item type.
     /// Acts as static data template for pass cards.
     /// </summary>
@@ -42,7 +56,15 @@ namespace BattlePass.UI
 
         [Tooltip("If true, this item will be tracked by the Key Reward Indicator even if not unique.")]
         [SerializeField] private bool showInKeyRewardIndicator = false;
-        
+
+        [Header("Currency Routing")]
+        [Tooltip(
+            "Which wallet this reward credits when claimed. " +
+            "Only meaningful when RewardType is Currency. " +
+            "Set this explicitly so routing does not rely on display-name matching. " +
+            "Leave as None to keep the legacy name-based fallback active.")]
+        [SerializeField] private CurrencySubtype currencySubtype = CurrencySubtype.None;
+
         [Header("Battle Pass Pool Rules")]
         [Tooltip("Completely excludes this item from the automatic tier generator.")]
         public bool excludeFromBattlePass = false;
@@ -70,6 +92,12 @@ namespace BattlePass.UI
         public bool ShowInKeyRewardIndicator => showInKeyRewardIndicator;
         public bool DistributeFixedTotal => distributeFixedTotal;
         public int FixedTotalAmount => fixedTotalAmount;
+
+        /// <summary>
+        /// Which wallet this currency reward credits.
+        /// None means fall back to display-name string matching (legacy behaviour).
+        /// </summary>
+        public CurrencySubtype CurrencySubtype => currencySubtype;
 
         /// <summary>
         /// Returns the formatted subtitle string based on the reward type and amount.
