@@ -1,13 +1,13 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// Shared editor helper that paints a coloured title banner at the very top of an inspector,
     /// giving the project's critical scripts a consistent, custom-branded header strip.
     /// </summary>
-    public static class VertigoInspectorBanner
+    public static class InspectorBanner
     {
         /// <summary>
         /// Draws a full-width coloured banner with a bold, upper-cased title.
@@ -45,7 +45,7 @@ namespace VertigoCase.UI
     {
         public override void OnInspectorGUI()
         {
-            VertigoInspectorBanner.Draw("Battle Pass Node", new Color(0.85f, 0.42f, 0.12f));
+            InspectorBanner.Draw("Battle Pass Node", new Color(0.85f, 0.42f, 0.12f));
             DrawDefaultInspector();
         }
     }
@@ -58,7 +58,7 @@ namespace VertigoCase.UI
     {
         public override void OnInspectorGUI()
         {
-            VertigoInspectorBanner.Draw("Level Skip Button", new Color(0.16f, 0.55f, 0.27f));
+            InspectorBanner.Draw("Level Skip Button", new Color(0.16f, 0.55f, 0.27f));
             DrawDefaultInspector();
         }
     }

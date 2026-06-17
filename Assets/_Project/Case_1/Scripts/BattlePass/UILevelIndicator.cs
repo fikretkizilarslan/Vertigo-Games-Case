@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// Floating indicator that tracks the current level node. Points left or right when the node is

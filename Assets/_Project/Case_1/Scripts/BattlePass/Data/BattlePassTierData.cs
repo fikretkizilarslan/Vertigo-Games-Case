@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     public enum RewardRarity
     {

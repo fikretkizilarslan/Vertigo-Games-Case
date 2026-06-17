@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// Editor-only tier generator for <see cref="BattlePassManager"/>.
@@ -18,7 +18,7 @@ namespace VertigoCase.UI
 
         public override void OnInspectorGUI()
         {
-            VertigoInspectorBanner.Draw("Battle Pass Manager", new Color(0.14f, 0.34f, 0.8f));
+            InspectorBanner.Draw("Battle Pass Manager", new Color(0.14f, 0.34f, 0.8f));
 
             DrawDefaultInspector();
 

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     [CustomEditor(typeof(RewardItemSO))]
     [CanEditMultipleObjects]

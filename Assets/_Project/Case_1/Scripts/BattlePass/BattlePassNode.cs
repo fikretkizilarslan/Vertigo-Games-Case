@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     public class BattlePassNode : MonoBehaviour
     {

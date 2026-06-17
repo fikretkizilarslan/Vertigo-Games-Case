@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// Keeps <c>Grp_Gem</c> hidden until the player taps the gem teaser button or claims a Lucky Gem reward.

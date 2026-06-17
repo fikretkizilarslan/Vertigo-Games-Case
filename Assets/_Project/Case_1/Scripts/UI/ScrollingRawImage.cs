@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// Scrolls the UV Rect of a RawImage component every frame

@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     public class BattlePassManager : MonoBehaviour
     {
@@ -21,59 +21,27 @@ namespace VertigoCase.UI
         [Header("Tier Setup — Populate from Inspector")]
         [SerializeField] private List<BattlePassTierData> tierList = new List<BattlePassTierData>();
 
-        [Header("Card Background Sprites")]
-        [SerializeField] private Sprite cardUncommon;
-        [SerializeField] private Sprite cardRare;
-        [SerializeField] private Sprite cardEpic;
-        [SerializeField] private Sprite cardLegendary;
-        [SerializeField] private Sprite cardMythic;
-        [SerializeField] private Sprite highlightedCardBgSprite; // ui_event_pass_collectable
-        [SerializeField] private Sprite claimedCardBgSprite; // ui_item_level_panel_collected
-        [SerializeField] private Material cardSweepMaterial; // Shine sweep for collectable/highlighted cards
-        [SerializeField] private Material rarityCardSweepMaterial; // Shine sweep for the other (rarity) cards
+        [Header("Visual Config")]
+        [Tooltip("Shared card frame sprites, shine/glow materials, per-rarity glow tints and level node sprites. Create via Assets > Create > Battle Pass > Visual Config.")]
+        [SerializeField] private BattlePassVisualConfig visualConfig;
 
-        [Header("Card Rarity Glow")]
-        [Tooltip("Single shared material (Case1/Sh_UIGlowPulse) used by every card's back glow. Per-card tint comes from the Image vertex color, so no per-card material copies are needed.")]
-        [SerializeField] private Material cardGlowMaterial;
-        [Tooltip("Tint applied to the back glow per rarity. Drives the shared glow material via the Image's vertex color.")]
-        [SerializeField] private Color colorUncommon = new Color(0.30f, 0.80f, 0.25f, 1f);
-        [SerializeField] private Color colorRare = new Color(0.23f, 0.63f, 1f, 1f);
-        [SerializeField] private Color colorEpic = new Color(0.65f, 0.30f, 1f, 1f);
-        [SerializeField] private Color colorLegendary = new Color(1f, 0.54f, 0.12f, 1f);
-        [SerializeField] private Color colorMythic = new Color(0.94f, 0.19f, 0.19f, 1f);
-        [Tooltip("Tint for the highlighted/collectable (event) cards.")]
-        [SerializeField] private Color colorHighlighted = new Color(1f, 0.82f, 0.25f, 1f);
-
-        public Sprite HighlightedCardBgSprite => highlightedCardBgSprite;
-        public Sprite ClaimedCardBgSprite => claimedCardBgSprite;
-        public Material CardSweepMaterial => cardSweepMaterial;
-        public Material RarityCardSweepMaterial => rarityCardSweepMaterial;
-        public Material CardGlowMaterial => cardGlowMaterial;
+        public Sprite HighlightedCardBgSprite => visualConfig != null ? visualConfig.HighlightedCardBgSprite : null;
+        public Sprite ClaimedCardBgSprite => visualConfig != null ? visualConfig.ClaimedCardBgSprite : null;
+        public Material CardSweepMaterial => visualConfig != null ? visualConfig.CardSweepMaterial : null;
+        public Material RarityCardSweepMaterial => visualConfig != null ? visualConfig.RarityCardSweepMaterial : null;
+        public Material CardGlowMaterial => visualConfig != null ? visualConfig.CardGlowMaterial : null;
         public bool EnableClaimShine => enableClaimShine;
         public float ClaimShineDuration => claimShineDuration;
         public Material ClaimShineMaterial => claimShineMaterial;
-        public Color HighlightedCardColor => colorHighlighted;
+        public Color HighlightedCardColor => visualConfig != null ? visualConfig.HighlightedCardColor : Color.white;
+        public Sprite LevelCompletedSprite => visualConfig != null ? visualConfig.LevelCompletedSprite : null;
+        public Sprite LevelLockedSprite => visualConfig != null ? visualConfig.LevelLockedSprite : null;
 
         /// <summary>Maps a reward rarity to the tint used by the shared card glow material.</summary>
         public Color GetCardColorByRarity(RewardRarity rarity)
         {
-            switch (rarity)
-            {
-                case RewardRarity.Uncommon: return colorUncommon;
-                case RewardRarity.Rare: return colorRare;
-                case RewardRarity.Epic: return colorEpic;
-                case RewardRarity.Legendary: return colorLegendary;
-                case RewardRarity.Mythic: return colorMythic;
-                default: return colorUncommon;
-            }
+            return visualConfig != null ? visualConfig.GetCardColorByRarity(rarity) : Color.white;
         }
-
-        [Header("Level Node Sprites")]
-        [SerializeField] private Sprite levelCompletedSprite;
-        [SerializeField] private Sprite levelLockedSprite;
-
-        public Sprite LevelCompletedSprite => levelCompletedSprite;
-        public Sprite LevelLockedSprite => levelLockedSprite;
 
         [Header("UI References - Road")]
         [SerializeField] private ScrollRect scrollRect;
@@ -122,7 +90,7 @@ namespace VertigoCase.UI
         [Tooltip("Road scroll-view canvas group, faded in once the road finishes building to hide the first-frame layout pop. Auto-resolved from the ScrollRect when empty.")]
         [SerializeField] private CanvasGroup roadCanvasGroup;
         [Tooltip("Fade-in duration (seconds) used to reveal the road on startup.")]
-        [Min(0f)] [SerializeField] private float startupRevealDuration = 0.2f;
+        [Min(0f)] [SerializeField] private float startupRevealDuration = 0f;
 
         [Header("Prefabs")]
         [SerializeField] private GameObject nodePrefab;
@@ -166,8 +134,6 @@ namespace VertigoCase.UI
         private float initialLineLocalZ;
         private readonly Vector3[] skipButtonCorners = new Vector3[4];
         private readonly Vector3[] levelNodeCorners = new Vector3[4];
-        private Vector3[] m_Corners;
-        private WaitForSeconds m_WaitAnimateDelay;
 
         // LateUpdate performance caching
         private float m_LastScrollPos = -1f;
@@ -253,9 +219,6 @@ namespace VertigoCase.UI
                 initialLineLocalZ = lineGradient.localPosition.z;
             }
 
-            m_Corners = new Vector3[4];
-            m_WaitAnimateDelay = new WaitForSeconds(0.5f);
-
             ResolveDiamondWallet();
             ResolveGoldWallet();
             ResolveGemWallet();
@@ -283,9 +246,9 @@ namespace VertigoCase.UI
                 return;
             }
 
-            SpawnRoadNodes();
-
-            // Test Setup: Mark rewards below level 2 as claimed (levels 2, 3, and 4 will be claimable)
+            // Test Setup: Mark rewards below level 2 as claimed (levels 2, 3, and 4 will be claimable).
+            // Done before spawning so each node already renders its correct claimed state in
+            // Initialize, letting us skip a second full-node UI pass on the heavy build frame.
             foreach (var tier in tierList)
             {
                 if (tier.level < 2)
@@ -294,16 +257,51 @@ namespace VertigoCase.UI
                     if (isPremiumActive && tier.premiumReward != null) tier.premiumReward.isClaimed = true;
                 }
             }
-            
-            if (scrollRect != null)
-            {
-                scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
-            }
 
             StartCoroutine(SeasonCountdownRoutine());
 
-            // Settle the layout immediately so the road is correctly positioned on the very first
-            // rendered frame, then reveal it. This removes the visible "build then jump" pop on startup.
+            // Build the road across a few frames so pressing Play never blocks on instantiating
+            // every card in a single frame. The rest of the scene (header, background) shows
+            // instantly while the road is assembled behind the hidden CanvasGroup, then snaps in
+            // already centred on the current level — no multi-second freeze, no intro auto-scroll.
+            StartCoroutine(StartupBuildRoutine());
+        }
+
+        /// <summary>
+        /// Spreads the road build over several frames and reveals it already centred on the current
+        /// level. Keeps the heavy instantiate cost off a single frame (no startup freeze) and skips
+        /// the old intro auto-scroll so the scene is interactive immediately.
+        /// </summary>
+        private IEnumerator StartupBuildRoutine()
+        {
+            // Paint the static scene (header, offer, background) on the very first frame before
+            // spending any time on the road, so Play feels instant even while the road is built
+            // behind the hidden CanvasGroup.
+            yield return null;
+
+            // Turn off layout driving on the road content for the duration of the build. With the
+            // HorizontalLayoutGroup + ContentSizeFitter active, every single node added forces a
+            // re-solve of the whole (growing) content each frame — an O(n^2) stall that is what made
+            // startup hang for seconds. We disable them, instantiate every node cheaply, then
+            // re-enable and rebuild the final layout exactly once.
+            LayoutGroup contentLayout = null;
+            ContentSizeFitter contentFitter = null;
+            if (contentContainer != null)
+            {
+                contentLayout = contentContainer.GetComponent<LayoutGroup>();
+                contentFitter = contentContainer.GetComponent<ContentSizeFitter>();
+            }
+            bool layoutWasEnabled = contentLayout != null && contentLayout.enabled;
+            bool fitterWasEnabled = contentFitter != null && contentFitter.enabled;
+            if (contentLayout != null) contentLayout.enabled = false;
+            if (contentFitter != null) contentFitter.enabled = false;
+
+            yield return StartCoroutine(SpawnRoadNodesRoutine());
+
+            // Restore layout driving and solve the final road layout in a single pass.
+            if (contentLayout != null) contentLayout.enabled = layoutWasEnabled;
+            if (contentFitter != null) contentFitter.enabled = fitterWasEnabled;
+
             Canvas.ForceUpdateCanvases();
             if (contentContainer is RectTransform contentRect)
             {
@@ -311,22 +309,58 @@ namespace VertigoCase.UI
             }
             Canvas.ForceUpdateCanvases();
 
-            UpdateAllUI();
+            // Land directly on the current level instead of animating in from level 0.
+            JumpScrollToLevel(currentLevel);
 
-            StartCoroutine(StartupRevealRoutine());
-            StartCoroutine(DeferredCardPulseRefreshRoutine());
-            scrollSnapRoutine = StartCoroutine(AnimateToCurrentLevelRoutine());
+            if (scrollRect != null)
+            {
+                scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
+            }
+
+            UpdateProgressLine();
+            UpdateFloatingIndicatorTarget();
+            UpdateTopXpPanel();
+            RefreshVisibleNodeEffects();
+
+            // Reveal the finished, correctly positioned road.
+            if (startupRevealDuration <= 0f)
+            {
+                if (roadCanvasGroup != null) roadCanvasGroup.alpha = 1f;
+            }
+            else
+            {
+                yield return StartCoroutine(StartupRevealRoutine());
+            }
         }
 
         /// <summary>
-        /// Re-applies card pulse / glow after the first layout pass so DOTween picks up the
-        /// final RectTransform scale (avoids a one-frame miss right after road spawn).
+        /// Instantly centres the scroll view on the requested level (no animation). Shared startup
+        /// helper so the road opens directly on the current level.
         /// </summary>
-        private IEnumerator DeferredCardPulseRefreshRoutine()
+        private void JumpScrollToLevel(int level)
         {
-            yield return null;
-            Canvas.ForceUpdateCanvases();
-            UpdateAllUI();
+            if (scrollRect == null || instantiatedNodes.Count == 0) return;
+
+            int levelIndex = GetNodeIndexForLevel(level);
+            BattlePassNode targetNode = instantiatedNodes[levelIndex];
+            if (targetNode == null || targetNode.LevelNodeAnchor == null) return;
+
+            RectTransform contentRect = scrollRect.content;
+            RectTransform viewportRect = scrollRect.viewport;
+            if (contentRect == null || viewportRect == null) return;
+
+            float contentWidth = contentRect.rect.width;
+            float viewportWidth = viewportRect.rect.width;
+            if (contentWidth <= viewportWidth)
+            {
+                scrollRect.horizontalNormalizedPosition = 0f;
+                return;
+            }
+
+            float targetLocalX = contentRect.InverseTransformPoint(targetNode.LevelNodeAnchor.position).x;
+            float distanceFromLeft = targetLocalX + (contentRect.pivot.x * contentWidth);
+            float desiredScrollPos = distanceFromLeft - (viewportWidth / 2f);
+            scrollRect.horizontalNormalizedPosition = Mathf.Clamp01(desiredScrollPos / (contentWidth - viewportWidth));
         }
 
         /// <summary>
@@ -372,16 +406,20 @@ namespace VertigoCase.UI
             roadCanvasGroup.alpha = 1f;
         }
 
-        private void SpawnRoadNodes()
+        /// <summary>
+        /// Instantiates one node per tier, spread over several frames so the build never blocks the
+        /// main thread in a single frame. The road stays hidden (alpha 0) until the build finishes.
+        /// </summary>
+        private IEnumerator SpawnRoadNodesRoutine()
         {
-            if (contentContainer == null) return;
+            if (contentContainer == null) yield break;
 
             // Clear existing child nodes except slider and gradient
             foreach (Transform child in contentContainer)
             {
                 bool isRoadSlider = (roadSlider != null && child.gameObject == roadSlider.gameObject);
                 bool isLineGradient = (lineGradient != null && child.gameObject == lineGradient.gameObject);
-                
+
                 if (!isRoadSlider && !isLineGradient)
                 {
                     Destroy(child.gameObject);
@@ -389,7 +427,12 @@ namespace VertigoCase.UI
             }
             instantiatedNodes.Clear();
 
-            // Instantiate prefab node for each tier
+            // How many nodes to instantiate per frame. Layout driving is disabled by the caller during
+            // the build, so each instantiate is cheap and we can spawn a large batch per frame while
+            // still spreading the cost enough to avoid a single visible hitch.
+            const int spawnBatchSize = 12;
+            int spawnedInBatch = 0;
+
             foreach (var tier in tierList)
             {
                 if (nodePrefab == null) continue;
@@ -400,6 +443,13 @@ namespace VertigoCase.UI
                 {
                     node.Initialize(tier, this);
                     instantiatedNodes.Add(node);
+                }
+
+                spawnedInBatch++;
+                if (spawnedInBatch >= spawnBatchSize)
+                {
+                    spawnedInBatch = 0;
+                    yield return null;
                 }
             }
 
@@ -535,16 +585,6 @@ namespace VertigoCase.UI
                 UpdateProgressLine();
                 UpdateFloatingIndicatorTarget();
             }
-        }
-
-        public Vector3 GetProgressFillEndWorldPosition()
-        {
-            if (roadSlider == null || instantiatedNodes.Count == 0 || roadSlider.fillRect == null || m_Corners == null) return Vector3.zero;
-
-            roadSlider.fillRect.GetWorldCorners(m_Corners);
-
-            // Midpoint of right-top and right-bottom corners is the end of fill
-            return (m_Corners[2] + m_Corners[3]) / 2f;
         }
 
         private void UpdateFloatingIndicatorTarget()
@@ -702,15 +742,7 @@ namespace VertigoCase.UI
 
         public Sprite GetCardSpriteByRarity(RewardRarity rarity)
         {
-            switch (rarity)
-            {
-                case RewardRarity.Uncommon: return cardUncommon;
-                case RewardRarity.Rare: return cardRare;
-                case RewardRarity.Epic: return cardEpic;
-                case RewardRarity.Legendary: return cardLegendary;
-                case RewardRarity.Mythic: return cardMythic;
-                default: return cardUncommon;
-            }
+            return visualConfig != null ? visualConfig.GetCardSpriteByRarity(rarity) : null;
         }
 
         public void OnRewardClicked(BattlePassNode node, bool isPremium)
@@ -1226,49 +1258,6 @@ namespace VertigoCase.UI
             }
 
             Destroy(vfxInstance, duration);
-        }
-
-        private IEnumerator AnimateToCurrentLevelRoutine()
-        {
-            if (scrollRect == null || instantiatedNodes.Count == 0) yield break;
-
-            scrollRect.horizontalNormalizedPosition = 0f;
-            yield return null;
-
-            int currentLevelIndex = GetNodeIndexForLevel(currentLevel);
-            BattlePassNode currentNode = instantiatedNodes[currentLevelIndex];
-
-            RectTransform contentRect = scrollRect.content;
-            RectTransform viewportRect = scrollRect.viewport;
-            float contentWidth = contentRect.rect.width;
-            float viewportWidth = viewportRect.rect.width;
-
-            if (contentWidth <= viewportWidth) yield break;
-
-            float targetLocalX = contentRect.InverseTransformPoint(currentNode.LevelNodeAnchor.position).x;
-            float distanceFromLeft = targetLocalX + (contentRect.pivot.x * contentWidth);
-            float desiredScrollPos = distanceFromLeft - (viewportWidth / 2f);
-            float targetNormalized = desiredScrollPos / (contentWidth - viewportWidth);
-            targetNormalized = Mathf.Clamp01(targetNormalized);
-
-            yield return m_WaitAnimateDelay;
-
-            float duration = 1.5f;
-            float elapsed = 0f;
-
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / duration;
-
-                // Ease Out Cubic scroll interpolation.
-                float easeT = 1f - Mathf.Pow(1f - t, 3f);
-
-                scrollRect.horizontalNormalizedPosition = Mathf.Lerp(0f, targetNormalized, easeT);
-                yield return null;
-            }
-
-            scrollRect.horizontalNormalizedPosition = targetNormalized;
         }
 
         /// <summary>

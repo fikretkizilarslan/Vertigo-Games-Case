@@ -3,12 +3,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// One-shot premium-offer hero moment wired in the scene under the battle-pass canvas.
-    /// Uses a dedicated dim backdrop plus a fully opaque lock icon so the parent CanvasGroup
-    /// does not wash out the lock.
+    /// Uses a full-opacity tiled backdrop under Img_Dim plus a fully opaque lock icon so the
+    /// parent CanvasGroup does not wash out the lock.
     /// </summary>
     [DisallowMultipleComponent]
     public class OfferBurstSequence : MonoBehaviour
@@ -17,12 +17,13 @@ namespace VertigoCase.UI
         [SerializeField] private RectTransform lockRect;
         [SerializeField] private CanvasGroup overlayGroup;
         [SerializeField] private CanvasGroup lockGroup;
-        [SerializeField] private Image dimBackdrop;
+        [SerializeField] private Image solidFill;
+        [SerializeField] private Graphic patternOverlay;
         [SerializeField] private GameObject vfxSlot;
         [SerializeField] private Image lockImage;
 
         [Header("Timing")]
-        [SerializeField] private float dimAlpha = 0.68f;
+        [SerializeField] [Range(0f, 1f)] private float backdropMaxAlpha = 1f;
         [SerializeField] private float popInDuration = 0.22f;
         [SerializeField] private float shakeDuration = 0.32f;
         [SerializeField] private float explodeDuration = 0.28f;
@@ -31,6 +32,8 @@ namespace VertigoCase.UI
         private Coroutine playRoutine;
         private Vector3 lockBaseScale = Vector3.one;
         private Quaternion lockBaseRotation = Quaternion.identity;
+        private Color solidBaseColor = Color.white;
+        private Color patternBaseColor = Color.white;
         private bool isInitialized;
 
         public bool IsPlaying => playRoutine != null;
@@ -66,12 +69,18 @@ namespace VertigoCase.UI
 
         private bool Initialize()
         {
-            if (dimBackdrop == null)
+            Transform dimTransform = transform.Find("Img_Dim");
+            if (solidFill == null && dimTransform != null)
             {
-                Transform dimTransform = transform.Find("Img_Dim");
-                if (dimTransform != null)
+                solidFill = dimTransform.GetComponent<Image>();
+            }
+
+            if (patternOverlay == null && dimTransform != null)
+            {
+                Transform tileTransform = dimTransform.Find("Img_Background_Tile");
+                if (tileTransform != null)
                 {
-                    dimBackdrop = dimTransform.GetComponent<Image>();
+                    patternOverlay = tileTransform.GetComponent<Graphic>();
                 }
             }
 
@@ -108,13 +117,22 @@ namespace VertigoCase.UI
                 }
             }
 
-            if (lockRect == null || overlayGroup == null || lockGroup == null || dimBackdrop == null)
+            if (lockRect == null || overlayGroup == null || lockGroup == null || solidFill == null)
             {
                 Debug.LogWarning("[OfferBurstSequence] Scene references are missing. Assign Grp_OfferBurst hierarchy in BattlePass Scene.");
                 return false;
             }
 
             lockGroup.ignoreParentGroups = true;
+
+            solidBaseColor = solidFill.color;
+            solidBaseColor.a = 1f;
+
+            if (patternOverlay != null)
+            {
+                patternBaseColor = patternOverlay.color;
+                patternBaseColor.a = 1f;
+            }
 
             if (lockImage != null)
             {
@@ -139,7 +157,7 @@ namespace VertigoCase.UI
                 overlayGroup.interactable = false;
             }
 
-            SetDimAlpha(0f);
+            SetBackdropAlpha(0f);
 
             if (lockGroup != null)
             {
@@ -158,16 +176,23 @@ namespace VertigoCase.UI
             }
         }
 
-        private void SetDimAlpha(float alpha)
+        private void SetBackdropAlpha(float alpha)
         {
-            if (dimBackdrop == null) return;
+            float a = Mathf.Clamp01(alpha) * backdropMaxAlpha;
 
-            Color c = dimBackdrop.color;
-            c.r = 0f;
-            c.g = 0f;
-            c.b = 0f;
-            c.a = alpha;
-            dimBackdrop.color = c;
+            if (solidFill != null)
+            {
+                Color c = solidBaseColor;
+                c.a = a;
+                solidFill.color = c;
+            }
+
+            if (patternOverlay != null)
+            {
+                Color c = patternBaseColor;
+                c.a = a;
+                patternOverlay.color = c;
+            }
         }
 
         private IEnumerator PlayRoutine(Action onComplete)
@@ -186,13 +211,13 @@ namespace VertigoCase.UI
                 float eased = 1f - Mathf.Pow(1f - t, 3f);
                 float overshoot = Mathf.Lerp(0f, 1.15f, eased);
 
-                SetDimAlpha(dimAlpha * eased);
+                SetBackdropAlpha(eased);
                 lockGroup.alpha = 1f;
                 lockRect.localScale = lockBaseScale * overshoot;
                 yield return null;
             }
 
-            SetDimAlpha(dimAlpha);
+            SetBackdropAlpha(backdropMaxAlpha);
             lockGroup.alpha = 1f;
             lockRect.localScale = lockBaseScale;
 
@@ -230,7 +255,7 @@ namespace VertigoCase.UI
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / fadeOutDuration);
-                SetDimAlpha(dimAlpha * (1f - t));
+                SetBackdropAlpha(backdropMaxAlpha * (1f - t));
                 yield return null;
             }
 

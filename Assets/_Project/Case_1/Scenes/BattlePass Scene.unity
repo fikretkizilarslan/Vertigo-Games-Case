@@ -8673,24 +8673,7 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
-  cardUncommon: {fileID: 21300000, guid: 3ffd3fa2d3c631c4fb0cbfbc174ebcfe, type: 3}
-  cardRare: {fileID: 21300000, guid: 8c315cd525c2cc2448a27e646fd0dc50, type: 3}
-  cardEpic: {fileID: 21300000, guid: 41289d4e56b56534493c51608e012ab5, type: 3}
-  cardLegendary: {fileID: 21300000, guid: bb9a62d630566754db9fc0b8bae27832, type: 3}
-  cardMythic: {fileID: 21300000, guid: 94c4673d02595a247bc5bf22193e383c, type: 3}
-  highlightedCardBgSprite: {fileID: 21300000, guid: 003fb8d53363e684c8bd2d06c7a3ef8e, type: 3}
-  claimedCardBgSprite: {fileID: 21300000, guid: 685785a351799cc449e3a2541cad03d1, type: 3}
-  cardSweepMaterial: {fileID: 2100000, guid: d01ff5dcd96c9284381a608adb74b44b, type: 2}
-  rarityCardSweepMaterial: {fileID: 2100000, guid: 1c85ea6de4a6d074faba11a2c3316b46, type: 2}
-  cardGlowMaterial: {fileID: 2100000, guid: 4d9f2a7c8b3e4f15a9c0d6e2f1b8a3c7, type: 2}
-  colorUncommon: {r: 0.3, g: 0.8, b: 0.25, a: 1}
-  colorRare: {r: 0.23, g: 0.63, b: 1, a: 1}
-  colorEpic: {r: 0.65, g: 0.3, b: 1, a: 1}
-  colorLegendary: {r: 1, g: 0.54, b: 0.12, a: 1}
-  colorMythic: {r: 0.94, g: 0.19, b: 0.19, a: 1}
-  colorHighlighted: {r: 1, g: 0.82, b: 0.25, a: 1}
-  levelCompletedSprite: {fileID: 21300000, guid: 1377e5ddf531e5e42a2c682e43e55022, type: 3}
-  levelLockedSprite: {fileID: 21300000, guid: 6b5403c56c6746445bb6569497ed5cd0, type: 3}
+  visualConfig: {fileID: 11400000, guid: d5a9b2c30e4f5a6b9c7d8e1f2a3b4c5d, type: 2}
   scrollRect: {fileID: 1040001498}
   contentContainer: {fileID: 1711525860}
   roadSlider: {fileID: 138709631}
@@ -8715,7 +8698,7 @@ MonoBehaviour:
   gemWalletController: {fileID: 0}
   walletFlyAnimator: {fileID: 0}
   roadCanvasGroup: {fileID: 0}
-  startupRevealDuration: 0.2
+  startupRevealDuration: 0
   nodePrefab: {fileID: 7555761151618658622, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
   freeClaimVfxPrefab: {fileID: 5595574936504997245, guid: 6f303b0f27fb67846996b3a2a0d20400, type: 3}
   premiumClaimVfxPrefab: {fileID: 5595574936504997245, guid: 322b9af5df511c24d9d01c3478289f74, type: 3}
@@ -15099,7 +15082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &910000002
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15149,10 +15132,11 @@ MonoBehaviour:
   lockRect: {fileID: 910000011}
   overlayGroup: {fileID: 910000003}
   lockGroup: {fileID: 910000012}
-  dimBackdrop: {fileID: 910000033}
+  solidFill: {fileID: 910000033}
+  patternOverlay: {fileID: 1977756300}
   vfxSlot: {fileID: 910000020}
   lockImage: {fileID: 910000013}
-  dimAlpha: 0.68
+  backdropMaxAlpha: 1
   popInDuration: 0.22
   shakeDuration: 0.32
   explodeDuration: 0.28
@@ -15309,7 +15293,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1977756299}
   m_Father: {fileID: 910000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -15338,7 +15323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0.18431373, g: 0.011764706, b: 0.54901963, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -30510,6 +30495,78 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1968904820}
+  m_CullTransparentMesh: 1
+--- !u!1 &1977756298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1977756299}
+  - component: {fileID: 1977756301}
+  - component: {fileID: 1977756300}
+  m_Layer: 5
+  m_Name: Img_Background_Tile
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1977756299
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977756298}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0000306, y: 1.0000306, z: 1.0000306}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910000031}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1977756300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977756298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
+  m_Material: {fileID: 2100000, guid: 6ee058e35185ae24a8ff73418b8fef08, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 2800000, guid: 86069d797c123634bb64bfca6ba7b747, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1977756301
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977756298}
   m_CullTransparentMesh: 1
 --- !u!1 &1991454614
 GameObject:

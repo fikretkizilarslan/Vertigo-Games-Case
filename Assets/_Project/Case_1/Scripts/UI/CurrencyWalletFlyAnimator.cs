@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     public enum WalletCurrencyType
     {

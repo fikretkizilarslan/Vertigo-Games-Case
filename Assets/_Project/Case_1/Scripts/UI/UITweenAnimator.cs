@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     /// <summary>
     /// Generic DOTween-driven looping animation for UI elements.
@@ -58,7 +58,6 @@ namespace VertigoCase.UI
         private Vector3 restScale;
         private bool hasRestScale;
         private Vector3 baseEuler;
-        private bool cached;
         private Tween tween;
 
         private void Awake()
@@ -86,7 +85,6 @@ namespace VertigoCase.UI
             EnsureRestScale();
             transform.localScale = restScale;
             baseScale = restScale;
-            cached = true;
 
             switch (animationType)
             {
@@ -205,7 +203,6 @@ namespace VertigoCase.UI
             hasRestScale = true;
             baseScale = restScale;
             baseEuler = transform.localEulerAngles;
-            cached = true;
         }
 
         private void EnsureRestScale()
@@ -214,16 +211,6 @@ namespace VertigoCase.UI
             {
                 CaptureRestScale();
             }
-        }
-
-        private void CacheBaseState()
-        {
-            if (cached)
-            {
-                return;
-            }
-
-            CaptureRestScale();
         }
 
         private void ResetState()

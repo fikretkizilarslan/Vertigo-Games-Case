@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     // Reward category - determines card behavior and layout
     public enum RewardType

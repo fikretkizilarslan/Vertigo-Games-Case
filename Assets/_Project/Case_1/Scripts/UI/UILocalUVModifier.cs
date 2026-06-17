@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VertigoCase.UI
+namespace BattlePass.UI
 {
     [ExecuteAlways]
     [AddComponentMenu("UI/Effects/UI Local UV Modifier")]

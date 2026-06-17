@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f8a1b29d3e4f5a8b6c7d0e1f2a3b4c, type: 3}
+  m_Name: BattlePassVisualConfig
+  m_EditorClassIdentifier: Assembly-CSharp::VertigoCase.UI.BattlePassVisualConfig
+  cardUncommon: {fileID: 21300000, guid: 3ffd3fa2d3c631c4fb0cbfbc174ebcfe, type: 3}
+  cardRare: {fileID: 21300000, guid: 8c315cd525c2cc2448a27e646fd0dc50, type: 3}
+  cardEpic: {fileID: 21300000, guid: 41289d4e56b56534493c51608e012ab5, type: 3}
+  cardLegendary: {fileID: 21300000, guid: bb9a62d630566754db9fc0b8bae27832, type: 3}
+  cardMythic: {fileID: 21300000, guid: 94c4673d02595a247bc5bf22193e383c, type: 3}
+  highlightedCardBgSprite: {fileID: 21300000, guid: 003fb8d53363e684c8bd2d06c7a3ef8e, type: 3}
+  claimedCardBgSprite: {fileID: 21300000, guid: 685785a351799cc449e3a2541cad03d1, type: 3}
+  cardSweepMaterial: {fileID: 2100000, guid: d01ff5dcd96c9284381a608adb74b44b, type: 2}
+  rarityCardSweepMaterial: {fileID: 2100000, guid: 1c85ea6de4a6d074faba11a2c3316b46, type: 2}
+  cardGlowMaterial: {fileID: 2100000, guid: 4d9f2a7c8b3e4f15a9c0d6e2f1b8a3c7, type: 2}
+  colorUncommon: {r: 0.3, g: 0.8, b: 0.25, a: 1}
+  colorRare: {r: 0.23, g: 0.63, b: 1, a: 1}
+  colorEpic: {r: 0.65, g: 0.3, b: 1, a: 1}
+  colorLegendary: {r: 1, g: 0.54, b: 0.12, a: 1}
+  colorMythic: {r: 0.94, g: 0.19, b: 0.19, a: 1}
+  colorHighlighted: {r: 1, g: 0.82, b: 0.25, a: 1}
+  levelCompletedSprite: {fileID: 21300000, guid: 1377e5ddf531e5e42a2c682e43e55022, type: 3}
+  levelLockedSprite: {fileID: 21300000, guid: 6b5403c56c6746445bb6569497ed5cd0, type: 3}

@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
-namespace VertigoCase.WeaponVFX
+namespace BattlePass.Showcase
 {
     public class ShowcaseCameraController : MonoBehaviour
     {
