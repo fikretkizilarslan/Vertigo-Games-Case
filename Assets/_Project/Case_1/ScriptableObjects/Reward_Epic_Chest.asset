@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab97974ee9c470340a2d1c6282e1db7a, type: 3}
   m_Name: Reward_Epic_Chest
   m_EditorClassIdentifier: Assembly-CSharp::VertigoCase.UI.RewardItemSO
-  displayName: Epic Chest
+  displayName: "Ep\u0131c Chest"
   icon: {fileID: 21300000, guid: 8b3fa6ee6bf0a554d8cb66dbf938238a, type: 3}
   currencyIcon: {fileID: 0}
   rewardType: 3

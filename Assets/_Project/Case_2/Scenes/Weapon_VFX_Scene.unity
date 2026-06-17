@@ -10942,14 +10942,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 853720272}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f83d1c4e2b5a6478890abcde1234567, type: 3}
+  m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1846766534}
-  rotationSpeed: 3
-  zoomSpeed: 1
-  minZoom: 0.7
-  maxZoom: 3
 --- !u!1 &896892041
 GameObject:
   m_ObjectHideFlags: 0
@@ -12276,11 +12271,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: ca424303dd321234291b5d6bb12792e7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.054
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ca424303dd321234291b5d6bb12792e7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.011
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ca424303dd321234291b5d6bb12792e7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12325,6 +12320,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ca424303dd321234291b5d6bb12792e7, type: 3}
       propertyPath: m_Name
       value: Mt_Wind
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ca424303dd321234291b5d6bb12792e7, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
