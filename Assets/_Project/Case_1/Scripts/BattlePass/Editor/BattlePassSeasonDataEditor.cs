@@ -5,24 +5,22 @@ using UnityEngine;
 namespace BattlePass.UI
 {
     /// <summary>
-    /// Editor-only tier generator for <see cref="BattlePassManager"/>.
-    /// This logic used to live inside the runtime manager class; it has been moved here so the
-    /// runtime class stays lean and carries no editor-only code. It draws the default inspector
-    /// plus an "Auto Generate Tiers" button that fills the manager's tierList.
+    /// Custom editor for <see cref="BattlePassSeasonDataSO"/> that handles automatic tier generation
+    /// directly inside the ScriptableObject asset itself, keeping the runtime manager clean.
     /// </summary>
-    [CustomEditor(typeof(BattlePassManager))]
-    public class BattlePassTierGenerator : Editor
+    [CustomEditor(typeof(BattlePassSeasonDataSO))]
+    public class BattlePassSeasonDataEditor : Editor
     {
-        private BattlePassManager _bp;
+        private BattlePassSeasonDataSO _seasonData;
         private int _generateLevelCount;
 
         public override void OnInspectorGUI()
         {
-            InspectorBanner.Draw("Battle Pass Manager", new Color(0.14f, 0.34f, 0.8f));
+            InspectorBanner.Draw("Battle Pass Season Data", new Color(0.14f, 0.34f, 0.8f));
 
             DrawDefaultInspector();
 
-            _bp = (BattlePassManager)target;
+            _seasonData = (BattlePassSeasonDataSO)target;
 
             EditorGUILayout.Space(8);
             if (GUILayout.Button("Auto Generate Tiers", GUILayout.Height(28)))
@@ -33,9 +31,9 @@ namespace BattlePass.UI
 
         private void AutoGenerateTiers()
         {
-            _generateLevelCount = _bp.EditorGenerateLevelCount;
-            int instantRewardCount = _bp.EditorInstantRewardCount;
-            List<BattlePassTierData> tierList = _bp.EditorTierList;
+            _generateLevelCount = _seasonData.generateLevelCount;
+            int instantRewardCount = _seasonData.instantRewardCount;
+            List<BattlePassTierData> tierList = _seasonData.tiers;
 
             // Find all RewardItemSO assets and filter out those excluded from Battle Pass
             List<RewardItemSO> allRewards = new List<RewardItemSO>();
@@ -69,13 +67,11 @@ namespace BattlePass.UI
                 return;
             }
 
+            Undo.RecordObject(_seasonData, "Auto Generate Tiers");
             tierList.Clear();
 
             // --- Instant reward showcase (highlighted cards before level 1) ---
-            // Prefer the designer-authored showcase list from the inspector. Each entry (which can be
-            // an Attachment, Character, Currency, ...) becomes one highlighted instant tier, in order.
-            // When the list is empty we fall back to the built-in default sequence so nothing breaks.
-            List<InstantRewardEntry> showcase = _bp.EditorInstantRewardShowcase;
+            List<InstantRewardEntry> showcase = _seasonData.instantRewardShowcase;
             List<InstantRewardEntry> validShowcase = (showcase != null)
                 ? showcase.FindAll(e => e != null && e.reward != null)
                 : null;
@@ -88,14 +84,13 @@ namespace BattlePass.UI
                     InstantRewardEntry entry = validShowcase[i];
 
                     BattlePassTierData instantTier = new BattlePassTierData();
-                    instantTier.level = -(showcaseCount - i); // negative levels keep them left of level 1
+                    instantTier.level = -(showcaseCount - i);
                     instantTier.isInstantReward = true;
                     instantTier.isHighlighted = true;
                     instantTier.isUnlockNowText = entry.showUnlockNowText;
                     instantTier.premiumReward = new RewardSlot { rewardData = entry.reward, amount = Mathf.Max(1, entry.amount) };
                     tierList.Add(instantTier);
 
-                    // Add unique starter items to the unique set to prevent repetition
                     if (entry.reward.IsUnique)
                     {
                         placedUniqueRewards.Add(entry.reward);
@@ -124,14 +119,13 @@ namespace BattlePass.UI
                     if (item == null) continue;
 
                     BattlePassTierData instantTier = new BattlePassTierData();
-                    instantTier.level = -(finalInstantCount - i); // e.g. -7, -6, -5
+                    instantTier.level = -(finalInstantCount - i);
                     instantTier.isInstantReward = true;
                     instantTier.isHighlighted = true;
                     instantTier.isUnlockNowText = (i < 2);
                     instantTier.premiumReward = new RewardSlot { rewardData = item, amount = def.amount };
                     tierList.Add(instantTier);
 
-                    // Add unique starter items to the unique set to prevent repetition
                     if (item.IsUnique)
                     {
                         placedUniqueRewards.Add(item);
@@ -185,7 +179,6 @@ namespace BattlePass.UI
                     RewardItemSO freeItem = PickWithoutRepeat(freePool, recentFree, placedUniqueRewards, nextAllowedLevelsFree, remainingToDistributeFree, i, null, recentPrem, nextAllowedLevelsPremium, false);
                     tier.freeReward.rewardData = freeItem;
 
-                    // Determine slot amount based on reward type
                     if (freeItem.DistributeFixedTotal && remainingToDistributeFree.ContainsKey(freeItem))
                     {
                         int remaining = remainingToDistributeFree[freeItem];
@@ -218,7 +211,6 @@ namespace BattlePass.UI
                 // --- Premium Reward selection according to constraints ---
                 tier.premiumReward = new RewardSlot();
                 
-                // Specific premium rewards for levels 0 and 1
                 if (i == 0 && goldReward != null) 
                 { 
                     tier.premiumReward.rewardData = goldReward; 
@@ -281,7 +273,6 @@ namespace BattlePass.UI
                 int remaining = kvp.Value;
                 if (remaining <= 0) continue;
 
-                // 1. Try adding to existing slots of this item
                 List<BattlePassTierData> existingTiers = tierList.FindAll(t => !t.isInstantReward && t.freeReward != null && t.freeReward.rewardData == item);
                 foreach (var tier in existingTiers)
                 {
@@ -296,7 +287,6 @@ namespace BattlePass.UI
                     }
                 }
 
-                // 2. Replace non-unique, non-distribution items with this item
                 if (remaining > 0 && (!item.ShowInKeyRewardIndicator || item.DistributeFixedTotal))
                 {
                     List<BattlePassTierData> candidateTiers = tierList.FindAll(t => 
@@ -308,7 +298,6 @@ namespace BattlePass.UI
                         !t.freeReward.rewardData.DistributeFixedTotal
                     );
 
-                    // Shuffle candidate tiers
                     for (int idx = 0; idx < candidateTiers.Count; idx++)
                     {
                         int tempIdx = Random.Range(idx, candidateTiers.Count);
@@ -321,7 +310,6 @@ namespace BattlePass.UI
                     {
                         if (remaining <= 0) break;
 
-                        // Check for adjacent duplicate rewards on same track, or same-level duplicate on other track
                         int L = tier.level;
                         bool hasDuplicate = tierList.Exists(t => 
                             ((t.level == L - 1 || t.level == L + 1) && t.freeReward != null && t.freeReward.rewardData == item) ||
@@ -338,7 +326,7 @@ namespace BattlePass.UI
 
                 if (remaining > 0)
                 {
-                    Debug.LogWarning($"[BattlePassManager] Free track: Could not distribute all fragments of {item.DisplayName}. Remaining: {remaining}");
+                    Debug.LogWarning($"[BattlePass] Free track: Could not distribute all fragments of {item.DisplayName}. Remaining: {remaining}");
                 }
             }
 
@@ -349,7 +337,6 @@ namespace BattlePass.UI
                 int remaining = kvp.Value;
                 if (remaining <= 0) continue;
 
-                // 1. Try adding to existing slots of this item
                 List<BattlePassTierData> existingTiers = tierList.FindAll(t => !t.isInstantReward && t.premiumReward != null && t.premiumReward.rewardData == item);
                 foreach (var tier in existingTiers)
                 {
@@ -364,7 +351,6 @@ namespace BattlePass.UI
                     }
                 }
 
-                // 2. Replace non-unique, non-distribution items with this item
                 if (remaining > 0 && (!item.ShowInKeyRewardIndicator || item.DistributeFixedTotal))
                 {
                     List<BattlePassTierData> candidateTiers = tierList.FindAll(t => 
@@ -376,7 +362,6 @@ namespace BattlePass.UI
                         !t.premiumReward.rewardData.DistributeFixedTotal
                     );
 
-                    // Shuffle candidate tiers
                     for (int idx = 0; idx < candidateTiers.Count; idx++)
                     {
                         int tempIdx = Random.Range(idx, candidateTiers.Count);
@@ -389,7 +374,6 @@ namespace BattlePass.UI
                     {
                         if (remaining <= 0) break;
 
-                        // Check for adjacent duplicate rewards on same track, or same-level duplicate on other track
                         int L = tier.level;
                         bool hasDuplicate = tierList.Exists(t => 
                             ((t.level == L - 1 || t.level == L + 1) && t.premiumReward != null && t.premiumReward.rewardData == item) ||
@@ -406,11 +390,11 @@ namespace BattlePass.UI
 
                 if (remaining > 0)
                 {
-                    Debug.LogWarning($"[BattlePassManager] Premium track: Could not distribute all fragments of {item.DisplayName}. Remaining: {remaining}");
+                    Debug.LogWarning($"[BattlePass] Premium track: Could not distribute all fragments of {item.DisplayName}. Remaining: {remaining}");
                 }
             }
 
-            // Guarantee all unique premium items (like Anubis) are placed at least once
+            // Guarantee unique premium items are placed
             List<RewardItemSO> uniquePremiumPool = premOthers.FindAll(r => r.IsUnique);
             foreach (var uniqueItem in uniquePremiumPool)
             {
@@ -434,7 +418,7 @@ namespace BattlePass.UI
                 }
             }
 
-            // Guarantee all unique free items are placed at least once
+            // Guarantee unique free items are placed
             List<RewardItemSO> uniqueFreePool = freeOthers.FindAll(r => r.IsUnique);
             foreach (var uniqueItem in uniqueFreePool)
             {
@@ -458,7 +442,7 @@ namespace BattlePass.UI
                 }
             }
 
-            // Post-process Gold amounts to follow the exact progression rules
+            // Post-process Gold amounts
             int finalFreeGoldCount = 0;
             int finalPremiumGoldCount = 0;
 
@@ -489,8 +473,9 @@ namespace BattlePass.UI
                 }
             }
 
-            EditorUtility.SetDirty(_bp);
-            Debug.Log($"Automatically generated {_generateLevelCount} levels!");
+            EditorUtility.SetDirty(_seasonData);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"Automatically generated {_generateLevelCount} levels in '{_seasonData.name}'!");
         }
 
         private RewardItemSO GetReward(string namePart, List<RewardItemSO> allRewards)
@@ -514,8 +499,6 @@ namespace BattlePass.UI
             bool isPremium = false)
         {
             bool isMilestoneLevel = (currentLevel > 0 && (currentLevel % 8 == 0 || currentLevel == _generateLevelCount));
-            
-            // Check if the last item placed on this track was Uncommon to prevent consecutive uncommons
             bool lastWasUncommon = (recentList.Count > 0 && recentList[recentList.Count - 1].Rarity == RewardRarity.Uncommon);
 
             List<RewardItemSO> filtered = pool.FindAll(r => 
@@ -528,7 +511,6 @@ namespace BattlePass.UI
                 (!remainingToDistribute.ContainsKey(r) || remainingToDistribute[r] > 0)
             );
 
-            // Fallback 1: Relax full recent history but keep milestone logic, spacing, consecutive uncommons check, and immediate previous exclusions
             if (filtered.Count == 0) 
             {
                 filtered = pool.FindAll(r => 
@@ -542,7 +524,6 @@ namespace BattlePass.UI
                 );
             }
 
-            // Fallback 2: Relax spacing cooldowns but STILL keep consecutive uncommons check, milestone logic and immediate previous exclusions
             if (filtered.Count == 0)
             {
                 filtered = pool.FindAll(r => 
@@ -555,7 +536,6 @@ namespace BattlePass.UI
                 );
             }
 
-            // Fallback 3: Relax spacing cooldowns AND consecutive uncommons check but keep milestone logic and immediate previous exclusions
             if (filtered.Count == 0)
             {
                 filtered = pool.FindAll(r => 
@@ -567,7 +547,6 @@ namespace BattlePass.UI
                 );
             }
 
-            // Fallback 4: Relax milestone logic but STILL keep immediate previous and same-level exclusions
             if (filtered.Count == 0)
             {
                 filtered = pool.FindAll(r => 
@@ -578,7 +557,6 @@ namespace BattlePass.UI
                 );
             }
 
-            // Fallback 5: Absolute backup (only if mathematically locked, relax immediate constraints but keep uniqueness)
             if (filtered.Count == 0)
             {
                 filtered = pool.FindAll(r => 
@@ -592,7 +570,6 @@ namespace BattlePass.UI
                 }
             }
 
-            // Weighted random selection based on rarity weights to control card densities
             int totalWeight = 0;
             List<int> weights = new List<int>();
             foreach (var r in filtered)
@@ -623,9 +600,7 @@ namespace BattlePass.UI
                 placedUniques.Add(picked);
             }
 
-            // 1. Rarity-based spacing (prevents identical items from repeating too close)
-            // Gentler cooldowns to allow natural alternation (rare = 2, epic = 3, etc.)
-            int spacing = 2; // Default for Uncommon
+            int spacing = 2;
             switch (picked.Rarity)
             {
                 case RewardRarity.Rare:
@@ -642,20 +617,17 @@ namespace BattlePass.UI
                     break;
             }
 
-            // Override for Premium Gold to make it rarer
             if (isPremium && picked != null && ((picked.DisplayName != null && picked.DisplayName.ToLower().Contains("gold")) || picked.name.ToLower().Contains("gold")))
             {
                 spacing = 8;
             }
             
             nextAllowedLevels[picked] = currentLevel + spacing;
-            // Only share cooldowns cross-track for Key Rewards
             if (picked.ShowInKeyRewardIndicator && otherNextAllowedLevels != null)
             {
                 otherNextAllowedLevels[picked] = currentLevel + spacing;
             }
 
-            // 2. Spacing for Key Rewards (ShowInKeyRewardIndicator = true) - minimum interval of 8 levels between any key rewards
             if (picked.ShowInKeyRewardIndicator)
             {
                 foreach (var r in pool)
@@ -672,9 +644,8 @@ namespace BattlePass.UI
             }
 
             recentList.Add(picked);
-            if (recentList.Count > 1) recentList.RemoveAt(0); // Size 1 for standard items to prevent starvation
+            if (recentList.Count > 1) recentList.RemoveAt(0);
 
-            // Only share history cross-track for Key Rewards
             if (picked.ShowInKeyRewardIndicator && otherRecentList != null)
             {
                 otherRecentList.Add(picked);

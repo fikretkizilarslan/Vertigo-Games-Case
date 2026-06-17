@@ -25,6 +25,16 @@ namespace BattlePass.UI
         public int amount = 1;
 
         [HideInInspector] public bool isClaimed = false;
+
+        public RewardSlot Clone()
+        {
+            return new RewardSlot
+            {
+                rewardData = this.rewardData,
+                amount = this.amount,
+                isClaimed = this.isClaimed
+            };
+        }
     }
 
     /// <summary>
@@ -66,5 +76,19 @@ namespace BattlePass.UI
         public RewardSlot freeReward;
         public RewardSlot premiumReward;
         public int xpRequiredToUnlock = 100;
+
+        public BattlePassTierData Clone()
+        {
+            return new BattlePassTierData
+            {
+                level = this.level,
+                isInstantReward = this.isInstantReward,
+                isUnlockNowText = this.isUnlockNowText,
+                isHighlighted = this.isHighlighted,
+                freeReward = this.freeReward?.Clone(),
+                premiumReward = this.premiumReward?.Clone(),
+                xpRequiredToUnlock = this.xpRequiredToUnlock
+            };
+        }
     }
 }

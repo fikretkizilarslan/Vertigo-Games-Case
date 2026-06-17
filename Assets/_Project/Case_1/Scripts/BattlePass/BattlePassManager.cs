@@ -13,13 +13,94 @@ namespace BattlePass.UI
     public partial class BattlePassManager : MonoBehaviour
     {
         [Header("Player Data (Runtime Demo)")]
-        [Min(0)] [SerializeField] private int currentLevel = 1;
-        [Min(0)] [SerializeField] private int currentXp = 0;
-        [Min(1)] [SerializeField] private int xpPerLevel = 100;
-        [SerializeField] private bool isPremiumActive = false;
+        [UnityEngine.Serialization.FormerlySerializedAs("currentLevel")]
+        [Min(0)] [SerializeField] private int fallbackLevel = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("currentXp")]
+        [Min(0)] [SerializeField] private int fallbackXp = 0;
+        [UnityEngine.Serialization.FormerlySerializedAs("xpPerLevel")]
+        [Min(1)] [SerializeField] private int fallbackXpPerLevel = 100;
+        [UnityEngine.Serialization.FormerlySerializedAs("isPremiumActive")]
+        [SerializeField] private bool fallbackPremiumActive = false;
+
+        [Header("ScriptableObject Architecture (Optional Overrides)")]
+        [SerializeField] private BattlePassSeasonDataSO seasonDataSO;
+        [SerializeField] private PlayerProfileSO playerProfileSO;
 
         [Header("Tier Setup — Populate from Inspector")]
-        [SerializeField] private List<BattlePassTierData> tierList = new List<BattlePassTierData>();
+        [HideInInspector] [SerializeField] private List<BattlePassTierData> tierList = new List<BattlePassTierData>();
+
+        // ──────────────────────────────────────────────────────────────────────
+        // ScriptableObject Integration Properties
+        // ──────────────────────────────────────────────────────────────────────
+        public int currentLevel
+        {
+            get => playerProfileSO != null ? playerProfileSO.currentLevel : fallbackLevel;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.currentLevel = value;
+                else fallbackLevel = value;
+            }
+        }
+
+        private int currentXp
+        {
+            get => playerProfileSO != null ? playerProfileSO.currentXp : fallbackXp;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.currentXp = value;
+                else fallbackXp = value;
+            }
+        }
+
+        private int xpPerLevel
+        {
+            get => playerProfileSO != null ? playerProfileSO.xpPerLevel : fallbackXpPerLevel;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.xpPerLevel = value;
+                else fallbackXpPerLevel = value;
+            }
+        }
+
+        private bool isPremiumActive
+        {
+            get => playerProfileSO != null ? playerProfileSO.isPremiumActive : fallbackPremiumActive;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.isPremiumActive = value;
+                else fallbackPremiumActive = value;
+            }
+        }
+
+        private int goldBalance
+        {
+            get => playerProfileSO != null ? playerProfileSO.goldBalance : fallbackGoldBalance;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.goldBalance = value;
+                else fallbackGoldBalance = value;
+            }
+        }
+
+        private int diamondBalance
+        {
+            get => playerProfileSO != null ? playerProfileSO.diamondBalance : fallbackDiamondBalance;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.diamondBalance = value;
+                else fallbackDiamondBalance = value;
+            }
+        }
+
+        private int gemBalance
+        {
+            get => playerProfileSO != null ? playerProfileSO.gemBalance : fallbackGemBalance;
+            set
+            {
+                if (playerProfileSO != null) playerProfileSO.gemBalance = value;
+                else fallbackGemBalance = value;
+            }
+        }
 
         [Header("Visual Config")]
         [Tooltip("Shared card frame sprites, shine/glow materials, per-rarity glow tints and level node sprites. Create via Assets > Create > Battle Pass > Visual Config.")]
@@ -68,18 +149,21 @@ namespace BattlePass.UI
         [Tooltip("Header diamond counter label (scene: Txt_Count_Diamond). Auto-resolved by name when left empty.")]
         [SerializeField] private TextMeshProUGUI diamondCountText;
         [Tooltip("Player's current diamond balance. Diamonds are spent when skipping a level with the Btn_XP_Skip badge.")]
-        [Min(0)] [SerializeField] private int diamondBalance = 100;
+        [UnityEngine.Serialization.FormerlySerializedAs("diamondBalance")]
+        [Min(0)] [SerializeField] private int fallbackDiamondBalance = 100;
 
         [Header("Gold Wallet")]
         [Tooltip("Header gold counter label (scene: Txt_Count_Gold). Auto-resolved by name when left empty.")]
         [SerializeField] private TextMeshProUGUI goldCountText;
         [Tooltip("Player's current gold balance, topped up when a gold reward card is claimed.")]
-        [Min(0)] [SerializeField] private int goldBalance = 0;
+        [UnityEngine.Serialization.FormerlySerializedAs("goldBalance")]
+        [Min(0)] [SerializeField] private int fallbackGoldBalance = 0;
 
         [Header("Lucky Gem Wallet")]
         [Tooltip("Header gem counter (scene: Txt_Count_Gem). Wallet UI: Grp_Gem — hidden until revealed.")]
         [SerializeField] private TextMeshProUGUI gemCountText;
-        [Min(0)] [SerializeField] private int gemBalance = 0;
+        [UnityEngine.Serialization.FormerlySerializedAs("gemBalance")]
+        [Min(0)] [SerializeField] private int fallbackGemBalance = 0;
         [SerializeField] private GemWalletController gemWalletController;
 
         [Header("Currency Fly Animation")]
@@ -147,30 +231,29 @@ namespace BattlePass.UI
         public int CurrentLevel => currentLevel;
         public bool IsPremiumActive => isPremiumActive;
 
-        [Header("Auto Generator Settings")]
-        [SerializeField] private int generateLevelCount = 50;
-        [SerializeField] private int instantRewardCount = 7;
+        [Header("Auto Generator Settings (Fallback)")]
+        [UnityEngine.Serialization.FormerlySerializedAs("generateLevelCount")]
+        [SerializeField] private int fallbackGenerateLevelCount = 50;
+        [UnityEngine.Serialization.FormerlySerializedAs("instantRewardCount")]
+        [SerializeField] private int fallbackInstantRewardCount = 7;
 
-        [Header("Instant Reward Showcase (Optional)")]
-        [Tooltip("Featured instant-reward cards shown before level 1 (the highlighted SOLARIS / CLEOPATRA row). " +
-                 "Add an entry here — e.g. an Attachment reward — to control exactly which cards appear, in order. " +
-                 "When this list is empty, the generator falls back to its built-in default sequence.")]
-        [SerializeField] private List<InstantRewardEntry> instantRewardShowcase = new List<InstantRewardEntry>();
+        [Header("Instant Reward Showcase (Fallback)")]
+        [Tooltip("Featured instant-reward cards shown before level 1. Fallback when Season Data SO is not assigned.")]
+        [UnityEngine.Serialization.FormerlySerializedAs("instantRewardShowcase")]
+        [SerializeField] private List<InstantRewardEntry> fallbackInstantRewardShowcase = new List<InstantRewardEntry>();
+
+        private int generateLevelCount => seasonDataSO != null ? seasonDataSO.generateLevelCount : fallbackGenerateLevelCount;
+        private int instantRewardCount => seasonDataSO != null ? seasonDataSO.instantRewardCount : fallbackInstantRewardCount;
+        private List<InstantRewardEntry> instantRewardShowcase => seasonDataSO != null ? seasonDataSO.instantRewardShowcase : fallbackInstantRewardShowcase;
 
 #if UNITY_EDITOR
-        // Editor-only accessors consumed by BattlePassManagerEditor (the tier generator tool).
-        // The heavy generation logic lives in Scripts/UI/Editor/BattlePassTierGenerator.cs so this
-        // runtime class stays lean and free of editor-only code.
         public List<BattlePassTierData> EditorTierList => tierList;
-        public int EditorGenerateLevelCount => generateLevelCount;
-        public int EditorInstantRewardCount => instantRewardCount;
-        public List<InstantRewardEntry> EditorInstantRewardShowcase => instantRewardShowcase;
 
         private void OnValidate()
         {
-            currentLevel = Mathf.Max(0, currentLevel);
-            currentXp = Mathf.Max(0, currentXp);
-            xpPerLevel = Mathf.Max(1, xpPerLevel);
+            fallbackLevel = Mathf.Max(0, fallbackLevel);
+            fallbackXp = Mathf.Max(0, fallbackXp);
+            fallbackXpPerLevel = Mathf.Max(1, fallbackXpPerLevel);
 
             if (Application.isPlaying)
             {
@@ -201,6 +284,20 @@ namespace BattlePass.UI
 
         private void Start()
         {
+            // Let the ScriptableObject values edited in the Inspector be the runtime source of truth.
+
+            if (seasonDataSO != null && seasonDataSO.tiers != null)
+            {
+                tierList = new List<BattlePassTierData>();
+                foreach (var tier in seasonDataSO.tiers)
+                {
+                    if (tier != null)
+                    {
+                        tierList.Add(tier.Clone());
+                    }
+                }
+            }
+
             if (levelIndicator == null)
             {
                 levelIndicator = FindFirstObjectByType<UILevelIndicator>();
