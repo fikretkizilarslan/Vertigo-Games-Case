@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9674e4900f69b404f95f392127f50e89, type: 3}
   m_Name: Season1Data
   m_EditorClassIdentifier: Assembly-CSharp::BattlePass.UI.BattlePassSeasonDataSO
+  generateLevelCount: 40
+  instantRewardCount: 3
+  instantRewardShowcase: []
   tiers:
   - level: -3
     isInstantReward: 1
@@ -55,7 +58,7 @@ MonoBehaviour:
   - level: 0
     isInstantReward: 0
     isUnlockNowText: 0
-    isHighlighted: 1
+    isHighlighted: 0
     freeReward:
       rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
       amount: 1000
@@ -87,7 +90,7 @@ MonoBehaviour:
       amount: 1000
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -100,8 +103,8 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 16
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 4
@@ -113,8 +116,8 @@ MonoBehaviour:
       amount: 9
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 18
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 5
@@ -126,8 +129,8 @@ MonoBehaviour:
       amount: 1000
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 20
+      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 6
@@ -139,8 +142,8 @@ MonoBehaviour:
       amount: 11
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 22
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 7
@@ -152,24 +155,11 @@ MonoBehaviour:
       amount: 12
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 24
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 8
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 13
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 2e1a32ca2da341f4cb153fb2cb3aa74e, type: 2}
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
-  - level: 9
+  - level: 8
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -178,7 +168,20 @@ MonoBehaviour:
       amount: 1200
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 9
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 14
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -200,12 +203,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 1450
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 32
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 12
@@ -213,41 +216,15 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 1450
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 17
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 2
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 34
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 13
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 18
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
-      amount: 1
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 14
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 2
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 15
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -256,8 +233,34 @@ MonoBehaviour:
       amount: 1700
       isClaimed: 0
     premiumReward:
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 36
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 14
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 19
+      isClaimed: 0
+    premiumReward:
       rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
       amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 15
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 1950
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 40
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 16
@@ -265,7 +268,7 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
       amount: 21
       isClaimed: 0
     premiumReward:
@@ -278,28 +281,15 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 1950
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 22
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 44
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 18
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 0f6fb37e6d5f67d4eaa10d6aa318e492, type: 2}
-      amount: 1
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 19
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -308,8 +298,21 @@ MonoBehaviour:
       amount: 2200
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 46
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 19
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
       amount: 1
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 7000
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 20
@@ -317,12 +320,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
       amount: 25
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 50
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 21
@@ -330,12 +333,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 26
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 2450
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 7000
+      rewardData: {fileID: 11400000, guid: d37eff9262aa1e54b836dfbdf609eb02, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 22
@@ -343,7 +346,7 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
       amount: 1
       isClaimed: 0
     premiumReward:
@@ -356,54 +359,15 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 2450
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 28
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 56
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 3
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 24
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 29
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 2e1a32ca2da341f4cb153fb2cb3aa74e, type: 2}
-      amount: 1
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 25
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 30
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
-      amount: 1
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 26
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
-      amount: 1
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 62
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 27
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -412,8 +376,47 @@ MonoBehaviour:
       amount: 2700
       isClaimed: 0
     premiumReward:
+      rewardData: {fileID: 11400000, guid: 18426f530f00a7d46b070764214aa80d, type: 2}
+      amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 25
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
       rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 64
+      amount: 30
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 60
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 26
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 2950
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 27
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
+      amount: 1
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 8000
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 28
@@ -425,8 +428,8 @@ MonoBehaviour:
       amount: 33
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 3
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 66
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 29
@@ -438,7 +441,7 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -448,11 +451,11 @@ MonoBehaviour:
     isHighlighted: 0
     freeReward:
       rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 2950
+      amount: 3200
       isClaimed: 0
     premiumReward:
       rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
-      amount: 3
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 31
@@ -473,11 +476,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 18426f530f00a7d46b070764214aa80d, type: 2}
+      rewardData: {fileID: 11400000, guid: d5832546f0e376f4fbcd65263c5e3c43, type: 2}
       amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -486,11 +489,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
       amount: 38
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
       amount: 76
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -499,12 +502,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 3200
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 39
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 55d6053058251d64ebed4663fb2a9d71, type: 2}
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 35
@@ -516,24 +519,11 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 80
+      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      amount: 1
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 36
-    isInstantReward: 0
-    isUnlockNowText: 0
-    isHighlighted: 0
-    freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 41
-      isClaimed: 0
-    premiumReward:
-      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
-      amount: 2
-      isClaimed: 0
-    xpRequiredToUnlock: 100
-  - level: 37
     isInstantReward: 0
     isUnlockNowText: 0
     isHighlighted: 0
@@ -542,8 +532,21 @@ MonoBehaviour:
       amount: 3450
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 5874508299d25f6449e854d2336f08a9, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
+      amount: 82
+      isClaimed: 0
+    xpRequiredToUnlock: 100
+  - level: 37
+    isInstantReward: 0
+    isUnlockNowText: 0
+    isHighlighted: 0
+    freeReward:
+      rewardData: {fileID: 11400000, guid: 89b8021e40cf498429a786cf61078870, type: 2}
       amount: 1
+      isClaimed: 0
+    premiumReward:
+      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      amount: 2
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 38
@@ -551,12 +554,12 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
-      amount: 43
+      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
+      amount: 3700
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 3821f0b19dc812f4984510bb4e25f8ed, type: 2}
-      amount: 8000
+      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      amount: 86
       isClaimed: 0
     xpRequiredToUnlock: 100
   - level: 39
@@ -564,11 +567,11 @@ MonoBehaviour:
     isUnlockNowText: 0
     isHighlighted: 0
     freeReward:
-      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
-      amount: 44
+      rewardData: {fileID: 11400000, guid: bd39a4274d2c7aa4d8a2de823cfb93ed, type: 2}
+      amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: 316ed6a0df3ef2746a2e2b8f32cf8993, type: 2}
+      rewardData: {fileID: 11400000, guid: b5d524c8ca55e104b850b4c224cbaf50, type: 2}
       amount: 88
       isClaimed: 0
     xpRequiredToUnlock: 100
@@ -581,7 +584,7 @@ MonoBehaviour:
       amount: 1
       isClaimed: 0
     premiumReward:
-      rewardData: {fileID: 11400000, guid: d5832546f0e376f4fbcd65263c5e3c43, type: 2}
-      amount: 1
+      rewardData: {fileID: 11400000, guid: 6d52fb272d87d4443bd5c75db60b82ca, type: 2}
+      amount: 3
       isClaimed: 0
     xpRequiredToUnlock: 100

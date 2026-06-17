@@ -923,13 +923,10 @@ namespace BattlePass.UI
             EnsureGemWalletController();
             if (gemWalletController != null)
             {
-                gemWalletController.RevealWallet(() =>
+                gemWalletController.RevealWallet();
+                AnimateWalletChange(WalletCurrencyType.Gem, fromBalance, toBalance, () =>
                 {
-                    Canvas.ForceUpdateCanvases();
-                    AnimateWalletChange(WalletCurrencyType.Gem, fromBalance, toBalance, () =>
-                    {
-                        gemWalletController.HideWalletAnimated();
-                    });
+                    gemWalletController.HideWalletAnimated();
                 });
                 return;
             }

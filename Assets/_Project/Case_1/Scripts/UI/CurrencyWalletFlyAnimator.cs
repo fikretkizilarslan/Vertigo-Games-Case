@@ -139,7 +139,6 @@ namespace BattlePass.UI
             }
 
             Vector2 centerLocal = GetScreenCenterLocal(layer);
-            Vector2 targetLocal = WorldPointToLayerLocal(iconTarget.position, layer);
 
             activeFlyTweens = flyCount;
             int completedFlies = 0;
@@ -153,8 +152,7 @@ namespace BattlePass.UI
 
                 Vector2 startPos = isGain
                     ? centerLocal + RandomInsideCircle(spawnSpreadRadius)
-                    : targetLocal + RandomInsideCircle(spawnSpreadRadius * 0.35f);
-                Vector2 endPos = isGain ? targetLocal : centerLocal;
+                    : GetIconTargetLocal(iconTarget, layer) + RandomInsideCircle(spawnSpreadRadius * 0.35f);
 
                 flyRect.anchoredPosition = startPos;
                 flyRect.localScale = Vector3.zero;
@@ -167,10 +165,16 @@ namespace BattlePass.UI
                     flySequence.AppendInterval(delay);
                 }
 
-                flySequence.Append(flyRect.DOScale(1f, 0.12f).SetEase(Ease.OutBack));
-                flySequence.Append(
-                    flyRect.DOAnchorPos(endPos, flyDuration + UnityEngine.Random.Range(-0.04f, 0.04f))
-                        .SetEase(flyEase));
+                flySequence.Append(flyRect.DOScale(1f, 0.08f).SetEase(Ease.OutBack));
+                float travelDuration = flyDuration + UnityEngine.Random.Range(-0.04f, 0.04f);
+                if (isGain)
+                {
+                    flySequence.Append(AnimateFlyToTarget(flyRect, iconTarget, layer, travelDuration, flyEase));
+                }
+                else
+                {
+                    flySequence.Append(flyRect.DOAnchorPos(centerLocal, travelDuration).SetEase(flyEase));
+                }
 
                 flySequence.OnComplete(() =>
                 {
@@ -233,11 +237,6 @@ namespace BattlePass.UI
 
         private void ResolveReferences()
         {
-            if (referencesResolved)
-            {
-                return;
-            }
-
             if (goldCountText == null)
             {
                 goldCountText = GameObject.Find("Txt_Count_Gold")?.GetComponent<TextMeshProUGUI>();
@@ -307,7 +306,7 @@ namespace BattlePass.UI
                 CaptureBaseScale(gemIconTarget, ref gemIconBaseScale, !referencesResolved);
             }
 
-            referencesResolved = true;
+            referencesResolved = goldIconTarget != null && diamondIconTarget != null && gemIconTarget != null;
         }
 
         private static void CaptureBaseScale(RectTransform icon, ref Vector3 baseScale, bool allowCapture)
@@ -341,10 +340,10 @@ namespace BattlePass.UI
 
         private static RectTransform FindIconUnderGroup(string groupName, string iconName)
         {
-            Transform group = GameObject.Find(groupName)?.transform;
+            Transform group = FindTransformByName(groupName);
             if (group == null)
             {
-                return GameObject.Find(iconName)?.GetComponent<RectTransform>();
+                return FindTransformByName(iconName)?.GetComponent<RectTransform>();
             }
 
             Transform icon = group.Find(iconName);
@@ -361,6 +360,34 @@ namespace BattlePass.UI
             }
 
             return icon != null ? icon.GetComponent<RectTransform>() : null;
+        }
+
+        private static Transform FindTransformByName(string objectName)
+        {
+            GameObject active = GameObject.Find(objectName);
+            if (active != null)
+            {
+                return active.transform;
+            }
+
+            Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                Transform candidate = transforms[i];
+                if (candidate == null || candidate.name != objectName || candidate.hideFlags != HideFlags.None)
+                {
+                    continue;
+                }
+
+                if (!candidate.gameObject.scene.IsValid())
+                {
+                    continue;
+                }
+
+                return candidate;
+            }
+
+            return null;
         }
 
         private RectTransform EnsureFlyLayer()
@@ -652,6 +679,29 @@ namespace BattlePass.UI
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screenCenter, eventCamera, out Vector2 localPoint);
             return localPoint;
+        }
+
+        private Tween AnimateFlyToTarget(
+            RectTransform flyRect,
+            RectTransform iconTarget,
+            RectTransform layer,
+            float duration,
+            Ease ease)
+        {
+            Vector2 start = flyRect.anchoredPosition;
+            return DOTween.To(() => 0f, t =>
+                {
+                    Vector2 end = GetIconTargetLocal(iconTarget, layer);
+                    flyRect.anchoredPosition = Vector2.Lerp(start, end, t);
+                }, 1f, duration)
+                .SetEase(ease)
+                .SetUpdate(useUnscaledTime);
+        }
+
+        private Vector2 GetIconTargetLocal(RectTransform iconTarget, RectTransform layer)
+        {
+            Vector3 worldCenter = iconTarget.TransformPoint(iconTarget.rect.center);
+            return WorldPointToLayerLocal(worldCenter, layer);
         }
 
         private Vector2 WorldPointToLayerLocal(Vector3 worldPoint, RectTransform layer)

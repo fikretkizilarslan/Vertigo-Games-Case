@@ -3593,6 +3593,8 @@ GameObject:
   m_Component:
   - component: {fileID: 573413297}
   - component: {fileID: 573413296}
+  - component: {fileID: 573413298}
+  - component: {fileID: 573413299}
   m_Layer: 0
   m_Name: ----Manager----
   m_TagString: Untagged
@@ -4213,8 +4215,8 @@ MonoBehaviour:
   fallbackGoldBalance: 3000
   gemCountText: {fileID: 459088537}
   fallbackGemBalance: 0
-  gemWalletController: {fileID: 0}
-  walletFlyAnimator: {fileID: 0}
+  gemWalletController: {fileID: 573413298}
+  walletFlyAnimator: {fileID: 573413299}
   roadCanvasGroup: {fileID: 0}
   startupRevealDuration: 0
   nodePrefab: {fileID: 7555761151618658622, guid: 4a3f3f5bdf9b2e640b10ac71707da915, type: 3}
@@ -4231,6 +4233,59 @@ MonoBehaviour:
   fallbackGenerateLevelCount: 40
   fallbackInstantRewardCount: 3
   fallbackInstantRewardShowcase: []
+--- !u!114 &573413298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573413295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 425df255aba621a4ab1e5cfb3a872350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattlePass.UI.GemWalletController
+  grpGem: {fileID: 1260058916}
+  gemRevealButton: {fileID: 0}
+  revealDuration: 0.18
+  revealFromScale: 0.82
+  hideDelayAfterCollect: 0.12
+  hideDuration: 0.3
+  hidePunchScale: 1.08
+  useUnscaledTime: 1
+--- !u!114 &573413299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573413295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f3c2e91b4d6f7489e0a1c2d3b4e5f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattlePass.UI.CurrencyWalletFlyAnimator
+  goldIconTarget: {fileID: 1661862508}
+  diamondIconTarget: {fileID: 102451212}
+  gemIconTarget: {fileID: 227497651}
+  goldCountText: {fileID: 1656810907}
+  diamondCountText: {fileID: 361407087}
+  gemCountText: {fileID: 459088537}
+  goldFlySprite: {fileID: 0}
+  diamondFlySprite: {fileID: 0}
+  gemFlySprite: {fileID: 0}
+  rootCanvas: {fileID: 1647718178}
+  flyLayer: {fileID: 0}
+  maxFlyIcons: 10
+  flyDuration: 0.55
+  spawnSpreadRadius: 90
+  spawnStagger: 0.045
+  flyIconSize: {x: 72, y: 72}
+  iconPunchStrength: 0.1
+  iconPunchDuration: 0.14
+  arriveShrinkDuration: 0.1
+  flyEase: 7
+  useUnscaledTime: 1
 --- !u!4 &573413297
 Transform:
   m_ObjectHideFlags: 0
@@ -5858,8 +5913,6 @@ MonoBehaviour:
   premiumStatusText: {fileID: 1605541717}
   claimButton: {fileID: 296112973}
   claimButtonLabel: {fileID: 2130359125}
-  premiumStatusMessage: PREMIUM ACTIVE
-  claimLabel: CLAIM
   overlayGroup: {fileID: 910000003}
   battlePassMainPanel: {fileID: 1488515907}
   overlaySortingOrder: 200
@@ -5870,7 +5923,6 @@ MonoBehaviour:
   lockBurstRotation: 28
   rewardRevealDuration: 0.35
   claimButtonDelay: 0.12
-  fadeOutDuration: 0.2
   enableBobbing: 1
   bobbingSpeed: 3
   bobbingAmplitude: 18

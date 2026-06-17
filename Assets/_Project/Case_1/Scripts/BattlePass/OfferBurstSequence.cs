@@ -38,8 +38,6 @@ namespace BattlePass.UI
         [SerializeField] private TMP_Text premiumStatusText;
         [SerializeField] private Button claimButton;
         [SerializeField] private TMP_Text claimButtonLabel;
-        [SerializeField] private string premiumStatusMessage = "Premium Active";
-        [SerializeField] private string claimLabel = "CLAIM";
 
         [Header("Overlay")]
         [SerializeField] private CanvasGroup overlayGroup;
@@ -57,7 +55,6 @@ namespace BattlePass.UI
         [Header("Timing — Reward & Dismiss")]
         [SerializeField] private float rewardRevealDuration = 0.35f;
         [SerializeField] private float claimButtonDelay = 0.12f;
-        [SerializeField] private float fadeOutDuration = 0.22f;
 
         [Header("Floating Bobbing Animation")]
         [SerializeField] private bool enableBobbing = true;
